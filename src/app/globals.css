@@ -1,0 +1,30 @@
+/* Tailwind CDN Compatibility Layer */
+
+/* Standard CSS resets to ensure CDN styles work as expected */
+body {
+  background-color: #fcfaf8;
+  /* off-white from config */
+  color: #1a1a1a;
+  /* black-accent from config */
+  /* Fonts are handled by Tailwind config in layout.tsx */
+}
+
+/* Custom Utilities from index.html */
+.pastel-gradient {
+  background: linear-gradient(135deg, #e6f4f1 0%, #f0eafc 50%, #fff1e6 100%);
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+/* Page transition optimization - PREVENT FLASH */
+.page-transition-wrapper {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+/* Prevent flash during navigation */
+main {
+  isolation: isolate;
+}
