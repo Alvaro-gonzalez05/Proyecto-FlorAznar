@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { gsap } from 'gsap';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,14 +16,20 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     const sidebarRef = useRef(null);
     const indicatorRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+    const [activePath, setActivePath] = useState(pathname);
     const { content: rightSidebarContent } = useRightSidebar();
+
+    // Sincronizar activePath con pathname para navegación del navegador (atrás/adelante)
+    useEffect(() => {
+        setActivePath(pathname);
+    }, [pathname]);
 
     // Navigation items
     const navItems = [
         { href: '/', icon: 'grid_view' },
+        { href: '/historial', icon: 'history' },
         { href: '/nueva-consulta', icon: 'add' },
         { href: '/perfil', icon: 'person' },
-        { href: '/analisis', icon: 'auto_awesome' },
         { href: '/configuracion', icon: 'settings' },
     ];
 
@@ -70,9 +76,9 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         }
     }, [pathname]);
 
-    // Mover indicador a la posición activa basado en pathname
+    // Mover indicador a la posición activa basado en activePath
     useEffect(() => {
-        const activeIndex = navItems.findIndex(item => item.href === pathname);
+        const activeIndex = navItems.findIndex(item => item.href === activePath);
 
         if (activeIndex !== -1 && indicatorRef.current) {
             // Calcular posición basada en el índice
@@ -87,7 +93,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                 ease: 'power3.out',
             });
         }
-    }, [pathname, navItems]);
+    }, [activePath, navItems]);
 
     return (
         <div className="flex h-screen overflow-hidden">
@@ -97,17 +103,18 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                     {/* Animated Indicator */}
                     <div
                         ref={indicatorRef}
-                        className="absolute left-0 w-full h-12 bg-black-accent rounded-2xl transition-all -z-10"
+                        className="absolute left-0 w-full h-12 bg-black-accent rounded-2xl -z-10"
                         style={{ top: 0 }}
                     />
 
                     {navItems.map((item, index) => {
-                        const isActive = pathname === item.href;
+                        const isActive = activePath === item.href;
                         return (
                             <TransitionLink
                                 key={item.href}
                                 href={item.href}
-                                className={`p-3 rounded-2xl transition-colors relative z-10 block ${isActive ? 'text-white' : 'text-slate-400 hover:text-black-accent'}`}
+                                onClick={() => setActivePath(item.href)}
+                                className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-colors relative z-10 ${isActive ? 'text-white' : 'text-slate-400 hover:text-black-accent'}`}
                             >
                                 <span className="material-symbols-outlined">{item.icon}</span>
                             </TransitionLink>

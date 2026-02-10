@@ -76,11 +76,41 @@ export default function Home() {
       </header>
 
       <section className="mb-6">
-        <div ref={heroRef} className="pastel-gradient rounded-[2rem] p-6 lg:p-8 relative overflow-hidden soft-shadow">
-          <div className="absolute top-0 right-0 p-8 opacity-20">
-            <svg className="text-black-accent" height="200" viewBox="0 0 100 100" width="200">
-              <circle cx="50" cy="50" fill="none" r="40" stroke="currentColor" strokeWidth="0.5"></circle>
-              <path d="M50 10 L50 90 M10 50 L90 50" stroke="currentColor" strokeWidth="0.5"></path>
+        <div 
+          ref={heroRef} 
+          className="bg-white rounded-[2rem] p-6 lg:p-8 relative overflow-hidden soft-shadow border border-slate-50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-default group"
+        >
+          
+          {/* Animated Aura Background */}
+          <div className="absolute inset-0 overflow-hidden rounded-[2rem] pointer-events-none">
+             <div className="absolute -top-[10%] -left-[10%] w-[80%] h-[80%] bg-[#e6f4f1] rounded-full filter blur-[80px] opacity-100 animate-aura-1 transform-gpu"></div>
+             <div className="absolute top-[10%] -right-[10%] w-[70%] h-[70%] bg-[#f0eafc] rounded-full filter blur-[80px] opacity-100 animate-aura-2 transform-gpu"></div>
+             <div className="absolute -bottom-[20%] left-[20%] w-[70%] h-[70%] bg-[#fff1e6] rounded-full filter blur-[80px] opacity-100 animate-aura-3 transform-gpu"></div>
+          </div>
+
+          <div className="absolute -top-10 -right-10 p-8 opacity-25 pointer-events-none z-0">
+            <svg className="text-black-accent w-64 h-64 group-hover:rotate-45 transition-transform duration-[3s] ease-in-out" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
+               {/* Centro */}
+               <circle cx="50" cy="50" r="5" />
+               <circle cx="50" cy="50" r="2" fill="currentColor" className="opacity-50" />
+               
+               {/* Flor Central */}
+               <path d="M50 50 Q60 30 50 10 Q40 30 50 50 Z" />
+               <path d="M50 50 Q70 40 90 50 Q70 60 50 50 Z" />
+               <path d="M50 50 Q60 70 50 90 Q40 70 50 50 Z" />
+               <path d="M50 50 Q30 60 10 50 Q30 40 50 50 Z" />
+               
+               {/* Pétalos Diagonales */}
+               <path d="M50 50 Q65 35 80 20" />
+               <path d="M50 50 Q80 20 65 35" transform="rotate(90 50 50)" />
+               <path d="M50 50 Q65 65 80 80" />
+               <path d="M50 50 Q35 65 20 80" />
+               <path d="M50 50 Q35 35 20 20" />
+               
+               {/* Círculos Externos */}
+               <circle cx="50" cy="50" r="25" strokeDasharray="1 2" />
+               <circle cx="50" cy="50" r="38" opacity="0.5" />
+               <circle cx="50" cy="50" r="45" opacity="0.3" strokeDasharray="4 1" />
             </svg>
           </div>
           <div className="relative z-10 max-w-2xl">

@@ -1,0 +1,44 @@
+@keyframes float-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes float-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 50px) scale(1.1); }
+  66% { transform: translate(-30px, -30px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes float-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, 0px) scale(1.1); }
+  66% { transform: translate(-50px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-aura-1 {
+  animation: float-1 12s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.animate-aura-2 {
+  animation: float-2 15s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.animate-aura-3 {
+  animation: float-3 10s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.group:hover .animate-aura-1,
+.group:hover .animate-aura-2,
+.group:hover .animate-aura-3,
+.hover-trigger:hover .animate-aura-1,
+.hover-trigger:hover .animate-aura-2,
+.hover-trigger:hover .animate-aura-3 {
+  animation-play-state: running;
+}

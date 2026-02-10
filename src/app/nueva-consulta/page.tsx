@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, FormEvent } from 'react';
+import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import Link from 'next/link';
 import TransitionLink from '../components/TransitionLink';
@@ -9,6 +11,17 @@ export default function NuevaConsultaPage() {
     const formRef = useRef(null);
     const illustrationRef = useRef(null);
     const headerRef = useRef(null);
+    const loadingRef = useRef(null);
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        // Simple entrance animation without complex GSAP states/refs dependencies that might race
+        if (isLoading && loadingRef.current) {
+            // Just ensure it's visible
+            loadingRef.current.style.opacity = "1";
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -49,15 +62,82 @@ export default function NuevaConsultaPage() {
         return () => ctx.revert();
     }, []);
 
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        // Simular tiempo de carga y redirigir
+        setTimeout(() => {
+            router.push('/resultados');
+        }, 3000);
+    };
+
     return (
-        <main className="flex-1 flex flex-col relative overflow-hidden">{/* Background Shapes */}
+        <main className="flex-1 flex flex-col relative overflow-hidden">
             {/* Background Shapes */}
             <div className="absolute rounded-full blur-3xl opacity-40 bg-mint w-96 h-96 -top-20 -right-20"></div>
             <div className="absolute rounded-full blur-3xl opacity-40 bg-lavender w-80 h-80 top-1/2 -right-10"></div>
             <div className="absolute rounded-full blur-3xl opacity-40 bg-peach w-64 h-64 bottom-0 left-1/4"></div>
 
-            {/* Header */}
-            <header ref={headerRef} className="flex justify-between items-center px-6 md:px-12 py-6 md:py-10 relative z-10">
+            {/* Portal Loading Screen */}
+            {isLoading && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-off-white flex flex-col items-center justify-center overflow-hidden">
+                    <div className="relative w-96 h-96 flex items-center justify-center animate-in fade-in zoom-in duration-500">
+                        {/* Aura Layers */}
+                        <div className="absolute inset-0 bg-teal-100 rounded-full blur-[80px] animate-pulse"></div>
+                        <div className="absolute inset-10 bg-purple-100 rounded-full blur-[60px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+                        <div className="absolute inset-20 bg-orange-100 rounded-full blur-[40px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+                        
+                        {/* Rotating Gradients */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-teal-50 via-transparent to-transparent blur-2xl animate-spin" style={{ animationDuration: '8s' }}></div>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-bl from-purple-50 via-transparent to-transparent blur-2xl animate-spin" style={{ animationDuration: '10s', animationDirection: 'reverse' }}></div>
+
+                        {/* Center Core */}
+                        <div className="relative z-10 flex flex-col items-center justify-center gap-8">
+                            <div className="w-64 h-64 md:w-80 md:h-80 animate-[spin_15s_linear_infinite]">
+                                <svg className="w-full h-full drop-shadow-xl opacity-90" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                                    <desc>Geometría Sagrada Minimalista</desc>
+                                    <g transform="translate(200, 200)">
+                                        <circle cx="0" cy="0" r="140" fill="none" stroke="#1a1a1a" strokeWidth="0.5" strokeOpacity="0.3" />
+                                        <circle cx="0" cy="0" r="160" fill="none" stroke="#1a1a1a" strokeWidth="0.3" strokeOpacity="0.2" />
+                                        <g stroke="#1a1a1a" strokeWidth="0.8" fill="none" strokeOpacity="0.7">
+                                            <circle cx="0" cy="0" r="50" />
+                                            <circle cx="0" cy="-50" r="50" />
+                                            <circle cx="43.3" cy="-25" r="50" />
+                                            <circle cx="43.3" cy="25" r="50" />
+                                            <circle cx="0" cy="50" r="50" />
+                                            <circle cx="-43.3" cy="25" r="50" />
+                                            <circle cx="-43.3" cy="-25" r="50" />
+                                        </g>
+                                        <g stroke="#1a1a1a" strokeWidth="0.5" fill="none" strokeOpacity="0.4" transform="rotate(30)">
+                                            <path d="M0 -140 L0 140" />
+                                            <path d="M-121.2 -70 L121.2 70" />
+                                            <path d="M-121.2 70 L121.2 -70" />
+                                        </g>
+                                        <circle cx="0" cy="-140" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="121.2" cy="-70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="121.2" cy="70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="0" cy="140" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="-121.2" cy="70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="-121.2" cy="-70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                        <circle cx="0" cy="0" r="3" fill="#1a1a1a" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <div className="text-center space-y-2">
+                                <h3 className="text-2xl font-light tracking-[0.2em] text-black-accent animate-pulse">CONECTANDO</h3>
+                                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                                    Interpretando vibraciones
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Header - Only visible when not loading (optional, but keep for transition effect) */}
+            <header ref={headerRef} className={`flex justify-between items-center px-6 md:px-12 py-6 md:py-10 relative z-10 transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
                 <TransitionLink className="flex items-center gap-2 text-slate-400 hover:text-black-accent transition-colors group" href="/">
                     <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
                     <span className="text-xs md:text-sm font-semibold uppercase tracking-widest">Volver</span>
@@ -69,16 +149,15 @@ export default function NuevaConsultaPage() {
             </header>
 
             {/* Main Content */}
-            <section className="flex-1 flex items-center justify-center px-4 md:px-8 py-6 md:py-0 relative z-10 overflow-y-auto">
+            <section className={`flex-1 flex items-center justify-center px-4 md:px-8 py-6 md:py-0 relative z-10 overflow-y-auto transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-center my-auto">
-                    {/* Form */}
-                    <div ref={formRef} className="space-y-8 md:space-y-12">
+                        <div ref={formRef} className="space-y-8 md:space-y-12">
                         <div className="space-y-2">
                             <h2 className="text-xs uppercase tracking-[0.4em] font-semibold text-slate-400">Paso 01</h2>
                             <h1 className="text-4xl md:text-6xl font-light tracking-tight">Nueva <span className="font-bold">Consulta</span></h1>
                         </div>
 
-                        <form className="space-y-4 md:space-y-8">
+                        <form className="space-y-4 md:space-y-8" onSubmit={handleSubmit}>
                             <div className="space-y-3 md:space-y-6">
                                 <div className="group">
                                     <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 ml-1 group-focus-within:text-black-accent transition-colors">
@@ -122,11 +201,12 @@ export default function NuevaConsultaPage() {
 
                             <div className="pt-3 md:pt-6">
                                 <button
-                                    className="w-full bg-black-accent text-white py-3 md:py-6 rounded-2xl font-bold text-sm tracking-[0.2em] uppercase flex items-center justify-center gap-4 hover:bg-slate-800 transition-all shadow-xl shadow-black/10 active:scale-[0.99]"
+                                    className={`w-full bg-black-accent text-white py-3 md:py-6 rounded-2xl font-bold text-sm tracking-[0.2em] uppercase flex items-center justify-center gap-4 hover:bg-slate-800 transition-all shadow-xl shadow-black/10 active:scale-[0.99] ${isLoading ? 'opacity-80 cursor-wait' : ''}`}
                                     type="submit"
+                                    disabled={isLoading}
                                 >
-                                    Comenzar Análisis
-                                    <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                                    {isLoading ? 'Procesando...' : 'Comenzar Análisis'}
+                                    {!isLoading && <span className="material-symbols-outlined text-lg">auto_awesome</span>}
                                 </button>
                                 <p className="text-center text-[10px] text-slate-400 uppercase tracking-widest mt-3 md:mt-6 leading-relaxed">
                                     El análisis tomará aproximadamente 15 segundos en ser procesado.
@@ -138,33 +218,69 @@ export default function NuevaConsultaPage() {
                     {/* Illustration */}
                     <div ref={illustrationRef} className="hidden lg:flex justify-center relative">
                         <div className="relative w-full aspect-square flex items-center justify-center">
-                            <svg className="w-full max-w-md animate-pulse" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="100" cy="100" fill="none" r="80" stroke="#e6f4f1" strokeWidth="0.5"></circle>
-                                <circle cx="100" cy="100" fill="none" r="60" stroke="#f0eafc" strokeWidth="0.5"></circle>
-                                <circle cx="100" cy="100" fill="none" r="40" stroke="#fff1e6" strokeWidth="0.5"></circle>
-                                <path d="M100 20 L100 180 M20 100 L180 100" stroke="#1a1a1a" strokeOpacity="0.05" strokeWidth="0.5"></path>
-                                <rect fill="none" height="114" stroke="#f0eafc" strokeWidth="0.5" transform="rotate(45 100 100)" width="114" x="43" y="43"></rect>
-                                <rect fill="none" height="114" stroke="#e6f4f1" strokeWidth="0.5" width="114" x="43" y="43"></rect>
-                                <polygon fill="none" points="100,30 165,140 35,140" stroke="#fff1e6" strokeOpacity="0.8" strokeWidth="0.5"></polygon>
-                                <polygon fill="none" points="100,170 165,60 35,60" stroke="#f0eafc" strokeOpacity="0.8" strokeWidth="0.5"></polygon>
-                                <circle cx="100" cy="100" fill="#1a1a1a" r="2"></circle>
+                            <svg className="w-full max-w-md drop-shadow-xl opacity-90 transition-transform duration-1000 ease-out hover:rotate-12" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                                <desc>Geometría Sagrada Minimalista</desc>
+                                
+                                {/* Group centered at 200,200 for easier rotation/symmetries */}
+                                <g transform="translate(200, 200)">
+                                    
+                                    {/* Delicate outer orbits */}
+                                    <circle cx="0" cy="0" r="140" fill="none" stroke="#1a1a1a" strokeWidth="0.5" strokeOpacity="0.3" />
+                                    <circle cx="0" cy="0" r="160" fill="none" stroke="#1a1a1a" strokeWidth="0.3" strokeOpacity="0.2" />
+                                    
+                                    {/* Seed of Life Pattern - Pure Strokes */}
+                                    <g stroke="#1a1a1a" strokeWidth="0.8" fill="none" strokeOpacity="0.7">
+                                        <circle cx="0" cy="0" r="50" />
+                                        <circle cx="0" cy="-50" r="50" />
+                                        <circle cx="43.3" cy="-25" r="50" />
+                                        <circle cx="43.3" cy="25" r="50" />
+                                        <circle cx="0" cy="50" r="50" />
+                                        <circle cx="-43.3" cy="25" r="50" />
+                                        <circle cx="-43.3" cy="-25" r="50" />
+                                    </g>
+
+                                    {/* Intersecting Geometry */}
+                                    <g stroke="#1a1a1a" strokeWidth="0.5" fill="none" strokeOpacity="0.4" transform="rotate(30)">
+                                        <path d="M0 -140 L0 140" />
+                                        <path d="M-121.2 -70 L121.2 70" />
+                                        <path d="M-121.2 70 L121.2 -70" />
+                                    </g>
+
+                                    {/* Tiny Accents - Minimalist dots */}
+                                    <circle cx="0" cy="-140" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    <circle cx="121.2" cy="-70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    <circle cx="121.2" cy="70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    <circle cx="0" cy="140" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    <circle cx="-121.2" cy="70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    <circle cx="-121.2" cy="-70" r="2" fill="#1a1a1a" opacity="0.6" />
+                                    
+                                    {/* Center point */}
+                                    <circle cx="0" cy="0" r="3" fill="#1a1a1a" />
+                                </g>
                             </svg>
-                            <div className="absolute top-1/4 right-0 w-4 h-4 rounded-full bg-peach"></div>
-                            <div className="absolute bottom-1/4 left-0 w-3 h-3 rounded-full bg-mint"></div>
-                            <div className="absolute top-10 left-1/4 w-2 h-2 rounded-full bg-lavender"></div>
+                            
+                            {/* Floating UI Elements for depth */}
+                            <div className="absolute top-10 right-10 bg-white p-3 rounded-2xl shadow-xl animate-[bounce_3s_infinite]">
+                                <span className="material-symbols-outlined text-black-accent">magic_button</span>
+                            </div>
+                            <div className="absolute bottom-20 left-0 bg-white p-3 rounded-2xl shadow-xl animate-[bounce_4s_infinite]" style={{ animationDelay: '1s' }}>
+                                <span className="material-symbols-outlined text-black-accent">all_inclusive</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="px-6 md:px-12 py-4 md:py-8 flex flex-col md:flex-row justify-between items-center gap 4 md:gap-0 relative z-10">
+            {!isLoading && (
+            <footer className="px-6 md:px-12 py-4 md:py-8 flex flex-col md:flex-row justify-between items-center gap 4 md:gap-0 relative z-10 transition-opacity duration-500">
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">© 2024 Numerología Moderna</p>
                 <div className="flex gap-6 md:gap-8">
                     <a className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] hover:text-black-accent transition-colors" href="#">Privacidad</a>
                     <a className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] hover:text-black-accent transition-colors" href="#">Términos</a>
                 </div>
             </footer>
+            )}
         </main>
     );
 }

@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
         <script id="tailwind-config" dangerouslySetInnerHTML={{
           __html: `
@@ -32,13 +32,18 @@ export default function RootLayout({
               extend: {
                 colors: {
                   "off-white": "#fcfaf8",
-                  "mint": "#e6f4f1",
-                  "lavender": "#f0eafc",
-                  "peach": "#fff1e6",
+                  "mint": "#f0f9f8",
+                  "lavender": "#f5f3ff",
+                  "peach": "#fff8f1",
+                  "rose-mist": "#fff1f2",
                   "black-accent": "#1a1a1a",
+                  "dark-gray": "#4a4a4a",
+                  "whatsapp-green": "#e7f8f2",
+                  "gmail-blue": "#e8f0fe",
                 },
                 fontFamily: {
-                  "display": ["Manrope", "sans-serif"]
+                  "display": ["Manrope", "sans-serif"],
+                  "serif": ["Playfair Display", "serif"]
                 },
                 borderRadius: {
                   "xl": "1rem",
