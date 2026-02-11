@@ -11,7 +11,7 @@ export default function NuevaConsultaPage() {
     const formRef = useRef(null);
     const illustrationRef = useRef(null);
     const headerRef = useRef(null);
-    const loadingRef = useRef(null);
+    const loadingRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
