@@ -326,7 +326,7 @@ export default function ResultadosPage() {
                 <div ref={containerRef} className="bento-grid">
                     {/* Main Card - Vibración Interna */}
                     <div 
-                        ref={(el) => cardRefs.current[0] = el}
+                        ref={(el) => { cardRefs.current[0] = el }}
                         className={`col-span-4 md:col-span-2 row-span-2 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-[3rem] soft-relief p-10 flex flex-col items-center justify-center relative overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -363,7 +363,7 @@ export default function ResultadosPage() {
 
                     {/* Misión */}
                     <div 
-                        ref={(el) => cardRefs.current[1] = el}
+                        ref={(el) => { cardRefs.current[1] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 pastel-gradient-mint rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief group hover:scale-[1.03] transition-all duration-300 hover:-translate-y-2 shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -381,7 +381,7 @@ export default function ResultadosPage() {
 
                     {/* Alma */}
                     <div 
-                        ref={(el) => cardRefs.current[2] = el}
+                        ref={(el) => { cardRefs.current[2] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 pastel-gradient-lavender rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief group hover:scale-[1.03] transition-all duration-300 hover:-translate-y-2 shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -399,7 +399,7 @@ export default function ResultadosPage() {
 
                     {/* Camino de Vida */}
                     <div 
-                        ref={(el) => cardRefs.current[3] = el}
+                        ref={(el) => { cardRefs.current[3] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 pastel-gradient-peach rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief group hover:scale-[1.03] transition-all duration-300 hover:-translate-y-2 shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -417,7 +417,7 @@ export default function ResultadosPage() {
 
                     {/* Personalidad */}
                     <div 
-                        ref={(el) => cardRefs.current[4] = el}
+                        ref={(el) => { cardRefs.current[4] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 pastel-gradient-rose rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief group hover:scale-[1.03] transition-all duration-300 hover:-translate-y-2 shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -435,7 +435,7 @@ export default function ResultadosPage() {
 
                     {/* Diamante - Realizaciones y Desafíos */}
                     <div 
-                        ref={(el) => cardRefs.current[5] = el}
+                        ref={(el) => { cardRefs.current[5] = el }}
                         className={`col-span-4 md:col-span-2 row-span-2 bg-white rounded-[3rem] soft-relief p-8 md:p-10 overflow-hidden flex flex-col justify-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -483,7 +483,7 @@ export default function ResultadosPage() {
 
                     {/* Planes Existenciales */}
                     <div 
-                        ref={(el) => cardRefs.current[6] = el}
+                        ref={(el) => { cardRefs.current[6] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 bg-white rounded-[2rem] p-6 lg:p-8 soft-relief flex flex-col justify-center group hover:bg-slate-50 transition-all duration-300 hover:-translate-y-2 shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
@@ -512,7 +512,7 @@ export default function ResultadosPage() {
 
                     {/* Regalo Divino */}
                     <div 
-                        ref={(el) => cardRefs.current[7] = el}
+                        ref={(el) => { cardRefs.current[7] = el }}
                         className={`col-span-2 md:col-span-1 row-span-1 bg-slate-900 rounded-[2rem] p-6 lg:p-8 text-white soft-relief flex flex-col justify-center relative overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg shadow-2xl ${
                             !showingCards ? 'opacity-100' : ''
                         }`}
