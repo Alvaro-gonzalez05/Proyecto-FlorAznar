@@ -195,6 +195,8 @@ export default function NuevaConsultaPage() {
         // 9. Navigate after BOTH animation + API complete
         tl.add(() => {
             apiCall.then((result) => {
+                // Limpiar el flag para que se muestren las tarjetas en presentación
+                sessionStorage.removeItem('cardsViewedOnce');
                 sessionStorage.setItem('numerologyResult', JSON.stringify(result));
                 router.push('/resultados');
             }).catch(() => {

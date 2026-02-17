@@ -140,7 +140,7 @@ export default function Home() {
           <a className="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-black-accent transition-colors" href="#">Ver todo</a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div ref={(el) => { cardsRef.current[0] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-mint hover:scale-[1.03] transition-all cursor-pointer">
+          <div ref={(el) => { cardsRef.current[0] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-mint hover:scale-[1.03] hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer">
             <div className="flex justify-between items-start mb-6">
               <div className="w-12 h-12 bg-mint rounded-2xl flex items-center justify-center">
                 <span className="material-symbols-outlined text-emerald-800/60">fingerprint</span>
@@ -154,7 +154,7 @@ export default function Home() {
               <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">chevron_right</span>
             </div>
           </div>
-          <div ref={(el) => { cardsRef.current[1] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-lavender hover:scale-[1.03] transition-all cursor-pointer">
+          <div ref={(el) => { cardsRef.current[1] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-lavender hover:scale-[1.03] hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer">
             <div className="flex justify-between items-start mb-6">
               <div className="w-12 h-12 bg-lavender rounded-2xl flex items-center justify-center">
                 <span className="material-symbols-outlined text-purple-800/60">self_improvement</span>
@@ -168,7 +168,7 @@ export default function Home() {
               <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">chevron_right</span>
             </div>
           </div>
-          <div ref={(el) => { cardsRef.current[2] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-peach hover:scale-[1.03] transition-all cursor-pointer">
+          <div ref={(el) => { cardsRef.current[2] = el; }} className="bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group hover:border-peach hover:scale-[1.03] hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer">
             <div className="flex justify-between items-start mb-6">
               <div className="w-12 h-12 bg-peach rounded-2xl flex items-center justify-center">
                 <span className="material-symbols-outlined text-orange-800/60">all_inclusive</span>

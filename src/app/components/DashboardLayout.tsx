@@ -29,8 +29,6 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         { href: '/', icon: 'grid_view' },
         { href: '/historial', icon: 'history' },
         { href: '/nueva-consulta', icon: 'add' },
-        { href: '/perfil', icon: 'person' },
-        { href: '/configuracion', icon: 'settings' },
     ];
 
     useEffect(() => {

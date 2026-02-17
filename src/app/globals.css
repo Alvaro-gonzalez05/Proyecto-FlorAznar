@@ -1,6 +1,15 @@
 /* Tailwind CDN Compatibility Layer */
 /* @import './animations.css'; - MOVED CONTENT BELOW TO ENSURE LOADING */
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
 @keyframes float-1 {
   0% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
