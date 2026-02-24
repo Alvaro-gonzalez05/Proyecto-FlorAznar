@@ -2,8 +2,13 @@
 /* @import './animations.css'; - MOVED CONTENT BELOW TO ENSURE LOADING */
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {
@@ -11,24 +16,57 @@
 }
 
 @keyframes float-1 {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0, 0) scale(1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
 @keyframes float-2 {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-30px, 50px) scale(1.1); }
-  66% { transform: translate(-30px, -30px) scale(0.9); }
-  100% { transform: translate(0, 0) scale(1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-30px, 50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-30px, -30px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
 @keyframes float-3 {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(50px, 10px) scale(1.1); }
-  66% { transform: translate(-50px, 20px) scale(0.85); }
-  100% { transform: translate(0, 0) scale(1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(50px, 10px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-50px, 20px) scale(0.85);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
 .animate-aura-1 {
@@ -57,6 +95,12 @@
 }
 
 /* Standard CSS resets to ensure CDN styles work as expected */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   background-color: #fcfaf8;
   /* off-white from config */
@@ -87,60 +131,65 @@ main {
 
 /* Custom Styles from Resultados Page */
 .bento-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 1.5rem;
-    height: 800px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(180px, auto);
+  gap: 1.5rem;
 }
 
 @media (max-width: 1024px) {
-    .bento-grid {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-    }
+  .bento-grid {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
 }
 
 .soft-relief {
-    box-shadow: 
-        0 10px 30px -10px rgba(0,0,0,0.08),
-        inset 0 1px 1px rgba(255,255,255,0.8);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 10px 30px -10px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
+
 .pastel-gradient-mint {
-    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+  background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
 }
+
 .pastel-gradient-lavender {
-    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
 }
+
 .pastel-gradient-peach {
-    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
 }
+
 .pastel-gradient-rose {
-    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+  background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
 }
+
 .sacred-geo-bg {
-    background-image: radial-gradient(circle at center, rgba(0,0,0,0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
+  background-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
+
 .spiritual-aura {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(165,180,252,0.4) 0%, rgba(192,132,252,0.2) 50%, transparent 70%);
-    filter: blur(40px);
-    z-index: 0;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(192, 132, 252, 0.2) 50%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .watercolor-blur {
-    filter: blur(60px);
-    opacity: 0.4;
+  filter: blur(60px);
+  opacity: 0.4;
 }
 
 .pdf-preview-shadow {
-    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.08), 0 18px 36px -18px rgba(0,0,0,0.1);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08), 0 18px 36px -18px rgba(0, 0, 0, 0.1);
 }

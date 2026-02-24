@@ -1,8 +1,5 @@
 /**
- * Numerología Pitagórica — Motor de cálculos
- * 
- * Recibe nombreCompleto y fechaNacimiento (YYYY-MM-DD)
- * y devuelve todos los cálculos numerológicos.
+ * Numerología Pitagórica — Motor de cálculos completo
  */
 
 // ─── Tabla de conversión Pitagórica ───────────────────────────
@@ -11,7 +8,7 @@ const LETTER_MAP: Record<string, number> = {
     B: 2, K: 2, T: 2,
     C: 3, L: 3, U: 3,
     D: 4, M: 4, V: 4,
-    E: 5, N: 5, W: 5,
+    E: 5, N: 5, 'Ñ': 5, W: 5,
     F: 6, O: 6, X: 6,
     G: 7, P: 7, Y: 7,
     H: 8, Q: 8, Z: 8,
@@ -22,245 +19,288 @@ const VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
 const MASTER_NUMBERS = new Set([11, 22, 33, 44]);
 const KARMIC_NUMBERS = new Set([13, 14, 16, 19]);
 
-// ─── Interfaces ───────────────────────────────────────────────
-
-export interface NumerologyNumber {
-    /** Número reducido final (1-9) */
-    reduced: number;
-    /** Si la suma intermedia fue un número maestro o kármico, se guarda aquí (ej: "13/4", "11/2") */
-    special: string | null;
+export interface ReductionResult {
+    sequence: number[]; // Sequence of reductions
+    digit: number;      // Final single digit (except for Master numbers where we keep 11, etc. but actually we return the digit as well and mark master)
+    isMaster: boolean;
+    isKarmic: boolean;
+    masterValue?: number;
+    karmicValue?: number;
 }
 
-export interface PlanesExistenciales {
-    mental: number;   // Cantidad de 1 y 8
-    fisico: number;   // Cantidad de 4 y 5
-    emotivo: number;  // Cantidad de 2, 3 y 6
-    intuitivo: number; // Cantidad de 7 y 9
-}
+// ─── Funciones de ayuda (Core) ────────────────────────────────
 
-export interface Diamond {
-    realizaciones: {
-        r1: NumerologyNumber; // E = A + B
-        r2: NumerologyNumber; // F = B + C
-        r3: NumerologyNumber; // G = E + F
-        r4: NumerologyNumber; // H = A + C
-    };
-    desafios: {
-        d1: NumerologyNumber; // K = |A - B|
-        d2: NumerologyNumber; // L = |B - C|
-        mayor: NumerologyNumber; // M = |K - L|
-        extra: NumerologyNumber; // N = |A - C|
-    };
-}
+export function reducirANumeros(num: number): ReductionResult {
+    let n = Math.abs(num);
+    const sequence: number[] = [n];
+    let isMaster = false;
+    let isKarmic = false;
+    let masterValue: number | undefined;
+    let karmicValue: number | undefined;
 
-export interface NumerologyResult {
-    // Datos del cliente
-    nombreCompleto: string;
-    fechaNacimiento: string;
+    // Check initially before any reduction
+    if (MASTER_NUMBERS.has(n)) {
+        isMaster = true;
+        masterValue = n;
+    }
+    if (KARMIC_NUMBERS.has(n)) {
+        isKarmic = true;
+        karmicValue = n;
+    }
 
-    // Cálculos del nombre
-    vibracionInterna: NumerologyNumber;
-    alma: NumerologyNumber;
-    personalidad: NumerologyNumber;
-    mision: NumerologyNumber;
-    planesExistenciales: PlanesExistenciales;
-
-    // Cálculos de la fecha
-    talento: NumerologyNumber;
-    karma: NumerologyNumber;
-    vidasPasadas: NumerologyNumber;
-    caminoDeVida: NumerologyNumber;
-    regaloDivino: NumerologyNumber;
-
-    // Diamante
-    diamante: Diamond;
-}
-
-// ─── Funciones de reducción ──────────────────────────────────
-
-/**
- * Suma los dígitos de un número hasta obtener un solo dígito (1-9).
- * Antes de reducir, verifica si la suma es un Número Maestro o Kármico.
- */
-export function reduceNumber(n: number): NumerologyNumber {
-    // Trabajamos con el valor absoluto
-    n = Math.abs(n);
-
-    // Suma de dígitos iterativa  
-    let sum = n;
-    while (sum > 9) {
-        // Antes de reducir, verificar maestro/kármico
-        if (MASTER_NUMBERS.has(sum) || KARMIC_NUMBERS.has(sum)) {
-            const reduced = sumDigits(sum);
-            return { reduced, special: `${sum}/${reduced}` };
+    while (n > 9) {
+        if (MASTER_NUMBERS.has(n)) {
+            isMaster = true;
+            masterValue = n;
         }
-        sum = sumDigits(sum);
+        if (KARMIC_NUMBERS.has(n)) {
+            isKarmic = true;
+            karmicValue = n;
+        }
+
+        let sum = 0;
+        let temp = n;
+        while (temp > 0) {
+            sum += temp % 10;
+            temp = Math.floor(temp / 10);
+        }
+        n = sum;
+        sequence.push(n);
+
+        // Check after reduction
+        if (n > 9) {
+            if (MASTER_NUMBERS.has(n)) {
+                isMaster = true;
+                masterValue = n;
+            }
+            if (KARMIC_NUMBERS.has(n)) {
+                isKarmic = true;
+                karmicValue = n;
+            }
+        }
     }
 
-    return { reduced: sum, special: null };
+    // Force exact special status from last checks
+    return {
+        sequence,
+        digit: n,
+        isMaster,
+        isKarmic,
+        masterValue,
+        karmicValue
+    };
 }
 
-function sumDigits(n: number): number {
-    let result = 0;
-    while (n > 0) {
-        result += n % 10;
-        n = Math.floor(n / 10);
-    }
-    return result;
+export interface NombreTotales {
+    rawLetters: number[];
+    letrasConteo: Record<number, number>;
+    totalLetras: number;
+    totalVocales: number;
+    totalConsonantes: number;
 }
 
-// ─── Funciones de conversión de letras ───────────────────────
-
-function letterToNumber(char: string): number {
-    return LETTER_MAP[char.toUpperCase()] || 0;
+function normalizeChar(char: string): string {
+    return char.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 }
 
-function isVowel(char: string): boolean {
-    return VOWELS.has(char.toUpperCase());
-}
+export function nombreATotales(nombre: string): NombreTotales {
+    let totalLetras = 0;
+    let totalVocales = 0;
+    let totalConsonantes = 0;
+    const letrasConteo: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+    const rawLetters: number[] = [];
 
-function isLetter(char: string): boolean {
-    return /[a-záéíóúñü]/i.test(char);
-}
+    const norm = normalizeChar(nombre);
+    for (const char of norm) {
+        const c = char.toUpperCase();
+        let num = LETTER_MAP[c];
+        if (!num) num = LETTER_MAP[char]; // fallback
+        if (!num) continue;
 
-// ─── Cálculos del Nombre ─────────────────────────────────────
+        totalLetras += num;
+        rawLetters.push(num);
+        letrasConteo[num] = (letrasConteo[num] || 0) + 1;
 
-function normalizeForCalculation(name: string): string {
-    // Normalizar acentos: á→a, é→e, í→i, ó→o, ú→u, ñ→n, ü→u
-    return name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase();
-}
-
-export function calculateNameNumbers(nombreCompleto: string) {
-    const normalized = normalizeForCalculation(nombreCompleto);
-
-    let totalSum = 0;
-    let vowelSum = 0;
-    let consonantSum = 0;
-    const rawNumbers: number[] = [];
-
-    for (const char of normalized) {
-        if (!isLetter(char)) continue;
-
-        const num = letterToNumber(char);
-        if (num === 0) continue;
-
-        totalSum += num;
-        rawNumbers.push(num);
-
-        if (isVowel(char)) {
-            vowelSum += num;
+        if (VOWELS.has(c)) {
+            totalVocales += num;
         } else {
-            consonantSum += num;
+            totalConsonantes += num;
         }
     }
 
-    const vibracionInterna = reduceNumber(totalSum);
-    const alma = reduceNumber(vowelSum);
-    const personalidad = reduceNumber(consonantSum);
-    const mision = reduceNumber(alma.reduced + personalidad.reduced);
-
-    return { vibracionInterna, alma, personalidad, mision, rawNumbers };
+    return { rawLetters, letrasConteo, totalLetras, totalVocales, totalConsonantes };
 }
 
-// ─── Planes Existenciales ────────────────────────────────────
 
-export function calculatePlanes(rawNumbers: number[]): PlanesExistenciales {
-    let mental = 0;
-    let fisico = 0;
-    let emotivo = 0;
-    let intuitivo = 0;
+// ─── Estructura Completa ─────────────────────────────────────
 
-    for (const num of rawNumbers) {
-        if (num === 1 || num === 8) mental++;
-        else if (num === 4 || num === 5) fisico++;
-        else if (num === 2 || num === 3 || num === 6) emotivo++;
-        else if (num === 7 || num === 9) intuitivo++;
-    }
+export function calcularEstructura(
+    nombreCompleto: string,
+    fechaNacimiento: string,
+    apellidosCompletos: string[],
+    anioActual: number,
+    mesActual: number
+) {
+    const totalesNombre = nombreATotales(nombreCompleto);
 
-    return { mental, fisico, emotivo, intuitivo };
-}
+    const vibracionInterna = reducirANumeros(totalesNombre.totalLetras);
+    const calculoAlma = reducirANumeros(totalesNombre.totalVocales);
+    const calculoPersonalidad = reducirANumeros(totalesNombre.totalConsonantes);
+    const calculoMision = reducirANumeros(calculoAlma.digit + calculoPersonalidad.digit);
 
-// ─── Cálculos de la Fecha ────────────────────────────────────
+    const deudasKarmicasNombre = totalesNombre.letrasConteo;
+    const planosExistenciales = {
+        mental: (deudasKarmicasNombre[1] || 0) + (deudasKarmicasNombre[8] || 0),
+        fisico: (deudasKarmicasNombre[4] || 0) + (deudasKarmicasNombre[5] || 0),
+        emotivo: (deudasKarmicasNombre[2] || 0) + (deudasKarmicasNombre[3] || 0) + (deudasKarmicasNombre[6] || 0),
+        intuitivo: (deudasKarmicasNombre[7] || 0) + (deudasKarmicasNombre[9] || 0)
+    };
 
-export function calculateDateNumbers(fechaNacimiento: string) {
-    // Formato esperado: YYYY-MM-DD
     const [yearStr, monthStr, dayStr] = fechaNacimiento.split('-');
     const day = parseInt(dayStr, 10);
     const month = parseInt(monthStr, 10);
     const year = parseInt(yearStr, 10);
 
-    const talento = reduceNumber(day);
-    const karma = reduceNumber(month);
+    const diaReducido = reducirANumeros(day).digit;
+    const mesReducido = reducirANumeros(month).digit;
+    const anioReducidoStrA = yearStr.split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
+    const anioReducido = reducirANumeros(anioReducidoStrA).digit;
 
-    // Vidas Pasadas: suma reducida del año completo
-    const yearDigitSum = yearStr.split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
-    const vidasPasadas = reduceNumber(yearDigitSum);
+    const caminoDeVida = reducirANumeros(diaReducido + mesReducido + anioReducido);
 
-    // Camino de Vida: suma de Talento + Karma + Vidas Pasadas
-    const caminoDeVida = reduceNumber(talento.reduced + karma.reduced + vidasPasadas.reduced);
+    const talento = reducirANumeros(day);
+    const karmaMes = reducirANumeros(month);
+    const memoriaVidaPasada = reducirANumeros(anioReducidoStrA);
 
-    // Regalo Divino: suma de los últimos 2 dígitos del año
-    const lastTwoDigits = year % 100;
-    const regaloDivino = reduceNumber(Math.floor(lastTwoDigits / 10) + (lastTwoDigits % 10));
+    const ultimosDosAnio = year % 100;
+    const regaloDivino = reducirANumeros(Math.floor(ultimosDosAnio / 10) + (ultimosDosAnio % 10)); // Sum of digits of last two year numbers? Actually "suma de los últimos dos dígitos". If 1981 -> 8+1 = 9. So Math.floor(ultimosDosAnio / 10) + (ultimosDosAnio % 10). Let's use reducing of them directly.
 
-    return { talento, karma, vidasPasadas, caminoDeVida, regaloDivino };
-}
+    const numeroDeFuerza = reducirANumeros(calculoMision.digit + caminoDeVida.digit);
 
-// ─── Diamante (Pináculos y Desafíos) ─────────────────────────
+    const words = nombreCompleto.split(/\s+/).filter(w => w.length > 0);
+    let sumaIniciales = 0;
+    words.forEach(w => {
+        const c = normalizeChar(w[0]);
+        const n = LETTER_MAP[c];
+        if (n) sumaIniciales += n;
+    });
+    const numeroDeEquilibrio = reducirANumeros(sumaIniciales);
 
-export function calculateDiamond(fechaNacimiento: string): Diamond {
-    const [yearStr, monthStr, dayStr] = fechaNacimiento.split('-');
-    const day = parseInt(dayStr, 10);
-    const month = parseInt(monthStr, 10);
+    const anioPersonal = reducirANumeros(diaReducido + mesReducido + reducirANumeros(anioActual).digit); // Wait, "Día + Mes + anioActual" in digits? It says "Dígito final de (Día + Mes + anioActual). Aplicar reducirANumeros()"
 
-    // Variables base reducidas
-    const A = reduceNumber(month).reduced;  // Mes
-    const B = reduceNumber(day).reduced;    // Día
-    const yearDigitSum = yearStr.split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
-    const C = reduceNumber(yearDigitSum).reduced; // Año
+    const mesPersonal = reducirANumeros(diaReducido + mesReducido + mesActual);
 
-    // Realizaciones (sumas)
-    const E = reduceNumber(A + B);       // Realización 1
-    const F = reduceNumber(B + C);       // Realización 2
-    const G = reduceNumber(E.reduced + F.reduced); // Realización 3
-    const H = reduceNumber(A + C);       // Realización 4
+    const sombraVal = mesReducido + caminoDeVida.digit;
+    const numeroDeSombra = { ...reducirANumeros(sombraVal), nota: "Asumido O = mes de nacimiento reducido" };
 
-    // Desafíos (restas absolutas)
-    const K = reduceNumber(Math.abs(A - B));       // Desafío 1
-    const L = reduceNumber(Math.abs(B - C));       // Desafío 2
-    const M = reduceNumber(Math.abs(K.reduced - L.reduced)); // Desafío Mayor
-    const N = reduceNumber(Math.abs(A - C));       // Desafío Extra
-
-    return {
-        realizaciones: { r1: E, r2: F, r3: G, r4: H },
-        desafios: { d1: K, d2: L, mayor: M, extra: N },
+    const primeraParte = {
+        vibracionInterna,
+        calculoAlma,
+        calculoPersonalidad,
+        calculoMision,
+        deudasKarmicasNombre,
+        planosExistenciales,
+        fechaNacimiento: {
+            caminoDeVida,
+            talento,
+            karmaMes,
+            memoriaVidaPasada
+        },
+        potenciadores: {
+            regaloDivino,
+            numeroDeFuerza,
+            numeroDeEquilibrio,
+            anioPersonal,
+            mesPersonal,
+            numeroDeSombra
+        }
     };
-}
 
-// ─── Función Principal ───────────────────────────────────────
+    let segundaParte = null;
 
-export function calculateNumerology(nombreCompleto: string, fechaNacimiento: string): NumerologyResult {
-    const { vibracionInterna, alma, personalidad, mision, rawNumbers } = calculateNameNumbers(nombreCompleto);
-    const planesExistenciales = calculatePlanes(rawNumbers);
-    const { talento, karma, vidasPasadas, caminoDeVida, regaloDivino } = calculateDateNumbers(fechaNacimiento);
-    const diamante = calculateDiamond(fechaNacimiento);
+    if ((apellidosCompletos && apellidosCompletos.length >= 2) || words.length >= 3) {
+        const fullNameForClan = nombreCompleto;
+        const totalesClan = nombreATotales(fullNameForClan);
+        const habitantes = totalesClan.letrasConteo;
+
+        const linajes: Array<{ nombre: string, reduccion: ReductionResult }> = [];
+        words.forEach(w => {
+            linajes.push({
+                nombre: w,
+                reduccion: reducirANumeros(nombreATotales(w).totalLetras)
+            });
+        });
+
+        const herenciaFamiliarSuma = (habitantes[1] || 0) + (habitantes[2] || 0) + (habitantes[3] || 0) + (habitantes[4] || 0);
+        const herenciaFamiliar = reducirANumeros(herenciaFamiliarSuma);
+
+        const totalDeLetrasNombreCompleto = totalesClan.totalLetras;
+        const totalLetrasReducido = reducirANumeros(totalDeLetrasNombreCompleto).digit;
+        const evolucionFamiliar = reducirANumeros(totalDeLetrasNombreCompleto + totalLetrasReducido);
+
+        const sumaCasas6a9 = (habitantes[6] || 0) + (habitantes[7] || 0) + (habitantes[8] || 0) + (habitantes[9] || 0);
+        const campoDeExpresion = reducirANumeros(totalDeLetrasNombreCompleto + sumaCasas6a9);
+
+        const potencialEvolutivo = reducirANumeros(evolucionFamiliar.digit + campoDeExpresion.digit);
+
+        const puenteIniciatico: Record<number, number> = {};
+        for (let casa = 1; casa <= 9; casa++) {
+            puenteIniciatico[casa] = Math.abs((habitantes[casa] || 0) - casa);
+        }
+
+        let puenteDeEvolucion = 0;
+        for (let casa = 1; casa <= 9; casa++) {
+            const h = habitantes[casa] || 0;
+            if (h > 1) {
+                puenteDeEvolucion += (h + 1);
+            }
+        }
+
+        const anos_30_58_87 = (casa: number) => {
+            const hOriginal = habitantes[casa] || 0;
+            if (hOriginal >= 1 && hOriginal <= 9) return habitantes[hOriginal] || 0;
+            return 0;
+        };
+
+        const res_anos: Record<number, number> = {};
+        for (let c = 1; c <= 9; c++) {
+            res_anos[c] = anos_30_58_87(c);
+        }
+
+        const sequenceName = totalesClan.rawLetters;
+        const induccionInconsciente: Record<number, number | null> = {};
+        for (let c = 1; c <= 9; c++) {
+            const pos = habitantes[c] || 0;
+            if (pos > 0 && pos <= sequenceName.length) {
+                induccionInconsciente[c] = sequenceName[pos - 1];
+            } else {
+                induccionInconsciente[c] = null;
+            }
+        }
+
+        segundaParte = {
+            habitantes,
+            linajes,
+            herenciaFamiliar,
+            evolucionFamiliar,
+            campoDeExpresion,
+            potencialEvolutivo,
+            puentes: {
+                iniciatico: puenteIniciatico,
+                evolucion: puenteDeEvolucion
+            },
+            anos_30_58_87: res_anos,
+            induccionInconsciente
+        };
+    }
 
     return {
         nombreCompleto,
         fechaNacimiento,
-        vibracionInterna,
-        alma,
-        personalidad,
-        mision,
-        planesExistenciales,
-        talento,
-        karma,
-        vidasPasadas,
-        caminoDeVida,
-        regaloDivino,
-        diamante,
+        apellidosCompletos,
+        anioActual,
+        mesActual,
+        primeraParte,
+        segundaParte
     };
 }

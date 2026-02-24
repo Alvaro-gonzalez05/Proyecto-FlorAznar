@@ -65,6 +65,9 @@ export default function NuevaConsultaPage() {
         const nombre = (formData.get('nombre') as string).trim();
         const apellido = (formData.get('apellido') as string).trim();
         const nombreCompleto = `${nombre} ${apellido}`;
+        const apellidosCompletos = apellido.split(/\s+/).filter(a => a.length > 0);
+        const anioActual = new Date().getFullYear();
+        const mesActual = new Date().getMonth() + 1;
         const fechaNacimiento = formData.get('fechaNacimiento') as string;
 
         const illustrationEl = illustrationRef.current;
@@ -186,7 +189,7 @@ export default function NuevaConsultaPage() {
         const apiCall = fetch('/api/numerology', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombreCompleto, fechaNacimiento }),
+            body: JSON.stringify({ nombreCompleto, fechaNacimiento, apellidosCompletos, anioActual, mesActual }),
         }).then(async (res) => {
             if (!res.ok) throw new Error('Error en el cálculo');
             return res.json();

@@ -55,7 +55,7 @@ export default function RootLayout({
           }
         `}} />
       </head>
-      <body className="min-h-screen font-display bg-off-white text-black-accent">
+      <body className="min-h-screen w-full overflow-x-hidden font-display bg-off-white text-black-accent">
         <DashboardLayout>
           {children}
         </DashboardLayout>

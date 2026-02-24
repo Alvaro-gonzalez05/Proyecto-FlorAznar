@@ -28,7 +28,7 @@ export default function Template({ children }: TemplateProps) {
     }, []);
 
     return (
-        <div ref={contentRef} className="page-transition-wrapper">
+        <div ref={contentRef} className="page-transition-wrapper flex-1 flex flex-col h-full relative">
             {children}
         </div>
     );

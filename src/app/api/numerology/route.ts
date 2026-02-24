@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateNumerology } from '@/lib/numerology';
+import { calcularEstructura } from '@/lib/numerology';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { nombreCompleto, fechaNacimiento } = body;
+        const { nombreCompleto, fechaNacimiento, apellidosCompletos, anioActual, mesActual } = body;
 
         // Validación básica
         if (!nombreCompleto || typeof nombreCompleto !== 'string' || nombreCompleto.trim().length === 0) {
@@ -21,7 +21,17 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const result = calculateNumerology(nombreCompleto.trim(), fechaNacimiento);
+        const apCompletos = Array.isArray(apellidosCompletos) ? apellidosCompletos : [];
+        const yActual = typeof anioActual === 'number' ? anioActual : new Date().getFullYear();
+        const mActual = typeof mesActual === 'number' ? mesActual : new Date().getMonth() + 1;
+
+        const result = calcularEstructura(
+            nombreCompleto.trim(),
+            fechaNacimiento,
+            apCompletos,
+            yActual,
+            mActual
+        );
 
         return NextResponse.json(result);
     } catch (error) {

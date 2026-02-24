@@ -128,7 +128,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
             </aside>
 
             {/* Main Content - Dynamic */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto flex flex-col h-full relative">
                 {children}
             </main>
 
