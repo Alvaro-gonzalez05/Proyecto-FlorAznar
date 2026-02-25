@@ -1,0 +1,4 @@
+﻿src/app/api/explanation/route.ts(140,28): error TS1127: Invalid character.
+src/app/api/explanation/route.ts(140,29): error TS1134: Variable declaration expected.
+src/app/api/explanation/route.ts(172,1): error TS1005: '}' expected.
+src/app/api/explanation/route.ts(172,1): error TS1160: Unterminated template literal.

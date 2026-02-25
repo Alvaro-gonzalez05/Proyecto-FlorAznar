@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import TransitionLink from '../components/TransitionLink';
+import { supabase } from '@/lib/supabase';
 
 export default function NuevaConsultaPage() {
     const formRef = useRef<HTMLDivElement>(null);
@@ -191,8 +192,94 @@ export default function NuevaConsultaPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombreCompleto, fechaNacimiento, apellidosCompletos, anioActual, mesActual }),
         }).then(async (res) => {
-            if (!res.ok) throw new Error('Error en el cálculo');
-            return res.json();
+            if (!res.ok) throw new Error('Error en el cálculo numérico');
+            const result = await res.json();
+
+            // Formatter para advertir a la IA si es Maestro o Kármico
+            const formatGeminiNumber = (r: any) => {
+                if (!r) return '';
+                let val = String(r.digit);
+                if (r.isMaster && r.masterValue) val = `${r.masterValue}/${val} (Este es un Número Maestro)`;
+                else if (r.isKarmic && r.karmicValue) val = `${r.karmicValue}/${val} (Este es un Número de Deuda Kármica)`;
+                return val;
+            };
+
+            const karmicLettersObj = result.primeraParte?.deudasKarmicasNombre || {};
+            const faltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => (karmicLettersObj[n] || 0) === 0).join(', ') || 'Ninguna (Posee todas las vibraciones kármicas, indícale qué significa estar exento de deuda en este plano)';
+
+            // 8.1 Call the Gemini API to pre-calculate explanations based on the result
+            const metricsPayload: Record<string, string | number> = {
+                vibracion_interna: formatGeminiNumber(result.primeraParte?.vibracionInterna),
+                alma: formatGeminiNumber(result.primeraParte?.calculoAlma),
+                mision: formatGeminiNumber(result.primeraParte?.calculoMision),
+                camino_de_vida: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.caminoDeVida),
+                personalidad: formatGeminiNumber(result.primeraParte?.calculoPersonalidad),
+                fuerza: formatGeminiNumber(result.primeraParte?.potenciadores?.numeroDeFuerza),
+                sombra: formatGeminiNumber(result.primeraParte?.potenciadores?.numeroDeSombra),
+                anio_personal: formatGeminiNumber(result.primeraParte?.potenciadores?.anioPersonal),
+                mes_personal: formatGeminiNumber(result.primeraParte?.potenciadores?.mesPersonal),
+                talento: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.talento),
+                karma_mes: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.karmaMes),
+                pasado: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.memoriaVidaPasada),
+                letras_faltantes: faltantes,
+                ...(result.segundaParte && {
+                    sistema_familiar_herencia: formatGeminiNumber(result.segundaParte.herenciaFamiliar),
+                    sistema_familiar_evolucion: formatGeminiNumber(result.segundaParte.evolucionFamiliar),
+                    sistema_familiar_expresion: formatGeminiNumber(result.segundaParte.campoDeExpresion),
+                    sistema_familiar_potencial: formatGeminiNumber(result.segundaParte.potencialEvolutivo),
+                })
+            };
+
+            // Iterar sobre los linajes dinámicamente y agregarlos al payload JSON
+            if (result.segundaParte?.linajes && Array.isArray(result.segundaParte.linajes)) {
+                result.segundaParte.linajes.forEach((linaje: any, idx: number) => {
+                    if (linaje.reduccion) {
+                        metricsPayload[`sistema_familiar_linaje_${idx}`] = formatGeminiNumber(linaje.reduccion);
+                    }
+                });
+            }
+
+            // Remove any empty metrics
+            const cleanPayload = Object.fromEntries(Object.entries(metricsPayload).filter(([_, v]) => v !== ''));
+
+            let aiDataResult = {};
+            try {
+                const aiRes = await fetch('/api/explanation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cleanPayload),
+                });
+
+                if (aiRes.ok) {
+                    const aiData = await aiRes.json();
+                    aiDataResult = aiData.explanations || {};
+                    sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
+                } else {
+                    console.error("Gemini pre-fetch failed", await aiRes.text());
+                    sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
+                }
+            } catch (err) {
+                console.error("Gemini network error", err);
+                sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
+            }
+
+            // --- SUPABASE STORAGE ---
+            // Guardar silenciosamente el registro en la base de datos PostgreSQL
+            try {
+                const { error: sbError } = await supabase.from('consultas').insert([{
+                    nombre_completo: nombre, // Save just the given name to DB
+                    fecha_nacimiento: fechaNacimiento,
+                    apellidos_completos: apellido, // Save just the given apellidos piece to DB
+                    numerologia_data: result,
+                    explicaciones_ia: aiDataResult
+                }]);
+
+                if (sbError) console.error("Error saving to Supabase:", sbError);
+            } catch (err) {
+                console.error("Network error saving to Supabase", err);
+            }
+
+            return result;
         });
 
         // 9. Navigate after BOTH animation + API complete
@@ -201,6 +288,7 @@ export default function NuevaConsultaPage() {
                 // Limpiar el flag para que se muestren las tarjetas en presentación
                 sessionStorage.removeItem('cardsViewedOnce');
                 sessionStorage.setItem('numerologyResult', JSON.stringify(result));
+
                 router.push('/resultados');
             }).catch(() => {
                 alert('Hubo un error al calcular. Intenta de nuevo.');

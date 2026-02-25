@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
+import AiExplanationModal from '../components/AiExplanationModal';
 
 type NumerologyResult = any;
 
@@ -25,6 +26,24 @@ export default function ResultadosPage() {
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
     const isTransitioning = useRef(false);
+    const transitionDirection = useRef(1);
+    const isFirstRender = useRef(true);
+
+    const [explanations, setExplanations] = useState<Record<string, string>>({});
+    const [explanationState, setExplanationState] = useState<{ isOpen: boolean, title: string, num: string | number, text?: string }>({
+        isOpen: false,
+        title: '',
+        num: '',
+        text: undefined
+    });
+
+    const openExplanation = (title: string, num: string | number, text?: string) => {
+        setExplanationState({ isOpen: true, title, num, text });
+    };
+
+    const closeExplanation = () => {
+        setExplanationState(prev => ({ ...prev, isOpen: false }));
+    };
 
     // Total de cartas estático, mostramos Sistema Familiar aunque caiga en fallback
     const totalCards = 11;
@@ -55,6 +74,16 @@ export default function ResultadosPage() {
     useEffect(() => {
         // Read numerology results from sessionStorage
         const stored = sessionStorage.getItem('numerologyResult');
+        const storedExplanations = sessionStorage.getItem('geminiExplanations');
+
+        if (storedExplanations) {
+            try {
+                setExplanations(JSON.parse(storedExplanations));
+            } catch {
+                // Ignore parsing errors for explanations
+            }
+        }
+
         if (stored) {
             try {
                 const parsedData = JSON.parse(stored);
@@ -68,38 +97,30 @@ export default function ResultadosPage() {
         }
     }, []);
 
-    // Entrada de la primera tarjeta
+    // Entrada o transición dinámica de cada tarjeta
     useEffect(() => {
-        if (!data || !showingCards) return;
-        const firstCard = cardRefs.current[0];
-        if (firstCard) {
-            gsap.set(firstCard, { y: 60, opacity: 0, scale: 0.95 });
-            gsap.to(firstCard, {
-                y: 0,
-                opacity: 1,
-                scale: 1,
-                duration: 0.85,
-                ease: 'expo.out',
-                delay: 0.05,
-            });
-        }
-    }, [data, showingCards]);
-
-    // Entrada de cada tarjeta nueva
-    useEffect(() => {
-        if (!showingCards || currentCardIndex === 0) return;
+        if (!showingCards || !data) return;
         const currentCard = cardRefs.current[currentCardIndex];
         if (currentCard) {
-            gsap.set(currentCard, { y: 60, opacity: 0, scale: 0.95 });
+            let durationStart = 0.5;
+            let delayStart = 0;
+
+            if (isFirstRender.current) {
+                isFirstRender.current = false;
+                durationStart = 0.85;
+                delayStart = 0.05;
+            }
+
+            // Solo hacemos un Fade In puro
+            gsap.set(currentCard, { xPercent: -50, yPercent: -50, y: 0, opacity: 0, scale: 1 });
             gsap.to(currentCard, {
-                y: 0,
                 opacity: 1,
-                scale: 1,
-                duration: 0.72,
-                ease: 'expo.out',
+                duration: durationStart,
+                delay: delayStart,
+                ease: 'power2.out',
             });
         }
-    }, [currentCardIndex, showingCards]);
+    }, [currentCardIndex, showingCards, data]);
 
     const clearAllCards = () => {
         cardRefs.current.forEach(card => {
@@ -128,6 +149,7 @@ export default function ResultadosPage() {
     const handleNextCard = () => {
         if (isTransitioning.current) return;
         isTransitioning.current = true;
+        transitionDirection.current = 1;
 
         const currentCard = cardRefs.current[currentCardIndex];
 
@@ -136,13 +158,11 @@ export default function ResultadosPage() {
         } else {
             if (currentCard) {
                 gsap.to(currentCard, {
-                    y: -50,
                     opacity: 0,
-                    scale: 1.05,
-                    duration: 0.38,
-                    ease: 'power2.in',
+                    duration: 0.35,
+                    ease: 'power2.inOut',
                     onComplete: () => {
-                        gsap.set(currentCard, { clearProps: 'y,scale,opacity' });
+                        gsap.set(currentCard, { y: 0, opacity: 0, scale: 1 });
                         setCurrentCardIndex(prev => prev + 1);
                         isTransitioning.current = false;
                     }
@@ -151,6 +171,27 @@ export default function ResultadosPage() {
                 setCurrentCardIndex(prev => prev + 1);
                 isTransitioning.current = false;
             }
+        }
+    };
+
+    const handlePreviousCard = () => {
+        if (isTransitioning.current || currentCardIndex === 0) return;
+        isTransitioning.current = true;
+        transitionDirection.current = -1;
+
+        const currentCard = cardRefs.current[currentCardIndex];
+
+        if (currentCard) {
+            gsap.to(currentCard, {
+                opacity: 0,
+                duration: 0.35,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    gsap.set(currentCard, { y: 0, opacity: 0, scale: 1 });
+                    setCurrentCardIndex(prev => prev - 1);
+                    isTransitioning.current = false;
+                }
+            });
         }
     };
 
@@ -202,23 +243,22 @@ export default function ResultadosPage() {
         if (currentCardIndex === cardIndex) {
             return {
                 position: 'fixed',
-                top: '46%',
+                top: '44%', // Ligeramente más arriba del centro para dar espacio constante a los controles 
                 left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '85vw',
-                maxWidth: wide ? '650px' : '500px',
-                maxHeight: '80vh',
-                overflowY: 'auto',
+                // NO se declara transform acá, GSAP se lo inyecta vía xPercent/yPercent para evitar baking de píxeles
+                width: cardIndex === 10 ? '90vw' : '85vw',
+                maxWidth: cardIndex === 10 ? '1000px' : (cardIndex === 5 ? '700px' : (wide ? '650px' : '500px')),
+                maxHeight: '68vh', // Estricto para pantallas delgadas
+                overflowY: 'auto', // Todas pueden scrollear suavemente si es necesario
                 zIndex: 9999,
                 opacity: 0,
+                display: 'flex',
+                flexDirection: 'column',
             };
         }
         if (currentCardIndex > cardIndex) {
             return {
-                opacity: 0,
-                filter: 'blur(3px)',
-                transition: 'opacity 0.2s ease-out',
-                display: 'none' // Evita que se amontonen las tarjetas visitadas tras la central
+                display: 'none' // Evita superposiciones invisibles en el DOM
             };
         }
         return { opacity: 0, display: 'none' };
@@ -268,6 +308,22 @@ export default function ResultadosPage() {
                     </div>
 
                     <div className="fixed bottom-6 md:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col md:flex-row items-center gap-4 w-[90%] md:w-auto justify-center" style={{ zIndex: 10001 }}>
+                        {currentCardIndex > 0 && (
+                            <button
+                                onClick={handlePreviousCard}
+                                className="backdrop-blur-xl text-slate-800 px-6 py-4 rounded-full font-bold text-sm tracking-wider uppercase flex items-center gap-3 hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-auto justify-center"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(200,200,200,0.5) 40%, rgba(220,220,220,0.4) 70%, rgba(255,255,255,0.6) 100%)',
+                                    border: '1px solid rgba(255,255,255,0.8)',
+                                    boxShadow: '0 8px 32px rgba(100,100,100,0.1), inset 0 1.5px 0 rgba(255,255,255,0.9)',
+                                }}
+                            >
+                                <span className="material-symbols-outlined text-xl">
+                                    arrow_back
+                                </span>
+                                Atrás
+                            </button>
+                        )}
                         <button
                             onClick={handleNextCard}
                             className="backdrop-blur-xl text-slate-800 px-8 py-4 rounded-full font-bold text-sm tracking-wider uppercase flex items-center gap-3 hover:scale-105 active:scale-95 transition-all duration-300 w-full md:w-auto justify-center"
@@ -303,6 +359,13 @@ export default function ResultadosPage() {
                             <p className="text-sm font-bold">{data.nombreCompleto}</p>
                             <p className="text-xs text-slate-500">{formatDate(data.fechaNacimiento)}</p>
                         </div>
+                        <button
+                            onClick={() => openExplanation('Síntesis General', 'Resumen', explanations['resumen_general'] || 'Generando síntesis general de la persona... (Si ves esto y las otras explicaciones sí cargan, intenta crear una consulta nueva)')}
+                            className="bg-indigo-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase flex items-center gap-3 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group"
+                        >
+                            Resumen de IA
+                            <span className="material-symbols-outlined text-base md:text-xl group-hover:rotate-12 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <Link href="/exportar" className="bg-black-accent text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase flex items-center gap-3 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group">
                             Previsualizar PDF
                             <span className="material-symbols-outlined text-base md:text-xl group-hover:translate-x-1 transition-transform">picture_as_pdf</span>
@@ -320,10 +383,17 @@ export default function ResultadosPage() {
                         className="col-span-4 md:col-span-2 row-span-2 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-[3rem] p-10 flex flex-col items-center justify-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 shadow-xl hover:shadow-2xl"
                         style={getCardStyle(0)}
                     >
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Vibración Interna', displayNum(data?.primeraParte?.vibracionInterna), explanations['vibracion_interna']); }}
+                            className="absolute top-6 right-6 bg-white/50 hover:bg-white text-indigo-500 rounded-full p-2 transition-colors shadow-sm z-20 group"
+                            title="Ver Significado Profundo"
+                        >
+                            <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <div className="absolute inset-0 sacred-geo-bg opacity-40"></div>
-                        <div className="relative z-10 text-center">
-                            <h3 className="text-sm font-extrabold uppercase tracking-widest mb-10 text-slate-600">Vibración Interna</h3>
-                            <div className="relative w-64 h-64 md:w-72 md:h-72 mb-8 flex items-center justify-center mx-auto">
+                        <div className="relative z-10 text-center flex flex-col items-center justify-center">
+                            <h3 className="text-sm font-extrabold uppercase tracking-widest mb-6 md:mb-10 text-slate-600">Vibración Interna</h3>
+                            <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mb-6 md:mb-8 flex items-center justify-center mx-auto scale-90 md:scale-100">
                                 <svg className="absolute inset-0 w-full h-full text-black-accent/10 animate-spin-slow" viewBox="0 0 100 100" style={{ animationDuration: '40s' }}>
                                     <circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeWidth="0.25"></circle>
                                     <circle cx="50" cy="50" fill="none" r="32" stroke="currentColor" strokeWidth="0.25"></circle>
@@ -331,21 +401,21 @@ export default function ResultadosPage() {
                                     <polygon fill="none" points="50,5 95,50 50,95 5,50" stroke="currentColor" strokeWidth="0.25"></polygon>
                                 </svg>
                                 <div className="flex flex-col items-center justify-center">
-                                    <span className="text-7xl md:text-8xl font-thin tracking-tighter text-black-accent relative">
+                                    <span className="text-6xl sm:text-7xl md:text-8xl font-thin tracking-tighter text-black-accent relative">
                                         {displayNum(data?.primeraParte?.vibracionInterna)}
                                         {data?.primeraParte?.vibracionInterna?.isMaster && (
-                                            <span className="absolute -top-4 -right-4 text-amber-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                            <span className="absolute -top-4 -right-4 text-amber-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} title="Posees un Número Maestro en tu Esencia Vital">auto_awesome</span>
                                         )}
                                         {data?.primeraParte?.vibracionInterna?.isKarmic && (
-                                            <span className="absolute -top-4 -right-4 text-rose-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                                            <span className="absolute -top-4 -right-4 text-rose-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} title="Posees un Número de Deuda Kármica en tu Esencia Vital">warning</span>
                                         )}
                                     </span>
-                                    <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mt-2">
+                                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500 mt-2">
                                         {data?.primeraParte?.vibracionInterna?.isMaster ? 'Número Maestro' : data?.primeraParte?.vibracionInterna?.isKarmic ? 'Deuda Kármica' : 'Esencia Vital'}
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-dark-gray text-sm leading-relaxed max-w-xs mx-auto font-medium">
+                            <p className="text-dark-gray text-xs md:text-sm leading-relaxed max-w-xs mx-auto font-medium">
                                 Tu vibración central irradia una frecuencia única que define tu potencial energético.
                             </p>
                         </div>
@@ -354,9 +424,16 @@ export default function ResultadosPage() {
                     {/* 1. Misión */}
                     <div
                         ref={(el) => { cardRefs.current[1] = el }}
-                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg"
+                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg relative"
                         style={getCardStyle(1)}
                     >
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Misión', displayNum(data?.primeraParte?.calculoMision), explanations['mision']); }}
+                            className="absolute top-4 right-4 bg-white/50 hover:bg-white text-teal-600 rounded-full p-1.5 transition-colors shadow-sm z-20 group"
+                            title="Ver Significado Profundo"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <div>
                             <span className="material-symbols-outlined text-teal-600 mb-4 bg-white/60 p-2 rounded-xl">psychology</span>
                             <h4 className="text-[10px] font-black text-teal-900 uppercase tracking-widest">Misión</h4>
@@ -370,9 +447,16 @@ export default function ResultadosPage() {
                     {/* 2. Alma */}
                     <div
                         ref={(el) => { cardRefs.current[2] = el }}
-                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg"
+                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg relative"
                         style={getCardStyle(2)}
                     >
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Alma', displayNum(data?.primeraParte?.calculoAlma), explanations['alma']); }}
+                            className="absolute top-4 right-4 bg-white/50 hover:bg-white text-indigo-600 rounded-full p-1.5 transition-colors shadow-sm z-20 group"
+                            title="Ver Significado Profundo"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <div>
                             <span className="material-symbols-outlined text-indigo-600 mb-4 bg-white/60 p-2 rounded-xl">favorite</span>
                             <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">Alma</h4>
@@ -386,9 +470,16 @@ export default function ResultadosPage() {
                     {/* 3. Camino de Vida */}
                     <div
                         ref={(el) => { cardRefs.current[3] = el }}
-                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-orange-50 to-amber-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg"
+                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-orange-50 to-amber-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg relative"
                         style={getCardStyle(3)}
                     >
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Camino de Vida', displayNum(data?.primeraParte?.fechaNacimiento?.caminoDeVida), explanations['camino_de_vida']); }}
+                            className="absolute top-4 right-4 bg-white/50 hover:bg-white text-orange-600 rounded-full p-1.5 transition-colors shadow-sm z-20 group"
+                            title="Ver Significado Profundo"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <div>
                             <span className="material-symbols-outlined text-orange-600 mb-4 bg-white/60 p-2 rounded-xl">timeline</span>
                             <h4 className="text-[10px] font-black text-orange-900 uppercase tracking-widest">Camino de Vida</h4>
@@ -402,9 +493,16 @@ export default function ResultadosPage() {
                     {/* 4. Personalidad */}
                     <div
                         ref={(el) => { cardRefs.current[4] = el }}
-                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-rose-50 to-pink-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg"
+                        className="col-span-2 md:col-span-1 row-span-1 bg-gradient-to-br from-rose-50 to-pink-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between soft-relief transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg relative"
                         style={getCardStyle(4)}
                     >
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Personalidad', displayNum(data?.primeraParte?.calculoPersonalidad), explanations['personalidad']); }}
+                            className="absolute top-4 right-4 bg-white/50 hover:bg-white text-rose-600 rounded-full p-1.5 transition-colors shadow-sm z-20 group"
+                            title="Ver Significado Profundo"
+                        >
+                            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                        </button>
                         <div>
                             <span className="material-symbols-outlined text-rose-600 mb-4 bg-white/60 p-2 rounded-xl">wb_sunny</span>
                             <h4 className="text-[10px] font-black text-rose-900 uppercase tracking-widest">Personalidad</h4>
@@ -429,7 +527,10 @@ export default function ResultadosPage() {
                             Frecuencias Potenciadoras
                         </h3>
                         <div className="grid grid-cols-2 gap-4 relative z-10">
-                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50">
+                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Número de Fuerza', displayNum(data?.primeraParte?.potenciadores?.numeroDeFuerza), explanations['fuerza']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-amber-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Número de Fuerza</p>
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeFuerza)}</p>
                                 <p className="text-[10px] text-slate-500">Misión + Camino de Vida</p>
@@ -439,7 +540,10 @@ export default function ResultadosPage() {
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeEquilibrio)}</p>
                                 <p className="text-[10px] text-slate-500">Iniciales del nombre</p>
                             </div>
-                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50">
+                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Número de Sombra', displayNum(data?.primeraParte?.potenciadores?.numeroDeSombra), explanations['sombra']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Número de Sombra</p>
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeSombra)}</p>
                                 <p className="text-[10px] text-slate-500">Puntos ciegos o miedos</p>
@@ -493,11 +597,17 @@ export default function ResultadosPage() {
                         </div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Tránsito Actual</p>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
+                            <div className="relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Año Personal', displayNum(data?.primeraParte?.potenciadores?.anioPersonal), explanations['anio_personal']); }} className="absolute -top-1 -right-1 bg-white/20 hover:bg-white text-white/50 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[9px] text-slate-400 font-bold uppercase mb-1">Año Personal</p>
                                 <p className="text-3xl font-light">{displayNum(data?.primeraParte?.potenciadores?.anioPersonal)}</p>
                             </div>
-                            <div>
+                            <div className="relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Mes Personal', displayNum(data?.primeraParte?.potenciadores?.mesPersonal), explanations['mes_personal']); }} className="absolute -top-1 -right-1 bg-white/20 hover:bg-white text-white/50 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[9px] text-slate-400 font-bold uppercase mb-1">Mes Personal</p>
                                 <p className="text-3xl font-light">{displayNum(data?.primeraParte?.potenciadores?.mesPersonal)}</p>
                             </div>
@@ -515,15 +625,24 @@ export default function ResultadosPage() {
                             Atributos de la Fecha
                         </p>
                         <div className="grid grid-cols-3 gap-3 text-center">
-                            <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50">
+                            <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Don o Talento', displayNum(data?.primeraParte?.fechaNacimiento?.talento), explanations['talento']); }} className="absolute -top-1 -right-1 bg-white/50 hover:bg-white text-blue-400 hover:text-blue-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[9px] font-bold text-blue-800 uppercase mb-1">Talento</p>
                                 <p className="text-2xl font-light text-blue-900">{displayNum(data?.primeraParte?.fechaNacimiento?.talento)}</p>
                             </div>
-                            <div className="bg-pink-50/50 rounded-xl p-3 border border-pink-100/50">
+                            <div className="bg-pink-50/50 rounded-xl p-3 border border-pink-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Karma a trabajar', displayNum(data?.primeraParte?.fechaNacimiento?.karmaMes), explanations['karma_mes']); }} className="absolute -top-1 -right-1 bg-white/50 hover:bg-white text-pink-400 hover:text-pink-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[9px] font-bold text-pink-800 uppercase mb-1">Karma</p>
                                 <p className="text-2xl font-light text-pink-900">{displayNum(data?.primeraParte?.fechaNacimiento?.karmaMes)}</p>
                             </div>
-                            <div className="bg-teal-50/50 rounded-xl p-3 border border-teal-100/50">
+                            <div className="bg-teal-50/50 rounded-xl p-3 border border-teal-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Memoria de Vida Pasada', displayNum(data?.primeraParte?.fechaNacimiento?.memoriaVidaPasada), explanations['pasado']); }} className="absolute -top-1 -right-1 bg-white/50 hover:bg-white text-teal-400 hover:text-teal-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[9px] font-bold text-teal-800 uppercase mb-1">Pasado</p>
                                 <p className="text-2xl font-light text-teal-900">{displayNum(data?.primeraParte?.fechaNacimiento?.memoriaVidaPasada)}</p>
                             </div>
@@ -536,11 +655,18 @@ export default function ResultadosPage() {
                         className="col-span-4 md:col-span-2 row-span-1 bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl border border-red-100/50"
                         style={getCardStyle(9, true)}
                     >
-                        <div className="flex items-center gap-3 justify-between mb-4">
+                        <div className="flex items-center gap-3 justify-between mb-4 relative group w-full">
                             <p className="text-[10px] font-black uppercase tracking-widest text-red-800 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-sm">history_toggle_off</span>
                                 Conteo de Letras Nombres
                             </p>
+                            <button onClick={(e) => {
+                                e.stopPropagation();
+                                const faltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => (data?.primeraParte?.deudasKarmicasNombre?.[n] || 0) === 0).join(', ');
+                                openExplanation('Lecciones Kármicas', faltantes || 'Ninguna', explanations['letras_faltantes']);
+                            }} className="bg-white/50 hover:bg-white text-red-400 hover:text-red-600 rounded-full p-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all shadow-sm z-20" title="Ver Significado Profundo">
+                                <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                            </button>
                         </div>
                         <div className="flex flex-wrap gap-2 text-center items-center justify-between max-w-full">
                             {([1, 2, 3, 4, 5, 6, 7, 8, 9]).map(num => {
@@ -581,25 +707,36 @@ export default function ResultadosPage() {
 
                                         {/* Left Side: 4 Stats */}
                                         <div className="lg:col-span-7 grid grid-cols-2 gap-4">
-                                            <div className="bg-gradient-to-br from-indigo-50 to-blue-50/60 rounded-[2.5rem] p-8 border border-indigo-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow">
+                                            <div className="bg-gradient-to-br from-indigo-50 to-blue-50/60 rounded-[2.5rem] p-8 border border-indigo-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Herencia Familiar', displayNum(data.segundaParte.herenciaFamiliar), explanations['sistema_familiar_herencia']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-indigo-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-3">Herencia</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.herenciaFamiliar)}</p>
                                             </div>
-                                            <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50/60 rounded-[2.5rem] p-8 border border-violet-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow">
+                                            <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50/60 rounded-[2.5rem] p-8 border border-violet-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Evolución Familiar', displayNum(data.segundaParte.evolucionFamiliar), explanations['sistema_familiar_evolucion']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-violet-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400 mb-3">Evolución</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.evolucionFamiliar)}</p>
                                             </div>
-                                            <div className="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-[2.5rem] p-8 border border-emerald-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow">
+                                            <div className="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-[2.5rem] p-8 border border-emerald-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Campo de Expresión', displayNum(data.segundaParte.campoDeExpresion), explanations['sistema_familiar_expresion']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-emerald-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 mb-3">Expresión</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.campoDeExpresion)}</p>
                                             </div>
-                                            <div className="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-[2.5rem] p-8 border border-amber-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow">
+                                            <div className="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-[2.5rem] p-8 border border-amber-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Potencial Evolutivo', displayNum(data.segundaParte.potencialEvolutivo), explanations['sistema_familiar_potencial']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-amber-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500/70 mb-3">Potencial</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.potencialEvolutivo)}</p>
                                             </div>
                                         </div>
 
-                                        {/* Right Side: Linajes & Puente */}
                                         <div className="lg:col-span-5 flex flex-col gap-4">
                                             <div className="bg-slate-50/70 rounded-[2.5rem] border border-slate-100 p-8 flex-1 flex flex-col shadow-inner">
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 flex justify-between items-center">
@@ -608,10 +745,15 @@ export default function ResultadosPage() {
                                                 </p>
                                                 <div className="flex-1 space-y-3 mb-6 flex flex-col justify-center">
                                                     {data.segundaParte.linajes.map((linaje: any, idx: number) => (
-                                                        <div key={idx} className="flex justify-between items-center bg-white px-5 py-4 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 transition-all hover:border-slate-300">
+                                                        <div key={idx} className="flex justify-between items-center bg-white px-5 py-4 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 transition-all hover:border-slate-300 relative group">
                                                             <span className="text-sm font-bold capitalize text-slate-600">{linaje.nombre.toLowerCase()}</span>
-                                                            <div className="bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
-                                                                <span className="font-bold text-slate-800 text-lg">{displayNum(linaje.reduccion)}</span>
+                                                            <div className="flex items-center gap-3">
+                                                                <button onClick={(e) => { e.stopPropagation(); openExplanation(`Linaje ${displayNum(linaje.reduccion)} para ${linaje.nombre.toLowerCase()}`, displayNum(linaje.reduccion), explanations[`sistema_familiar_linaje_${idx}`]); }} className="bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                                                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                                </button>
+                                                                <div className="bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
+                                                                    <span className="font-bold text-slate-800 text-lg">{displayNum(linaje.reduccion)}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -622,8 +764,8 @@ export default function ResultadosPage() {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
+
                                 </div>
                             </>
                         ) : (
@@ -642,6 +784,14 @@ export default function ResultadosPage() {
                     </div>
                 </div>
             </section>
+
+            <AiExplanationModal
+                isOpen={explanationState.isOpen}
+                onClose={closeExplanation}
+                title={explanationState.title}
+                num={explanationState.num}
+                precalculatedText={explanationState.text}
+            />
         </div>
     );
 }

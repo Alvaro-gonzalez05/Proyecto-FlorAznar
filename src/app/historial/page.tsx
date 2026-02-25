@@ -2,8 +2,24 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { supabase } from '@/lib/supabase';
+
+// Helper function to format the created_at DB timestamp
+function formatDateDisplay(dateString: string) {
+    const date = new Date(dateString);
+    const formatter = new Intl.DateTimeFormat('es-AR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+    return formatter.format(date).toUpperCase();
+}
+function formatTimeDisplay(dateString: string) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+}
 
 export default function HistorialPage() {
     const headerRef = useRef<HTMLElement>(null);
@@ -11,27 +27,53 @@ export default function HistorialPage() {
     const gridRef = useRef<HTMLDivElement>(null);
     const sidebarRef = useRef<HTMLElement>(null);
 
+    const [consults, setConsults] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Initial Data Fetch
     useEffect(() => {
+        async function fetchHistory() {
+            try {
+                const { data, error } = await supabase
+                    .from('consultas')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!error && data) {
+                    setConsults(data);
+                }
+            } catch (err) {
+                console.error("Error fetching history:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchHistory();
+    }, []);
+
+    useEffect(() => {
+        if (loading) return;
+
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ 
+            const tl = gsap.timeline({
                 defaults: { ease: "expo.out", duration: 1.5 } // Usamos expo.out para una sensación premium y suave
             });
 
             const gridItems = gridRef.current ? Array.from(gridRef.current.children) : [];
             const sidebarElements = sidebarRef.current ? Array.from(sidebarRef.current.children) : [];
-            
+
             // 1. Estado Inicial: "Etereo"
             // Más desplazamiento, un poco de escala y blur
             gsap.set([headerRef.current, controlsRef.current, ...gridItems, ...sidebarElements], {
                 autoAlpha: 0,
-                y: 40, 
+                y: 40,
                 scale: 0.95, // Efecto de "crecimiento" al aparecer
-                filter: "blur(8px)", 
+                filter: "blur(8px)",
                 willChange: "transform, opacity, filter"
             });
 
             // 2. Orquestación Cinematográfica
-            
+
             // Header: Aparece majestuosamente
             tl.to(headerRef.current, {
                 autoAlpha: 1,
@@ -48,7 +90,7 @@ export default function HistorialPage() {
                 scale: 1,
                 filter: "blur(0px)",
                 clearProps: "willChange,filter"
-            }, "<0.1"); 
+            }, "<0.1");
 
             // Grid Cards: Cascada rápida y fluida
             if (gridItems.length > 0) {
@@ -60,7 +102,7 @@ export default function HistorialPage() {
                     stagger: {
                         amount: 0.6, // Tiempo total para que aparezcan todos
                         from: "start"
-                    }, 
+                    },
                     clearProps: "transform,willChange,filter" // Solo limpiamos lo necesario
                 }, "<0.2"); // Solapamiento agresivo
             }
@@ -74,12 +116,12 @@ export default function HistorialPage() {
                     filter: "blur(0px)",
                     stagger: 0.1,
                     clearProps: "willChange,filter"
-                }, "<0.4"); 
+                }, "<0.4");
             }
         });
 
         return () => ctx.revert();
-    }, []);
+    }, [loading, consults]);
 
     return (
         <div className="flex flex-col lg:flex-row h-full overflow-hidden">
@@ -115,173 +157,67 @@ export default function HistorialPage() {
                 </div>
 
                 <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-12">
-                    {/* Card 1 */}
-                    <div className="opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group hover:border-mint hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="w-12 h-12 bg-mint rounded-2xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-emerald-800/60">fingerprint</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Enviado</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#0124</span>
-                            </div>
+                    {loading ? (
+                        <div className="col-span-full py-20 flex justify-center items-center">
+                            <span className="material-symbols-outlined text-5xl text-slate-300 animate-spin">refresh</span>
                         </div>
-                        <h4 className="text-xl font-bold mb-1 tracking-tight group-hover:text-emerald-900 transition-colors">Sofía Martínez</h4>
-                        <div className="flex flex-col gap-1 mb-6">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">cake</span>
-                                <p className="text-xs tracking-wider">24 OCT 1992</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                <p className="text-xs tracking-wider">Hace 2 horas</p>
-                            </div>
+                    ) : consults.length === 0 ? (
+                        <div className="col-span-full py-20 flex flex-col items-center text-center">
+                            <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">folder_open</span>
+                            <h3 className="text-xl font-bold text-slate-400">Sin registros</h3>
+                            <p className="text-slate-400 mt-2 max-w-sm">Aún no tienes análisis numerológicos guardados en el historial.</p>
                         </div>
-                        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Arquetipo</span>
-                                <span className="text-xl font-light italic">Destino <span className="font-bold not-italic">11</span></span>
-                            </div>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-mint group-hover:text-emerald-800 transition-all">
-                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                            </button>
-                        </div>
-                    </div>
+                    ) : (
+                        consults.map((consult, index) => {
+                            // Extract numbers
+                            const mainNumber = consult.numerologia_data?.primeraParte?.vibracionInterna?.digit || '-';
+                            const destinyNumber = consult.numerologia_data?.primeraParte?.calculoMision?.digit || '-';
 
-                    {/* Card 2 */}
-                    <div className="opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group hover:border-lavender hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="w-12 h-12 bg-lavender rounded-2xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-purple-800/60">self_improvement</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 px-3 py-1 rounded-full mb-2">Pendiente</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#0123</span>
-                            </div>
-                        </div>
-                        <h4 className="text-xl font-bold mb-1 tracking-tight group-hover:text-purple-900 transition-colors">Julián Ricci</h4>
-                        <div className="flex flex-col gap-1 mb-6">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">cake</span>
-                                <p className="text-xs tracking-wider">12 FEB 1985</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                <p className="text-xs tracking-wider">Ayer, 14:20</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Arquetipo</span>
-                                <span className="text-xl font-light italic">Alma <span className="font-bold not-italic">7</span></span>
-                            </div>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-lavender group-hover:text-purple-800 transition-all">
-                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                            </button>
-                        </div>
-                    </div>
+                            const styles = [
+                                { border: 'hover:border-mint', bg: 'bg-mint', text: 'text-emerald-900', hoverBg: 'group-hover:bg-mint', hoverText: 'group-hover:text-emerald-800', iconBg: 'bg-mint/30', iconText: 'text-emerald-800/60', icon: 'fingerprint', tag: 'Esencia' },
+                                { border: 'hover:border-lavender', bg: 'bg-lavender', text: 'text-purple-900', hoverBg: 'group-hover:bg-lavender', hoverText: 'group-hover:text-purple-800', iconBg: 'bg-lavender/30', iconText: 'text-purple-800/60', icon: 'self_improvement', tag: 'Cálculo' },
+                                { border: 'hover:border-peach', bg: 'bg-peach', text: 'text-orange-900', hoverBg: 'group-hover:bg-peach', hoverText: 'group-hover:text-orange-800', iconBg: 'bg-peach/30', iconText: 'text-orange-800/60', icon: 'all_inclusive', tag: 'Registro' }
+                            ];
+                            const st = styles[index % styles.length];
 
-                    {/* Card 3 */}
-                    <div className="opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group hover:border-peach hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="w-12 h-12 bg-peach rounded-2xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-orange-800/60">all_inclusive</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Enviado</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#0122</span>
-                            </div>
-                        </div>
-                        <h4 className="text-xl font-bold mb-1 tracking-tight group-hover:text-orange-900 transition-colors">Elena Vargas</h4>
-                        <div className="flex flex-col gap-1 mb-6">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">cake</span>
-                                <p className="text-xs tracking-wider">05 SEP 1978</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                <p className="text-xs tracking-wider">22 May, 09:15</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Arquetipo</span>
-                                <span className="text-xl font-light italic">Ciclo <span className="font-bold not-italic">22</span></span>
-                            </div>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-peach group-hover:text-orange-800 transition-all">
-                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Card 4 */}
-                    <div className="opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group hover:border-mint hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="w-12 h-12 bg-mint rounded-2xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-emerald-800/60">diversity_3</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Enviado</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#0121</span>
-                            </div>
-                        </div>
-                        <h4 className="text-xl font-bold mb-1 tracking-tight group-hover:text-emerald-900 transition-colors">Lucas G.</h4>
-                        <div className="flex flex-col gap-1 mb-6">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">cake</span>
-                                <p className="text-xs tracking-wider">30 DIC 1995</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                <p className="text-xs tracking-wider">18 May, 18:30</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Arquetipo</span>
-                                <span className="text-xl font-light italic">Esencia <span className="font-bold not-italic">3</span></span>
-                            </div>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-mint group-hover:text-emerald-800 transition-all">
-                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Card 5 */}
-                    <div className="opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group hover:border-lavender hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="w-12 h-12 bg-lavender rounded-2xl flex items-center justify-center">
-                                <span className="material-symbols-outlined text-purple-800/60">psychology</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 px-3 py-1 rounded-full mb-2">Pendiente</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#0120</span>
-                            </div>
-                        </div>
-                        <h4 className="text-xl font-bold mb-1 tracking-tight group-hover:text-purple-900 transition-colors">Ana Paula F.</h4>
-                        <div className="flex flex-col gap-1 mb-6">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">cake</span>
-                                <p className="text-xs tracking-wider">15 JUN 1988</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <span className="material-symbols-outlined text-sm">calendar_today</span>
-                                <p className="text-xs tracking-wider">15 May, 11:45</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Arquetipo</span>
-                                <span className="text-xl font-light italic">Misión <span className="font-bold not-italic">8</span></span>
-                            </div>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-lavender group-hover:text-purple-800 transition-all">
-                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                            </button>
-                        </div>
-                    </div>
+                            return (
+                                <div key={consult.id} className={`opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group ${st.border} hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden`}>
+                                    <div className="flex justify-between items-start mb-8">
+                                        <div className={`w-12 h-12 ${st.bg} rounded-2xl flex items-center justify-center`}>
+                                            <span className={`material-symbols-outlined ${st.iconText}`}>{st.icon}</span>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Guardado</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#{consult.id.slice(0, 4)}</span>
+                                        </div>
+                                    </div>
+                                    <h4 className={`text-xl font-bold mb-1 tracking-tight ${st.text} transition-colors capitalize`}>{consult.nombre_completo.toLowerCase()}</h4>
+                                    <div className="flex flex-col gap-1 mb-6">
+                                        <div className="flex items-center gap-2 text-slate-400">
+                                            <span className="material-symbols-outlined text-sm">cake</span>
+                                            <p className="text-xs tracking-wider">{formatDateDisplay(consult.fecha_nacimiento)}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-slate-400">
+                                            <span className="material-symbols-outlined text-sm">calendar_today</span>
+                                            <p className="text-xs tracking-wider">{formatDateDisplay(consult.created_at)} - {formatTimeDisplay(consult.created_at)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-5 border-t border-slate-50">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Vibración</span>
+                                            <span className="text-xl font-light italic">Esencia <span className="font-bold not-italic">{mainNumber}</span></span>
+                                        </div>
+                                        <button className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center ${st.hoverBg} ${st.hoverText} transition-all`}>
+                                            <span className="material-symbols-outlined text-lg">arrow_outward</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
 
                     {/* New Analysis Card */}
-                    <Link href="/nueva-consulta" className="bg-off-white p-7 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group hover:border-black-accent/10 hover:-translate-y-2 hover:shadow-lg transition-all duration-300 cursor-pointer opacity-0">
+                    <Link href="/nueva-consulta" className="bg-off-white p-7 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group hover:border-black-accent/10 hover:-translate-y-2 hover:shadow-lg transition-all duration-300 cursor-pointer">
                         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 soft-shadow">
                             <span className="material-symbols-outlined text-slate-300 text-3xl">add</span>
                         </div>
@@ -304,7 +240,7 @@ export default function HistorialPage() {
                             <span className="text-xs font-bold">+12% vs mes anterior</span>
                         </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Estados de Entrega</h4>
                         <div className="space-y-3">
