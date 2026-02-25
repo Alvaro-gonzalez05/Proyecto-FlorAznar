@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import TransitionLink from './components/TransitionLink';
 import { supabase } from '@/lib/supabase';
@@ -11,7 +12,8 @@ function formatDateDisplay(dateString: string) {
   const formatter = new Intl.DateTimeFormat('es-AR', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'America/Argentina/Buenos_Aires'
   });
   return formatter.format(date).toUpperCase();
 }
@@ -23,12 +25,32 @@ export default function Home() {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const [recentConsults, setRecentConsults] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const handleViewResults = (consult: any) => {
+    if (consult.numerologia_data) {
+      sessionStorage.setItem('numerologyResult', JSON.stringify(consult.numerologia_data));
+    }
+    if (consult.explicaciones_ia) {
+      sessionStorage.setItem('geminiExplanations', JSON.stringify(consult.explicaciones_ia));
+    }
+    router.push('/resultados');
+  };
 
   // Initial Data Fetch
   useEffect(() => {
-    async function fetchRecent() {
+    async function fetchData() {
       try {
+        // 1. Fetch total count
+        const { count, error: countError } = await supabase
+          .from('consultas')
+          .select('*', { count: 'exact', head: true });
+
+        if (!countError) setTotalCount(count || 0);
+
+        // 2. Fetch last 3
         const { data, error } = await supabase
           .from('consultas')
           .select('*')
@@ -39,12 +61,12 @@ export default function Home() {
           setRecentConsults(data);
         }
       } catch (err) {
-        console.error("Error fetching latest consults:", err);
+        console.error("Error fetching homepage data:", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchRecent();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -105,7 +127,9 @@ export default function Home() {
       <header ref={headerRef} className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-xs uppercase tracking-[0.4em] font-semibold text-slate-400 mb-1">Módulo de Consultoría</h1>
-          <p className="text-sm font-medium">Lunes, 24 de Mayo</p>
+          <p className="text-sm font-medium capitalize">
+            {new Intl.DateTimeFormat('es-AR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Argentina/Buenos_Aires' }).format(new Date())}
+          </p>
         </div>
         <div className="flex items-center gap-6">
           <button className="text-sm font-semibold flex items-center gap-2 border-b border-black-accent pb-1 px-1">
@@ -158,7 +182,7 @@ export default function Home() {
               Hola, <span className="font-bold">Flor</span>
             </h2>
             <p className="text-sm lg:text-base text-slate-700/80 leading-relaxed mb-4 max-w-lg">
-              Hoy las energías sugieren un enfoque en la introspección y el equilibrio. Tienes 4 reportes listos para ser analizados.
+              Hoy las energías sugieren un enfoque en la introspección y el equilibrio. Tienes <span className="font-bold text-black-accent">{totalCount} reportes</span> guardados en tu historial.
             </p>
             <TransitionLink
               href="/nueva-consulta"
@@ -177,7 +201,7 @@ export default function Home() {
             <h3 className="text-xl font-semibold tracking-tight">Últimos Análisis</h3>
             <p className="text-slate-400 text-sm mt-1">Consultas procesadas recientemente</p>
           </div>
-          <a className="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-black-accent transition-colors" href="#">Ver todo</a>
+          <TransitionLink className="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-black-accent transition-colors" href="/historial">Ver todo</TransitionLink>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
@@ -207,6 +231,7 @@ export default function Home() {
                 <div
                   key={consult.id}
                   ref={(el) => { cardsRef.current[index] = el; }}
+                  onClick={() => handleViewResults(consult)}
                   className={`bg-white p-5 rounded-3xl border border-slate-50 soft-shadow group ${st.border} hover:scale-[1.03] hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer`}
                 >
                   <div className="flex justify-between items-start mb-6">
