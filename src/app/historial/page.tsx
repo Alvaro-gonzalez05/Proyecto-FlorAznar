@@ -2,13 +2,21 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { supabase } from '@/lib/supabase';
+import { Toaster, sileo } from 'sileo';
+import 'sileo/styles.css';
 
-// Helper function to format the created_at DB timestamp
-function formatDateDisplay(dateString: string) {
-    const date = new Date(dateString);
+// Helper function for Birthdays (prevents timezone shifts for YYYY-MM-DD)
+function formatBirthday(dateString: string) {
+    if (!dateString) return '-';
+    // Split to ensure we treat it as local date parts
+    const [year, month, day] = dateString.split('-').map(Number);
+    if (!year || !month || !day) return dateString;
+
+    const date = new Date(year, month - 1, day);
     const formatter = new Intl.DateTimeFormat('es-AR', {
         day: '2-digit',
         month: 'short',
@@ -16,9 +24,25 @@ function formatDateDisplay(dateString: string) {
     });
     return formatter.format(date).toUpperCase();
 }
+
+// Helper function to format the created_at DB timestamp
+function formatDateDisplay(dateString: string) {
+    const date = new Date(dateString);
+    const formatter = new Intl.DateTimeFormat('es-AR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'America/Argentina/Buenos_Aires'
+    });
+    return formatter.format(date).toUpperCase();
+}
 function formatTimeDisplay(dateString: string) {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('es-AR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Argentina/Buenos_Aires'
+    });
 }
 
 export default function HistorialPage() {
@@ -29,6 +53,70 @@ export default function HistorialPage() {
 
     const [consults, setConsults] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    const handleViewResults = (consult: any) => {
+        if (consult.numerologia_data) {
+            sessionStorage.setItem('numerologyResult', JSON.stringify(consult.numerologia_data));
+        }
+        if (consult.explicaciones_ia) {
+            sessionStorage.setItem('geminiExplanations', JSON.stringify(consult.explicaciones_ia));
+        }
+        router.push('/resultados');
+    };
+
+    const handleDeleteConsult = (consult: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        sileo.action({
+            title: "¿Eliminar Consulta?",
+            description: `¿Estás segura de eliminar el registro de ${consult.nombre_completo}? Esta acción no se puede deshacer.`,
+            fill: "#ffffff",
+            icon: <span className="material-symbols-outlined text-red-500">warning</span>,
+            styles: {
+                title: "sileo-red-text font-bold",
+                button: "sileo-red-button transition-colors",
+                badge: "sileo-neutral-badge"
+            },
+            button: {
+                title: "Confirmar Borrado",
+                onClick: async () => {
+                    try {
+                        const { error } = await supabase
+                            .from('consultas')
+                            .delete()
+                            .eq('id', consult.id);
+
+                        if (error) {
+                            console.error("Error de Supabase:", error);
+                            // Si el error es de permisos (RLS), avisamos al usuario
+                            if (error.code === '42501' || error.message.includes('policy')) {
+                                alert("¡Atención! La base de datos rechazó el borrado. Debes habilitar el permiso de 'DELETE' en tu panel de Supabase para la tabla 'consultas'.");
+                                return;
+                            }
+                            throw error;
+                        }
+
+                        // Actualizar estado local
+                        setConsults(prev => prev.filter(c => c.id !== consult.id));
+
+                        sileo.success({
+                            title: "Eliminado",
+                            description: "La consulta ha sido borrada exitosamente.",
+                            duration: 3000
+                        });
+                    } catch (err: any) {
+                        console.error("Error completo en borrado:", err);
+                        sileo.error({
+                            title: "Error",
+                            description: "No se pudo eliminar de la base de datos.",
+                            duration: 4000
+                        });
+                    }
+                }
+            }
+        });
+    };
 
     // Initial Data Fetch
     useEffect(() => {
@@ -50,6 +138,17 @@ export default function HistorialPage() {
         }
         fetchHistory();
     }, []);
+
+    // Estadísticas reales
+    const totalConsultas = consults.length;
+    const guardadasCount = consults.filter(c =>
+        c.explicaciones_ia &&
+        typeof c.explicaciones_ia === 'object' &&
+        Object.keys(c.explicaciones_ia).length > 0
+    ).length;
+    const sinGuardarCount = totalConsultas - guardadasCount;
+    const mensualGoal = 100; // Meta arbitraria para el progreso
+    const metaPercentage = totalConsultas > 0 ? Math.round((totalConsultas / mensualGoal) * 100) : 0;
 
     useEffect(() => {
         if (loading) return;
@@ -187,7 +286,11 @@ export default function HistorialPage() {
                                             <span className={`material-symbols-outlined ${st.iconText}`}>{st.icon}</span>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Guardado</span>
+                                            {consult.explicaciones_ia && Object.keys(consult.explicaciones_ia).length > 0 ? (
+                                                <span className="text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full mb-2">Guardado</span>
+                                            ) : (
+                                                <span className="text-[9px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 px-3 py-1 rounded-full mb-2">Incompleto</span>
+                                            )}
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">#{consult.id.slice(0, 4)}</span>
                                         </div>
                                     </div>
@@ -195,7 +298,7 @@ export default function HistorialPage() {
                                     <div className="flex flex-col gap-1 mb-6">
                                         <div className="flex items-center gap-2 text-slate-400">
                                             <span className="material-symbols-outlined text-sm">cake</span>
-                                            <p className="text-xs tracking-wider">{formatDateDisplay(consult.fecha_nacimiento)}</p>
+                                            <p className="text-xs tracking-wider">{formatBirthday(consult.fecha_nacimiento)}</p>
                                         </div>
                                         <div className="flex items-center gap-2 text-slate-400">
                                             <span className="material-symbols-outlined text-sm">calendar_today</span>
@@ -207,9 +310,22 @@ export default function HistorialPage() {
                                             <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Vibración</span>
                                             <span className="text-xl font-light italic">Esencia <span className="font-bold not-italic">{mainNumber}</span></span>
                                         </div>
-                                        <button className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center ${st.hoverBg} ${st.hoverText} transition-all`}>
-                                            <span className="material-symbols-outlined text-lg">arrow_outward</span>
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={(e) => handleDeleteConsult(consult, e)}
+                                                className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-all text-slate-300`}
+                                                title="Eliminar"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">delete</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleViewResults(consult)}
+                                                className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center ${st.hoverBg} ${st.hoverText} transition-all`}
+                                                title="Reabrir Análisis"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">arrow_outward</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -234,29 +350,29 @@ export default function HistorialPage() {
                     <div className="bg-off-white rounded-3xl p-8 border border-slate-50 relative overflow-hidden">
                         <div className="absolute -right-4 -top-4 w-24 h-24 bg-mint rounded-full blur-3xl opacity-50"></div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1 relative z-10">Total Consultas</div>
-                        <div className="text-5xl font-light mb-2 relative z-10 tracking-tighter">124</div>
-                        <div className="flex items-center gap-2 text-emerald-600 relative z-10">
-                            <span className="material-symbols-outlined text-sm">trending_up</span>
-                            <span className="text-xs font-bold">+12% vs mes anterior</span>
+                        <div className="text-5xl font-light mb-2 relative z-10 tracking-tighter">{totalConsultas}</div>
+                        <div className="flex items-center gap-2 text-slate-400 relative z-10">
+                            <span className="material-symbols-outlined text-sm">history</span>
+                            <span className="text-xs font-bold">Historial Completo</span>
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Estados de Entrega</h4>
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Estados de Guardado</h4>
                         <div className="space-y-3">
                             <div className="flex justify-between items-center bg-emerald-50/30 p-4 rounded-2xl">
                                 <div className="flex items-center gap-3">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                    <span className="text-sm font-medium">Completados</span>
+                                    <span className="text-sm font-medium">Guardadas</span>
                                 </div>
-                                <span className="text-sm font-bold">118</span>
+                                <span className="text-sm font-bold">{guardadasCount}</span>
                             </div>
                             <div className="flex justify-between items-center bg-amber-50/30 p-4 rounded-2xl">
                                 <div className="flex items-center gap-3">
                                     <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                                    <span className="text-sm font-medium">Pendientes</span>
+                                    <span className="text-sm font-medium">Sin Guardar</span>
                                 </div>
-                                <span className="text-sm font-bold">6</span>
+                                <span className="text-sm font-bold">{sinGuardarCount}</span>
                             </div>
                         </div>
                     </div>
@@ -268,11 +384,11 @@ export default function HistorialPage() {
                             </div>
                             <p className="text-[10px] uppercase tracking-widest text-slate-400 mb-4">Meta Mensual</p>
                             <div className="flex items-end justify-between mb-2">
-                                <h4 className="text-2xl font-light">82<span className="text-sm text-slate-500">/150</span></h4>
-                                <span className="text-xs font-bold text-lavender">54%</span>
+                                <h4 className="text-2xl font-light">{totalConsultas}<span className="text-sm text-slate-500">/{mensualGoal}</span></h4>
+                                <span className="text-xs font-bold text-lavender">{metaPercentage}%</span>
                             </div>
                             <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-lavender h-full w-[54%] rounded-full"></div>
+                                <div className="bg-lavender h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min(metaPercentage, 100)}%` }}></div>
                             </div>
                         </div>
                     </div>
@@ -285,6 +401,7 @@ export default function HistorialPage() {
                     </button>
                 </div>
             </aside>
+            <Toaster position="bottom-center" theme="system" />
         </div>
     );
 }

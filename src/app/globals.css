@@ -1,5 +1,4 @@
 /* Tailwind CDN Compatibility Layer */
-/* @import './animations.css'; - MOVED CONTENT BELOW TO ENSURE LOADING */
 
 @keyframes spin-slow {
   from {
@@ -103,10 +102,7 @@ body {
 
 body {
   background-color: #fcfaf8;
-  /* off-white from config */
   color: #1a1a1a;
-  /* black-accent from config */
-  /* Fonts are handled by Tailwind config in layout.tsx */
 }
 
 /* Custom Utilities from index.html */
@@ -192,4 +188,127 @@ main {
 
 .pdf-preview-shadow {
   box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08), 0 18px 36px -18px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════ */
+/* ═══ ESTILOS DE IMPRESIÓN PARA PDF            ═══ */
+/* ═══════════════════════════════════════════════ */
+
+/* MARGIN 0 = Elimina la URL, hora, título y # de pagina que agrega el navegador */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+
+  /* Ocultar UI web */
+  .screen-only {
+    display: none !important;
+  }
+
+  /* Mostrar contenido de impresión */
+  .print-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Reset del documento */
+  html {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Desbloquear la cadena de contenedores del DashboardLayout
+     Solo apuntamos a los contenedores directos, no a TODO el DOM */
+  #__next,
+  #__next>div,
+  #__next>div>div,
+  #__next>div>main,
+  #__next>div>div>main,
+  #__next>div>div>div>main,
+  div[class*="DashboardLayout"],
+  div[class*="flex"][class*="h-screen"],
+  main[class*="flex-1"][class*="overflow-y-auto"] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-height: none !important;
+    position: static !important;
+    flex: none !important;
+  }
+
+  /* También para la estructura body > div */
+  body>div,
+  body>div>div,
+  body>div>div>div,
+  body>div>div>main,
+  body>div>div>div>main {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-height: none !important;
+    position: static !important;
+  }
+
+  /* Ocultar los sidebars de navegación */
+  body>div>div>aside,
+  body>div>div>div>aside,
+  body>div>div>nav,
+  #__next aside,
+  #__next nav {
+    display: none !important;
+  }
+
+  /* Saltos de página */
+  .pdf-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .pdf-no-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .pdf-page-before {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+}
+
+/* Custom Sileo overrides to ensure red text and NO BLUE */
+.sileo-red-text {
+  color: #ef4444 !important;
+}
+
+.sileo-neutral-badge {
+  background-color: #f1f5f9 !important;
+  /* gray-100 */
+  color: #ef4444 !important;
+}
+
+.sileo-red-button {
+  color: #ef4444 !important;
+  background-color: #f8fafc !important;
+  /* gray-50 */
+  border: 1px solid #f1f5f9 !important;
+  font-weight: 700 !important;
+}
+
+.sileo-red-button:hover {
+  background-color: #fef2f2 !important;
+  /* red-50 */
 }

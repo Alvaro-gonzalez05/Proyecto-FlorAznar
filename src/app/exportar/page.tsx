@@ -3,348 +3,387 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
+function displayNum(n: any): string {
+    if (typeof n === 'number') return String(n);
+    if (!n) return '-';
+    if (n.isMaster) return `${n.masterValue}/${n.digit}`;
+    if (n.isKarmic) return `${n.karmicValue}/${n.digit}`;
+    return String(n.digit || '-');
+}
+
 export default function ExportPage() {
     const [resultData, setResultData] = useState<any>(null);
     const [aiExplanations, setAiExplanations] = useState<any>(null);
-
-    // UI Expandable States
     const [showWspInput, setShowWspInput] = useState(false);
     const [wspNumber, setWspNumber] = useState('');
     const [showEmailInput, setShowEmailInput] = useState(false);
     const [emailAddr, setEmailAddr] = useState('');
-
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         const stored = sessionStorage.getItem('numerologyResult');
-        if (stored) {
-            setResultData(JSON.parse(stored));
-        }
-
+        if (stored) setResultData(JSON.parse(stored));
         const storedAi = sessionStorage.getItem('geminiExplanations');
-        if (storedAi) {
-            setAiExplanations(JSON.parse(storedAi));
-        }
+        if (storedAi) setAiExplanations(JSON.parse(storedAi));
     }, []);
 
     const handleDownloadPDF = () => {
-        // Ejecuta el menú de impresión del navegador. El CSS de impresión (print:...) 
-        // se encarga de mostrar el formato vectorizado multipágina ocultando la UI.
+        const originalTitle = document.title;
+        document.title = `Carta Natal - ${clientName}`;
         window.print();
+        // Restaurar título después de imprimir
+        setTimeout(() => { document.title = originalTitle; }, 1000);
     };
 
     const handleWhatsAppShare = () => {
-        if (!wspNumber) {
-            setShowWspInput(true);
-            return;
-        }
-
-        const text = `¡Hola! Aquí tienes tu análisis numerológico. Tu Vibración Interna es ${resultData?.primeraParte?.vibracionInterna?.digit || '...'} y tu Misión de Vida es ${resultData?.primeraParte?.calculoMision?.digit || '...'}. Adjunto el PDF generado.`;
-        const url = `https://wa.me/${wspNumber.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
-        setShowWspInput(false);
-        setWspNumber('');
+        if (!wspNumber) { setShowWspInput(true); return; }
+        const message = `¡Hola! Aquí tienes los resultados principales de tu Carta Natal Numerológica`;
+        window.open(`https://wa.me/${wspNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+        setShowWspInput(false); setWspNumber('');
     };
 
     const handleGmailShare = () => {
-        if (!emailAddr) {
-            setShowEmailInput(true);
-            return;
-        }
+        if (!emailAddr) { setShowEmailInput(true); return; }
+        const client = resultData?.nombreCompleto || 'Cliente';
+        const subject = `Carta Natal Numerológica - ${client}`;
+        const body = `¡Hola! Aquí tienes los resultados principales de tu Carta Natal Numerológica`;
 
-        const subject = `Carta Natal Numerológica - ${resultData?.nombreCompleto || 'Cliente'}`;
-        const body = `Hola,\n\nTe adjunto los resultados principales de tu Carta Natal Numerológica:\n\nVibración Interna: ${resultData?.primeraParte?.vibracionInterna?.digit || '-'}\nDestino / Misión: ${resultData?.primeraParte?.calculoMision?.digit || '-'}\n\nPor favor, responde a este correo si tienes dudas o si deseas recibir el archivo PDF adjunto.\n\nSaludos.`;
-        const url = `mailto:${emailAddr}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = url;
-        setShowEmailInput(false);
-        setEmailAddr('');
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddr}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(gmailUrl, '_blank');
+
+        setShowEmailInput(false); setEmailAddr('');
     };
 
     if (!mounted) return null;
 
-    const clientNameDisplay = resultData?.nombreCompleto || 'Cargando...';
-    const vibracionDisplay = resultData?.primeraParte?.vibracionInterna?.digit || '...';
-    const misionDisplay = resultData?.primeraParte?.calculoMision?.digit || '...';
-    const destinoDisplay = resultData?.primeraParte?.fechaNacimiento?.caminoDeVida?.digit || '...';
+    const clientName = resultData?.nombreCompleto || 'Cargando...';
+    const vibracionDisplay = displayNum(resultData?.primeraParte?.vibracionInterna);
+    const misionDisplay = displayNum(resultData?.primeraParte?.calculoMision);
+    const destinoDisplay = displayNum(resultData?.primeraParte?.fechaNacimiento?.caminoDeVida);
 
-    // Agrupación lógica de las secciones para mapear en el renderizado de impresión
-    const printSections = [
-        {
-            groupName: "1. Esencia y Propósito",
-            items: [
-                { label: "Vibración Interna - Alma", value: resultData?.primeraParte?.vibracionInterna?.digit, text: aiExplanations?.vibracion_interna },
-                { label: "Talento", value: resultData?.primeraParte?.fechaNacimiento?.talento?.digit, text: aiExplanations?.talento },
-                { label: "Misión de Vida", value: resultData?.primeraParte?.calculoMision?.digit, text: aiExplanations?.mision },
-                { label: "Personalidad Exterior", value: resultData?.primeraParte?.calculoPersonalidad?.digit, text: aiExplanations?.personalidad }
-            ]
-        },
-        {
-            groupName: "2. Ciclos y Potenciadores",
-            items: [
-                { label: "Camino de Vida", value: resultData?.primeraParte?.fechaNacimiento?.caminoDeVida?.digit, text: aiExplanations?.camino_de_vida },
-                { label: "Número de Fuerza", value: resultData?.primeraParte?.potenciadores?.numeroDeFuerza?.digit, text: aiExplanations?.fuerza },
-                { label: "Número de Sombra", value: resultData?.primeraParte?.potenciadores?.numeroDeSombra?.digit, text: aiExplanations?.sombra },
-                { label: "Año Personal", value: resultData?.primeraParte?.potenciadores?.anioPersonal?.digit, text: aiExplanations?.anio_personal },
-                { label: "Mes Personal", value: resultData?.primeraParte?.potenciadores?.mesPersonal?.digit, text: aiExplanations?.mes_personal }
-            ]
-        },
-        {
-            groupName: "3. Karmas y Memorias",
-            items: [
-                { label: "Memoria de Vida Pasada", value: resultData?.primeraParte?.fechaNacimiento?.memoriaVidaPasada?.digit, text: aiExplanations?.pasado },
-                { label: "Deuda Kármica del Mes", value: resultData?.primeraParte?.fechaNacimiento?.karmaMes?.digit, text: aiExplanations?.karma_mes },
-                { label: "Letras Faltantes y Deuda Nominal", value: "", text: aiExplanations?.letras_faltantes }
-            ]
-        },
-        {
-            groupName: "4. Sistema Familiar",
-            items: [
-                { label: "Herencia Familiar", value: resultData?.segundaParte?.herenciaFamiliar?.digit, text: aiExplanations?.sistema_familiar_herencia },
-                { label: "Evolución Familiar", value: resultData?.segundaParte?.evolucionFamiliar?.digit, text: aiExplanations?.sistema_familiar_evolucion },
-                { label: "Campo de Expresión", value: resultData?.segundaParte?.campoDeExpresion?.digit, text: aiExplanations?.sistema_familiar_expresion },
-                { label: "Potencial Evolutivo", value: resultData?.segundaParte?.potencialEvolutivo?.digit, text: aiExplanations?.sistema_familiar_potencial }
-            ]
-        }
+    const letrasKarmicasFaltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        .filter(n => (resultData?.primeraParte?.deudasKarmicasNombre?.[n] || 0) === 0)
+        .join(', ');
+
+    // Todos los resultados
+    const allResults: Array<{ section: string; label: string; value: string; aiKey: string }> = [
+        { section: "Esencia y Propósito", label: "Vibración Interna", value: displayNum(resultData?.primeraParte?.vibracionInterna), aiKey: "vibracion_interna" },
+        { section: "Esencia y Propósito", label: "Alma", value: displayNum(resultData?.primeraParte?.calculoAlma), aiKey: "alma" },
+        { section: "Esencia y Propósito", label: "Misión de Vida", value: displayNum(resultData?.primeraParte?.calculoMision), aiKey: "mision" },
+        { section: "Esencia y Propósito", label: "Personalidad Exterior", value: displayNum(resultData?.primeraParte?.calculoPersonalidad), aiKey: "personalidad" },
+        { section: "Sendero y Destino", label: "Camino de Vida", value: displayNum(resultData?.primeraParte?.fechaNacimiento?.caminoDeVida), aiKey: "camino_de_vida" },
+        { section: "Atributos de la Fecha", label: "Talento / Don", value: displayNum(resultData?.primeraParte?.fechaNacimiento?.talento), aiKey: "talento" },
+        { section: "Atributos de la Fecha", label: "Deuda Kármica del Mes", value: displayNum(resultData?.primeraParte?.fechaNacimiento?.karmaMes), aiKey: "karma_mes" },
+        { section: "Atributos de la Fecha", label: "Memoria de Vida Pasada", value: displayNum(resultData?.primeraParte?.fechaNacimiento?.memoriaVidaPasada), aiKey: "pasado" },
+        { section: "Potenciadores", label: "Número de Fuerza", value: displayNum(resultData?.primeraParte?.potenciadores?.numeroDeFuerza), aiKey: "fuerza" },
+        { section: "Potenciadores", label: "Número de Sombra", value: displayNum(resultData?.primeraParte?.potenciadores?.numeroDeSombra), aiKey: "sombra" },
+        { section: "Tránsito Actual", label: "Año Personal", value: displayNum(resultData?.primeraParte?.potenciadores?.anioPersonal), aiKey: "anio_personal" },
+        { section: "Tránsito Actual", label: "Mes Personal", value: displayNum(resultData?.primeraParte?.potenciadores?.mesPersonal), aiKey: "mes_personal" },
+        { section: "Lecciones Kármicas", label: "Letras Faltantes", value: letrasKarmicasFaltantes || "Ninguna", aiKey: "letras_faltantes" },
     ];
 
-    // Añadir linajes dinámicamente si existen
-    const linajesKeys = Object.keys(aiExplanations || {}).filter(k => k.startsWith('sistema_familiar_linaje_'));
-    if (linajesKeys.length > 0 && resultData?.segundaParte?.linajes) {
-        const linajeItems = linajesKeys.map((k, i) => ({
-            label: `Linaje ${i + 1}`,
-            value: resultData.segundaParte.linajes[i]?.reduccion?.digit,
-            text: aiExplanations[k]
-        }));
-        printSections.push({
-            groupName: "5. Ramas de Linajes",
-            items: linajeItems
-        });
+    if (resultData?.segundaParte) {
+        allResults.push(
+            { section: "Sistema Familiar", label: "Herencia Familiar", value: displayNum(resultData.segundaParte.herenciaFamiliar), aiKey: "sistema_familiar_herencia" },
+            { section: "Sistema Familiar", label: "Evolución Familiar", value: displayNum(resultData.segundaParte.evolucionFamiliar), aiKey: "sistema_familiar_evolucion" },
+            { section: "Sistema Familiar", label: "Campo de Expresión", value: displayNum(resultData.segundaParte.campoDeExpresion), aiKey: "sistema_familiar_expresion" },
+            { section: "Sistema Familiar", label: "Potencial Evolutivo", value: displayNum(resultData.segundaParte.potencialEvolutivo), aiKey: "sistema_familiar_potencial" },
+        );
+        if (resultData.segundaParte.linajes) {
+            resultData.segundaParte.linajes.forEach((linaje: any, idx: number) => {
+                allResults.push({ section: "Linajes", label: `Linaje: ${(linaje.nombre || '?').toLowerCase()}`, value: displayNum(linaje.reduccion), aiKey: `sistema_familiar_linaje_${idx}` });
+            });
+        }
     }
+
+    const validResults = allResults.filter(item => {
+        return (item.value && item.value !== '-') || aiExplanations?.[item.aiKey]?.trim();
+    });
+
+    // ═══ CONTENIDO COMPARTIDO (se muestra en preview Y en impresión) ═══
+    const PrintContent = () => (
+        <div style={{ background: 'white', color: 'black', fontFamily: "'Manrope', sans-serif" }}>
+            {/* ── PORTADA ── */}
+            <div className="pdf-page-break" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '3rem' }}>
+                <div style={{ position: 'absolute', top: '2.5rem', left: '2.5rem', right: '2.5rem', bottom: '2.5rem', border: '2px solid rgba(212, 175, 55, 0.1)' }}></div>
+                <div style={{ position: 'absolute', top: '4rem', right: '4rem', width: '6rem', height: '6rem', borderTop: '3px solid rgba(212, 175, 55, 0.5)', borderRight: '3px solid rgba(212, 175, 55, 0.5)', borderTopRightRadius: '3rem' }}></div>
+                <div style={{ position: 'absolute', bottom: '4rem', left: '4rem', width: '6rem', height: '6rem', borderBottom: '3px solid rgba(212, 175, 55, 0.5)', borderLeft: '3px solid rgba(212, 175, 55, 0.5)', borderBottomLeftRadius: '3rem' }}></div>
+                <div style={{ textAlign: 'center', position: 'relative', zIndex: 10 }}>
+                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.4em', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Estudio Analítico &bull; Carta Natal</p>
+                    <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '3rem', fontStyle: 'italic', color: '#1e293b', textTransform: 'capitalize', marginBottom: '1.5rem' }}>{clientName.toLowerCase()}</h1>
+                    <div style={{ width: '5rem', height: '2px', background: '#d4af37', margin: '0 auto 2.5rem' }}></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', marginBottom: '4rem' }}>
+                        {[
+                            { lbl: 'Vibración', val: vibracionDisplay },
+                            { lbl: 'Camino', val: destinoDisplay },
+                            { lbl: 'Misión', val: misionDisplay },
+                        ].map((d, i) => (
+                            <div key={i} style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{d.lbl}</p>
+                                <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: '#d97706' }}>{d.val}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <p style={{ fontSize: '0.6rem', color: '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Generado Exclusivamente Por</p>
+                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, letterSpacing: '0.3em', color: '#475569', marginTop: '0.3rem' }}>FLORENCIA AZNAR</p>
+                </div>
+            </div>
+
+            {/* ── RESUMEN GENERAL IA ── */}
+            {aiExplanations?.resumen_general && (
+                <div className="pdf-no-break" style={{ padding: '2.5rem 2rem', marginBottom: '1rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Interpretación Integral</p>
+                        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', color: '#1e293b', fontStyle: 'italic' }}>Síntesis Energética General</h2>
+                        <div style={{ width: '3rem', height: '2px', background: '#d4af37', margin: '0.8rem auto 0' }}></div>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', lineHeight: 1.9, color: '#475569', whiteSpace: 'pre-wrap', textAlign: 'justify' }}>{aiExplanations.resumen_general}</p>
+                </div>
+            )}
+
+            {/* ── TODOS LOS RESULTADOS — Flujo continuo ── */}
+            <div style={{ padding: '1rem 2rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+                    <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase' }}>Desglose Analítico — Interpretaciones de IA</p>
+                </div>
+
+                {validResults.map((item, idx) => {
+                    const aiText = aiExplanations?.[item.aiKey];
+                    return (
+                        <div key={idx} className="pdf-no-break" style={{ borderLeft: '3px solid rgba(212, 175, 55, 0.3)', paddingLeft: '1.2rem', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #f8fafc', position: 'relative' }}>
+                            <div style={{ position: 'absolute', left: '-2px', top: '0.5rem', width: '3px', height: '1.5rem', background: '#d4af37', borderRadius: '2px' }}></div>
+                            <p style={{ fontSize: '0.5rem', letterSpacing: '0.4em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.3rem' }}>{item.section}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.5rem' }}>
+                                <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.02em' }}>{item.label}</h4>
+                                {item.value && item.value !== '-' && (
+                                    <span style={{ padding: '0.2rem 0.8rem', borderRadius: '0.8rem', background: 'linear-gradient(135deg, #fffbeb, #fff7ed)', border: '1px solid rgba(212, 175, 55, 0.2)', fontFamily: "'Playfair Display', serif", fontSize: '1.3rem', fontWeight: 700, color: '#b45309' }}>
+                                        {item.value}
+                                    </span>
+                                )}
+                            </div>
+                            {aiText && (
+                                <p style={{ fontSize: '0.8rem', lineHeight: 1.8, color: '#475569', whiteSpace: 'pre-wrap', textAlign: 'justify' }}>{aiText}</p>
+                            )}
+                            {!aiText && (
+                                <p style={{ fontSize: '0.75rem', color: '#cbd5e1', fontStyle: 'italic' }}>Sin interpretación disponible.</p>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* ── CONTEO DE LETRAS + PLANOS ── */}
+            {resultData?.primeraParte?.deudasKarmicasNombre && (
+                <div className="pdf-page-before" style={{ padding: '2.5rem 2rem' }}>
+                    <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Análisis Vibracional</p>
+                    <div style={{ width: '2rem', height: '2px', background: '#d4af37', marginBottom: '1.2rem' }}></div>
+                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: '#1e293b', marginBottom: '0.5rem' }}>Conteo de Letras por Vibración</h2>
+                    <p style={{ fontSize: '0.7rem', color: '#94a3b8', fontStyle: 'italic', marginBottom: '1.5rem' }}>Las vibraciones con valor 0 representan lecciones kármicas pendientes.</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '0.5rem', marginBottom: '2rem' }}>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => {
+                            const count = resultData.primeraParte.deudasKarmicasNombre[num] || 0;
+                            const isKarma = count === 0;
+                            return (
+                                <div key={num} style={{ textAlign: 'center', padding: '0.8rem 0.3rem', borderRadius: '0.8rem', border: `1px solid ${isKarma ? '#fecaca' : '#e2e8f0'}`, background: isKarma ? '#fef2f2' : '#f8fafc' }}>
+                                    <p style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.1em', color: isKarma ? '#b91c1c' : '#94a3b8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Nº {num}</p>
+                                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', fontWeight: 700, color: isKarma ? '#b91c1c' : '#475569' }}>{count}</p>
+                                    {isKarma && <p style={{ fontSize: '0.4rem', fontWeight: 700, color: '#ef4444', textTransform: 'uppercase', marginTop: '0.2rem' }}>KARMA</p>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: '#1e293b', marginBottom: '0.8rem' }}>Planos Existenciales</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem', marginBottom: '1.5rem' }}>
+                        {[
+                            { name: "Mental", value: resultData.primeraParte.planosExistenciales?.mental || 0, color: "#60a5fa" },
+                            { name: "Físico", value: resultData.primeraParte.planosExistenciales?.fisico || 0, color: "#f87171" },
+                            { name: "Emotivo", value: resultData.primeraParte.planosExistenciales?.emotivo || 0, color: "#4ade80" },
+                            { name: "Intuitivo", value: resultData.primeraParte.planosExistenciales?.intuitivo || 0, color: "#c084fc" },
+                        ].map((p, i) => (
+                            <div key={i} style={{ textAlign: 'center', padding: '1rem', borderRadius: '0.8rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: p.color, margin: '0 auto 0.5rem' }}></div>
+                                <p style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.15em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>{p.name}</p>
+                                <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', fontWeight: 700, color: '#475569' }}>{p.value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+                        <div style={{ padding: '0.8rem', borderRadius: '0.8rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                            <p style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.15em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Equilibrio</p>
+                            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 700, color: '#475569' }}>{displayNum(resultData.primeraParte.potenciadores?.numeroDeEquilibrio)}</p>
+                        </div>
+                        <div style={{ padding: '0.8rem', borderRadius: '0.8rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                            <p style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.15em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Regalo Divino</p>
+                            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 700, color: '#475569' }}>{displayNum(resultData.primeraParte.potenciadores?.regaloDivino)}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── SISTEMA FAMILIAR ── */}
+            {resultData?.segundaParte && (
+                <div className="pdf-page-before" style={{ padding: '2.5rem 2rem' }}>
+                    <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Mapa del Clan</p>
+                    <div style={{ width: '2rem', height: '2px', background: '#d4af37', marginBottom: '1.2rem' }}></div>
+                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem' }}>Sistema Familiar — Datos Completos</h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                        {[
+                            { label: "Herencia", value: displayNum(resultData.segundaParte.herenciaFamiliar), bg: "#eef2ff", border: "#c7d2fe" },
+                            { label: "Evolución", value: displayNum(resultData.segundaParte.evolucionFamiliar), bg: "#f5f3ff", border: "#ddd6fe" },
+                            { label: "Expresión", value: displayNum(resultData.segundaParte.campoDeExpresion), bg: "#ecfdf5", border: "#a7f3d0" },
+                            { label: "Potencial", value: displayNum(resultData.segundaParte.potencialEvolutivo), bg: "#fffbeb", border: "#fde68a" },
+                        ].map((d, i) => (
+                            <div key={i} style={{ textAlign: 'center', padding: '0.8rem', borderRadius: '0.8rem', background: d.bg, border: `1px solid ${d.border}` }}>
+                                <p style={{ fontSize: '0.45rem', fontWeight: 900, letterSpacing: '0.15em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>{d.label}</p>
+                                <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', fontWeight: 700, color: '#475569' }}>{d.value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    {resultData.segundaParte.habitantes && (
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '0.6rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Habitantes del Sistema</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '0.4rem' }}>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                                    <div key={num} style={{ textAlign: 'center', padding: '0.5rem', borderRadius: '0.5rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                        <p style={{ fontSize: '0.4rem', fontWeight: 700, color: '#94a3b8' }}>C{num}</p>
+                                        <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', fontWeight: 700, color: '#475569' }}>{resultData.segundaParte.habitantes[num] || 0}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {resultData.segundaParte.linajes && (
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '0.6rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Linajes</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                                {resultData.segundaParte.linajes.map((linaje: any, idx: number) => (
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.8rem', borderRadius: '0.5rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'capitalize', color: '#475569' }}>{(linaje.nombre || '?').toLowerCase()}</span>
+                                        <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', background: 'white', padding: '0.15rem 0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>{displayNum(linaje.reduccion)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        {resultData.segundaParte.puentes?.iniciatico && (
+                            <div>
+                                <h3 style={{ fontSize: '0.6rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Puente Iniciático</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.3rem' }}>
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                                        <div key={num} style={{ textAlign: 'center', padding: '0.3rem', borderRadius: '0.4rem', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                            <p style={{ fontSize: '0.4rem', fontWeight: 700, color: '#94a3b8' }}>C{num}</p>
+                                            <p style={{ fontWeight: 700, fontSize: '0.75rem', color: '#475569' }}>{resultData.segundaParte.puentes.iniciatico[num]}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', borderRadius: '0.8rem', border: '2px solid #e2e8f0' }}>
+                            <p style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.15em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Puente de Evolución</p>
+                            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', fontWeight: 700, color: '#1e293b' }}>{resultData.segundaParte.puentes?.evolucion ?? '-'}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── PIE FINAL ── */}
+            <div style={{ textAlign: 'center', padding: '2rem', borderTop: '1px solid #f1f5f9' }}>
+                <p style={{ fontSize: '0.5rem', letterSpacing: '0.3em', color: '#cbd5e1', fontWeight: 700, textTransform: 'uppercase' }}>Carta Natal Numerológica — {clientName} — Florencia Aznar</p>
+            </div>
+        </div>
+    );
 
     return (
         <>
-            {/* === PANTALLA WEB (Oculta al imprimir) === */}
-            <div className="print:hidden flex flex-col h-full overflow-hidden relative bg-slate-50/50">
-                <header className="px-12 py-8 flex justify-between items-center bg-white/80 backdrop-blur-md z-30 shrink-0 border-b border-slate-100">
+            {/* ═══ PANTALLA WEB ═══ */}
+            <div className="screen-only" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#f8fafc' }}>
+                <header style={{ padding: '1.2rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', flexShrink: 0 }}>
                     <div>
-                        <h1 className="text-xs uppercase tracking-[0.4em] font-semibold text-slate-400 mb-1">Paso Final</h1>
-                        <h2 className="text-2xl font-bold tracking-tight">Menú de Exportación</h2>
+                        <h1 style={{ fontSize: '0.65rem', letterSpacing: '0.3em', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Paso Final</h1>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700 }}>Exportar Carta Natal</h2>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <Link href="/resultados" className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-black-accent transition-colors">
-                            <span className="material-symbols-outlined text-lg">arrow_back</span>
-                            Volver al panel
-                        </Link>
-                    </div>
+                    <Link href="/resultados" className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-black-accent transition-colors">
+                        <span className="material-symbols-outlined text-lg">arrow_back</span>
+                        Volver
+                    </Link>
                 </header>
 
-                <div className="flex-1 flex overflow-hidden relative z-10">
-                    {/* Preview Area (Simbolica) */}
-                    <div className="flex-1 overflow-y-auto p-12 flex justify-center items-start">
-                        <div className="bg-white w-full max-w-[600px] aspect-[1/1.414] rounded-sm pdf-preview-shadow relative overflow-hidden p-16 flex flex-col items-center justify-between">
-                            <div className="absolute inset-0 sacred-geo-bg opacity-[0.03] text-amber-900"></div>
-                            <div className="absolute top-8 right-8 w-16 h-16 border-t-2 border-r-2 border-amber-200/50 rounded-tr-3xl"></div>
-                            <div className="absolute bottom-8 left-8 w-16 h-16 border-b-2 border-l-2 border-amber-200/50 rounded-bl-3xl"></div>
-
-                            <div className="relative z-10 text-center flex flex-col items-center w-full">
-                                <span className="material-symbols-outlined text-4xl font-extralight text-amber-500/50 mb-12">stars</span>
-                                <h3 className="text-xs uppercase tracking-[0.5em] font-semibold text-slate-400 mb-6">Carta Natal Numerológica</h3>
-                                <h4 className="font-serif text-5xl mb-2 italic text-slate-800 tracking-tight capitalize">{clientNameDisplay.toLowerCase()}</h4>
-                                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-12"></div>
-
-                                <div className="relative w-80 h-80 mb-12 flex items-center justify-center">
-                                    <svg className="w-full h-full absolute animate-[spin_60s_linear_infinite]" viewBox="0 0 200 200">
-                                        <circle cx="100" cy="100" r="95" fill="none" stroke="#e2e8f0" strokeWidth="0.5" />
-                                        <g stroke="#d4af37" strokeWidth="0.4" fill="none" opacity="0.8">
-                                            <polygon points="100,30 160.6,135 39.4,135" />
-                                            <polygon points="100,170 39.4,65 160.6,65" />
-                                        </g>
-                                        <circle cx="100" cy="100" r="40" fill="none" stroke="#e2e8f0" strokeWidth="0.8" />
-                                    </svg>
-                                    <div className="text-center z-10 relative">
-                                        <div className="font-serif text-8xl italic tracking-tighter mb-1 text-black-accent">{vibracionDisplay}</div>
-                                        <div className="text-[9px] uppercase tracking-[0.3em] font-bold text-slate-400">Energía Vital</div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-12 w-full max-w-sm">
-                                    <div className="text-center border-r border-slate-100 last:border-0 px-4">
-                                        <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-3">Misión</p>
-                                        <p className="font-serif text-2xl italic text-slate-700">{misionDisplay}</p>
-                                    </div>
-                                    <div className="text-center px-4">
-                                        <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-3">Cm. Vida</p>
-                                        <p className="font-serif text-2xl italic text-slate-700">{destinoDisplay}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="relative z-10 text-center mt-12">
-                                <p className="text-[10px] text-slate-300 font-medium tracking-widest mb-2">GENERADO POR</p>
-                                <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Astral Bloom</p>
+                <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+                    {/* Previsualización */}
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', background: '#e2e8f0' }}>
+                        <div style={{ maxWidth: '650px', margin: '0 auto' }}>
+                            <div className="pdf-preview-shadow" style={{ background: 'white', borderRadius: '2px', overflow: 'hidden' }}>
+                                <PrintContent />
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Action Sidebar */}
-                    <aside className="w-96 border-l border-slate-100 bg-white p-10 flex flex-col shrink-0 overflow-y-auto">
-                        <div className="mb-10">
-                            <h3 className="text-lg font-bold mb-2">Opciones de Exportación</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed">Se generará un documento multipágina con explicaciones dinámicas de la IA.</p>
+                    {/* Sidebar */}
+                    <aside className="screen-only" style={{ width: '20rem', borderLeft: '1px solid #f1f5f9', background: 'white', padding: '2rem', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.3rem' }}>Exportar</h3>
+                            <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{validResults.length} resultados con interpretaciones.</p>
                         </div>
 
-                        <div className="space-y-4">
-                            <button
-                                onClick={handleDownloadPDF}
-                                className="w-full bg-black-accent text-white h-16 rounded-2xl font-bold flex items-center justify-between px-8 hover:opacity-90 transition-all shadow-lg shadow-black/5"
-                            >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                            <button onClick={handleDownloadPDF} className="bg-black-accent text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-black/5" style={{ width: '100%', height: '3.2rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', border: 'none', cursor: 'pointer' }}>
                                 Imprimir / Guardar PDF
                                 <span className="material-symbols-outlined">print</span>
                             </button>
 
-                            {/* WhatsApp Toggle */}
-                            <div className="bg-whatsapp-green/20 rounded-2xl border border-emerald-100 overflow-hidden transition-all duration-300">
+                            <div className="bg-whatsapp-green/20 rounded-2xl border border-emerald-100 overflow-hidden">
                                 {showWspInput ? (
-                                    <div className="p-4 flex flex-col gap-3">
-                                        <label className="text-xs font-bold text-emerald-900 uppercase tracking-wider">Número de WhatsApp</label>
-                                        <input
-                                            type="tel"
-                                            placeholder="+54 9 11 1234 5678"
-                                            value={wspNumber}
-                                            onChange={(e) => setWspNumber(e.target.value)}
-                                            className="w-full bg-white border-emerald-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-400 outline-none"
-                                            autoFocus
-                                        />
-                                        <div className="flex gap-2">
-                                            <button onClick={() => setShowWspInput(false)} className="flex-1 py-2 text-xs font-bold text-emerald-800/60 hover:text-emerald-900">Cancelar</button>
-                                            <button onClick={handleWhatsAppShare} className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold tracking-widest uppercase hover:bg-emerald-700 shadow-xl shadow-emerald-900/10">Enviar Link</button>
+                                    <div style={{ padding: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <input type="tel" placeholder="+54 9 11 1234 5678" value={wspNumber} onChange={(e) => setWspNumber(e.target.value)} className="w-full bg-white border-emerald-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-400 outline-none" autoFocus />
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button onClick={() => setShowWspInput(false)} className="text-xs font-bold text-emerald-800/60" style={{ flex: 1, padding: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>Cancelar</button>
+                                            <button onClick={handleWhatsAppShare} className="bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase" style={{ flex: 1, padding: '0.5rem', border: 'none', cursor: 'pointer' }}>Enviar</button>
                                         </div>
                                     </div>
                                 ) : (
-                                    <button onClick={() => setShowWspInput(true)} className="w-full text-emerald-900 h-16 bg-whatsapp-green font-bold flex items-center justify-between px-8 hover:bg-[#dcf3eb] transition-all">
-                                        Mensaje WhatsApp
-                                        <span className="material-symbols-outlined">chat</span>
+                                    <button onClick={() => setShowWspInput(true)} className="w-full text-emerald-900 bg-whatsapp-green font-bold hover:bg-[#dcf3eb] transition-all" style={{ height: '3.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', border: 'none', cursor: 'pointer' }}>
+                                        WhatsApp <span className="material-symbols-outlined">chat</span>
                                     </button>
                                 )}
                             </div>
 
-                            {/* Gmail Toggle */}
-                            <div className="bg-gmail-blue/20 rounded-2xl border border-blue-100 overflow-hidden transition-all duration-300">
+                            <div className="bg-gmail-blue/20 rounded-2xl border border-blue-100 overflow-hidden">
                                 {showEmailInput ? (
-                                    <div className="p-4 flex flex-col gap-3">
-                                        <label className="text-xs font-bold text-blue-900 uppercase tracking-wider">Correo Electrónico</label>
-                                        <input
-                                            type="email"
-                                            placeholder="cliente@email.com"
-                                            value={emailAddr}
-                                            onChange={(e) => setEmailAddr(e.target.value)}
-                                            className="w-full bg-white border-blue-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                                            autoFocus
-                                        />
-                                        <div className="flex gap-2">
-                                            <button onClick={() => setShowEmailInput(false)} className="flex-1 py-2 text-xs font-bold text-blue-800/60 hover:text-blue-900">Cancelar</button>
-                                            <button onClick={handleGmailShare} className="flex-1 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold tracking-widest uppercase hover:bg-blue-700 shadow-xl shadow-blue-900/10">Abrir Mail</button>
+                                    <div style={{ padding: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <input type="email" placeholder="cliente@email.com" value={emailAddr} onChange={(e) => setEmailAddr(e.target.value)} className="w-full bg-white border-blue-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-400 outline-none" autoFocus />
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button onClick={() => setShowEmailInput(false)} className="text-xs font-bold text-blue-800/60" style={{ flex: 1, padding: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>Cancelar</button>
+                                            <button onClick={handleGmailShare} className="bg-blue-600 text-white rounded-xl text-xs font-bold uppercase" style={{ flex: 1, padding: '0.5rem', border: 'none', cursor: 'pointer' }}>Enviar</button>
                                         </div>
                                     </div>
                                 ) : (
-                                    <button onClick={() => setShowEmailInput(true)} className="w-full text-blue-900 h-16 bg-gmail-blue font-bold flex items-center justify-between px-8 hover:bg-[#deebfe] transition-all">
-                                        Enviar por Correo
-                                        <span className="material-symbols-outlined">mail</span>
+                                    <button onClick={() => setShowEmailInput(true)} className="w-full text-blue-900 bg-gmail-blue font-bold hover:bg-[#deebfe] transition-all" style={{ height: '3.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', border: 'none', cursor: 'pointer' }}>
+                                        Email <span className="material-symbols-outlined">mail</span>
                                     </button>
                                 )}
                             </div>
                         </div>
 
-                        <div className="mt-auto bg-off-white rounded-3xl p-6 border border-slate-100">
-                            <div className="flex items-center gap-4 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-100">
-                                    <span className="material-symbols-outlined text-slate-400">check_circle</span>
-                                </div>
-                                <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Alta Definición</p>
-                            </div>
-                            <p className="text-[11px] text-slate-400 leading-relaxed">El reporte PDF nativo se renderizará con textos dinámicos vectorizados y saltos de página perfectos para formato A4.</p>
+                        <div style={{ marginTop: 'auto', background: '#fcfaf8', borderRadius: '1rem', padding: '1.2rem', border: '1px solid #d4af3733', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.05)' }}>
+                            <p style={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.1em', color: '#b45309', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>info</span>
+                                Guía de Envío
+                            </p>
+                            <p style={{ fontSize: '0.7rem', color: '#64748b', lineHeight: 1.6 }}>
+                                1. <b>Guarda el PDF</b> usando el botón negro.<br />
+                                2. Toca <b>WhatsApp</b> para abrir el chat del cliente.<br />
+                                3. En WhatsApp, <b>adjunta el archivo</b> que descargaste.
+                            </p>
                         </div>
                     </aside>
                 </div>
             </div>
 
-            {/* === LAYOUT DE IMPRESIÓN (Solo visible al crear PDF via Print) === */}
-            <div className="hidden print:block bg-white text-black min-h-screen font-sans">
-                {/* Página 1: Portada (Ocupa toda la hoja y fuerza salto) */}
-                <div className="h-screen w-full flex flex-col items-center justify-center relative break-after-page">
-                    <div className="absolute top-12 left-12 right-12 bottom-12 border-2 border-amber-500/10 z-0"></div>
-                    <div className="absolute top-20 right-20 w-32 h-32 border-t-4 border-r-4 border-amber-300/60 rounded-tr-[4rem]"></div>
-                    <div className="absolute bottom-20 left-20 w-32 h-32 border-b-4 border-l-4 border-amber-300/60 rounded-bl-[4rem]"></div>
-
-                    <div className="relative z-10 text-center w-full max-w-2xl px-10 flex flex-col items-center">
-                        <h2 className="text-sm uppercase tracking-[0.4em] font-semibold text-slate-500 mb-8">Estudio Analítico &bull; Carta Natal</h2>
-                        <h1 className="font-serif text-6xl capitalize text-slate-900 italic tracking-tight mb-8">
-                            {clientNameDisplay.toLowerCase()}
-                        </h1>
-                        <div className="w-24 h-[2px] bg-amber-400 mb-12"></div>
-
-                        <div className="flex justify-center gap-16 mb-24">
-                            <div className="text-center">
-                                <p className="text-xs uppercase tracking-widest font-bold text-slate-400 mb-3">Vibración Interna</p>
-                                <p className="font-serif text-5xl text-amber-600">{vibracionDisplay}</p>
-                            </div>
-                            <div className="w-[1px] bg-slate-200"></div>
-                            <div className="text-center">
-                                <p className="text-xs uppercase tracking-widest font-bold text-slate-400 mb-3">Destino (Cm. Vida)</p>
-                                <p className="font-serif text-5xl text-amber-600">{destinoDisplay}</p>
-                            </div>
-                        </div>
-
-                        <p className="text-xs text-slate-400 tracking-[0.2em] uppercase">Generado Exclusivamente Por</p>
-                        <p className="text-lg font-serif font-bold tracking-widest mt-2 text-slate-700">ASTRAL BLOOM</p>
-                    </div>
-                </div>
-
-                {/* Páginas Siguientes: Desglose de Resultados generados por la Inteligencia Artificial */}
-                <div className="p-16">
-                    <h2 className="text-xs uppercase tracking-[0.5em] font-bold text-slate-400 text-center mb-16 pb-4 border-b border-slate-100">
-                        Interpretación Profunda y Desglose Analítico
-                    </h2>
-
-                    {printSections.map((group, groupIndex) => {
-                        const hasItems = group.items.some(item => item.text && item.text.trim() !== '');
-                        if (!hasItems) return null;
-
-                        return (
-                            <div key={groupIndex} className="mb-16">
-                                <h3 className="text-3xl font-serif text-amber-700 mb-8 uppercase tracking-widest underline decoration-amber-100 decoration-4 underline-offset-8">
-                                    {group.groupName}
-                                </h3>
-
-                                <div className="space-y-10">
-                                    {group.items.map((item, itemIndex) => {
-                                        if (!item.text || item.text.trim() === '') return null;
-
-                                        return (
-                                            <div key={itemIndex} className="break-inside-avoid border-l-4 border-slate-100 pl-6 pb-2">
-                                                <div className="flex items-center gap-4 mb-3">
-                                                    <h4 className="text-xl font-bold tracking-tight text-slate-800 uppercase">
-                                                        {item.label}
-                                                    </h4>
-                                                    {item.value && (
-                                                        <span className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center font-serif text-xl font-bold">
-                                                            {item.value}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div
-                                                    className="text-[15px] leading-[1.8] text-slate-700 font-sans whitespace-pre-wrap text-justify"
-                                                >
-                                                    {item.text}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+            {/* ═══ CONTENIDO DE IMPRESIÓN (oculto en web, visible al imprimir) ═══ */}
+            <div className="print-only" style={{ display: 'none' }}>
+                <PrintContent />
             </div>
         </>
     );
