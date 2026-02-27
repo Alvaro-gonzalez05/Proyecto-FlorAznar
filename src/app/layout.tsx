@@ -40,6 +40,7 @@ export default function RootLayout({
                   "dark-gray": "#4a4a4a",
                   "whatsapp-green": "#e7f8f2",
                   "gmail-blue": "#e8f0fe",
+                  "cream-soft": "#fdfbf7",
                 },
                 fontFamily: {
                   "display": ["Manrope", "sans-serif"],

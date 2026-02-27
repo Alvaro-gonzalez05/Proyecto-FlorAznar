@@ -17,6 +17,18 @@ export default function NuevaConsultaPage() {
     const floatingEl2Ref = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [prefill, setPrefill] = useState<{ nombre?: string, apellido?: string, fechaNacimiento?: string }>({});
+
+    // Read pre-fill data from agenda
+    useEffect(() => {
+        const stored = sessionStorage.getItem('agendaPrefill');
+        if (stored) {
+            try {
+                setPrefill(JSON.parse(stored));
+            } catch { /* ignore */ }
+            sessionStorage.removeItem('agendaPrefill');
+        }
+    }, []);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -336,6 +348,7 @@ export default function NuevaConsultaPage() {
                                         <input
                                             name="nombre"
                                             required
+                                            defaultValue={prefill.nombre || ''}
                                             className="w-full bg-white border-none rounded-2xl p-3 md:p-5 soft-shadow focus:ring-2 focus:ring-lavender transition-all text-base md:text-lg font-light placeholder:text-slate-300"
                                             placeholder="Ej. Sofía"
                                             type="text"
@@ -348,6 +361,7 @@ export default function NuevaConsultaPage() {
                                         <input
                                             name="apellido"
                                             required
+                                            defaultValue={prefill.apellido || ''}
                                             className="w-full bg-white border-none rounded-2xl p-3 md:p-5 soft-shadow focus:ring-2 focus:ring-lavender transition-all text-base md:text-lg font-light placeholder:text-slate-300"
                                             placeholder="Ej. Martínez"
                                             type="text"
@@ -363,6 +377,7 @@ export default function NuevaConsultaPage() {
                                         <input
                                             name="fechaNacimiento"
                                             required
+                                            defaultValue={prefill.fechaNacimiento || ''}
                                             className="w-full bg-white border-none rounded-2xl p-3 md:p-5 soft-shadow focus:ring-2 focus:ring-lavender transition-all text-base md:text-lg font-light placeholder:text-slate-300 appearance-none"
                                             type="date"
                                         />

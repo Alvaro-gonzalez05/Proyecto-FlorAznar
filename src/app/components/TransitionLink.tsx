@@ -52,8 +52,8 @@ export default function TransitionLink({ href, children, className, onClick }: T
                 ease: 'power2.in',
             }, 0); // Comienza en tiempo 0
 
-            // Si estamos en home y el sidebar derecho existe, animarlo también
-            if (pathname === '/' && rightSidebar) {
+            // Si estamos en home o agenda y el sidebar derecho existe, animarlo también
+            if ((pathname === '/' || pathname === '/agenda') && rightSidebar) {
                 timeline.to(rightSidebar, {
                     x: 50,
                     opacity: 0,

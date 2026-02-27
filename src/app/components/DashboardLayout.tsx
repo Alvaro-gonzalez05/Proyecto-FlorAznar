@@ -28,6 +28,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     const navItems = [
         { href: '/', icon: 'grid_view' },
         { href: '/historial', icon: 'history' },
+        { href: '/agenda', icon: 'calendar_month' },
         { href: '/nueva-consulta', icon: 'add' },
     ];
 
@@ -51,9 +52,9 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         return () => ctx.revert();
     }, []); // Solo se ejecuta una vez al montar
 
-    // Animar sidebar derecho cuando estamos en home
+    // Animar sidebar derecho cuando estamos en home o agenda
     useEffect(() => {
-        if (pathname === '/' && sidebarRef.current) {
+        if ((pathname === '/' || pathname === '/agenda') && sidebarRef.current) {
             const ctx = gsap.context(() => {
                 gsap.fromTo(sidebarRef.current,
                     {
@@ -132,9 +133,9 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                 {children}
             </main>
 
-            {/* Right Sidebar - Only on Home Page */}
-            {pathname === '/' && (
-                <aside ref={sidebarRef} className="w-80 border-l border-slate-100 p-8 bg-white hidden xl:flex flex-col">
+            {/* Right Sidebar - Home and Agenda */}
+            {(pathname === '/' || pathname === '/agenda') && (
+                <aside ref={sidebarRef} className="w-80 border-l border-slate-100 p-8 bg-white hidden xl:flex flex-col shrink-0">
                     {rightSidebarContent || (
                         <>
                             <h3 className="text-sm font-bold uppercase tracking-widest mb-8">Tendencia del Día</h3>
