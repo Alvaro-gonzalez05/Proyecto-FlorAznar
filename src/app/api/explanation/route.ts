@@ -38,6 +38,11 @@ export async function POST(request: Request) {
             'karma_mes': 'Karma / Tensión de la fecha de nacimiento (Mes)',
             'pasado': 'Memoria de Vida Pasada de la fecha de nacimiento (Año)',
             'letras_faltantes': 'Lecciones Kármicas (estos son los números pitagóricos con valor 0 o faltantes en el nombre, que indican deuda u obstáculos a trabajar)',
+            'subconsciente_i': 'Número de Subconsciente I (suma de los 3 primeros ciclos de realización)',
+            'subconsciente_o': 'Número de Subconsciente O (suma de los 3 primeros desafíos)',
+            'inconsciente': 'Número del Inconsciente (4to ciclo + camino de vida)',
+            'ciclo_actual': 'Ciclo de Realización Actual (etapa vital actual)',
+            'ciclos_desafios': 'Mapa del Diamante (Análisis en conjunto de los 4 Ciclos de Realización y los 4 Desafíos)',
             'sistema_familiar_herencia': 'Sistema Familiar - Herencia Familiar',
             'sistema_familiar_evolucion': 'Sistema Familiar - Evolución Familiar',
             'sistema_familiar_expresion': 'Sistema Familiar - Campo de Expresión',
@@ -74,18 +79,26 @@ ${file2Text}
 === TU TAREA ===
 ${analysisRequestStr}
 
-Para CADA métrica en esta lista, extrae de la bibliografía de arriba una explicación profunda, evolutiva y mística.
-SI ALGUNA MÉTRICA NO APARECE EN LOS DOCUMENTOS (ej: Lecciones Kármicas, Talento, Karma de Nacimiento o Números Maestros/Kármicos específicos), DEBES usar tus amplios conocimientos en Numerología Pitagórica para proveer una explicación igual de rica y profunda, adoptando el mismo tono. ¡Jamás omitas una clave solicitada!
-Adicionalmente, si el texto indica que un número es "Número Maestro" o "Deuda Kármica", DEBES mencionarlo explícitamente y explicar su gran poder o desafío (por ejemplo, hablar del potencial luminoso del 11, o la reestructuración kármica del 13).
+Para CADA métrica en esta lista:
+1. Sé EXTREMADAMENTE CONCISO pero PROFUNDO. Evita textos y resúmenes largos. Ve directo al poder, reto o significado esencial, sin rodeos, asegurando que se explique bien.
+2. TEN EN CUENTA que algunos valores incluyen DESGLOSES DETALLADOS. Explica breve y directamente cada sub-componente por separado, y luego el total.
+3. Extraé de la bibliografía de arriba una explicación profunda, y resumila fuertemente para que el cliente la pueda leer rápido en pantalla.
+4. Si un número es "Número Maestro" (ej. 11, 22, 33) o "Deuda Kármica" (ej. 13, 14, 16, 19), DEBÉS mencionarlo explícitamente y dedicar una breve oración a su impacto o lección.
+5. Si hay una fórmula o alternativa, explicá cómo los componentes se combinan.
 
-IMPORTANTE: Debe ser un texto BASTANTE RESUMIDO, bien completo e impactante, idealmente 1 solo párrafo fuerte (máximo 2 párrafos cortos). Ve directo al grano místico, eliminando presentaciones corporativas tontas como "Aquí tienes la explicación".
-Escribe respondiendo al usuario de frente (hablándole en segunda persona del singular, de forma súper elegante, empoderante y profesional).
+FORMATO DE CADA EXPLICACIÓN:
+- Si hay sub-componentes (nombres, vocales por palabra, fórmulas, etc.), USÁS ESTE FORMATO ESTRUCTURADO Y BREVE:
+  * Una línea por cada sub-componente que empiece con el nombre/componente y su número en MAYÚSCULAS, seguido de dos puntos, y luego la explicación corta.
+  * Ejemplo para alma: "NANCY (vocales = 8): Vocales con energía de poder material." nueva línea "TOTAL = 31/4: ... "
+- Si es un valor simple sin desglose: 1 solo párrafo directo e impactante explicando el número.
+- CADA VALOR del JSON debe ser un STRING DE TEXTO PLANO (nunca un objeto ni un array).
+- Ve directo al grano místico. NO uses introducciones como "Aquí tienes" o "Estimada...".
+- Hablá en segunda persona del singular, de forma elegante y empoderante.
 
-ADEMÁS DE EXPLICAR CADA MÉTRICA, DEBES AGREGAR UNA CLAVE EXTRA LLAMADA "resumen_general".
-En "resumen_general", debes escribir una SÍNTESIS GLOBAL MAGISTRAL de 2 o 3 párrafos integrando los números más fuertes que detectaste en la lista y dando un panorama general de la persona como individuo.
+ADEMÁS, CREÁ una clave extra "resumen_general" con una SÍNTESIS GLOBAL de 1 o 2 párrafos (MUY BREVE) integrando los números más fuertes.
 
 DEVUELVE ÚNICAMENTE UN OBJETO JSON VÁLIDO.
-Las claves del JSON deben ser EXÁCTAMENTE LAS MISMAS CLAVES en minúsculas que te pasé en la lista, MÁS la nueva clave "resumen_general". Los valores deben ser los textos interpretativos que redactaste. No agregues formatos de bloque \`\`\`json.`;
+Las claves del JSON deben ser EXACTAMENTE LAS MISMAS CLAVES en minúsculas que te pasé en la lista, MÁS "resumen_general". Los valores DEBEN SER STRINGS (texto plano). No agregues formatos de bloque \`\`\`json.`;
 
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',

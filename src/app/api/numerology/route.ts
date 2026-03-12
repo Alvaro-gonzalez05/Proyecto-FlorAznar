@@ -4,7 +4,7 @@ import { calcularEstructura } from '@/lib/numerology';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { nombreCompleto, fechaNacimiento, apellidosCompletos, anioActual, mesActual } = body;
+        const { nombreCompleto, nombresDePila, fechaNacimiento, apellidosCompletos, anioActual, mesActual } = body;
 
         // Validación básica
         if (!nombreCompleto || typeof nombreCompleto !== 'string' || nombreCompleto.trim().length === 0) {
@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
             fechaNacimiento,
             apCompletos,
             yActual,
-            mActual
+            mActual,
+            typeof nombresDePila === 'string' ? nombresDePila.trim() : undefined
         );
 
         return NextResponse.json(result);

@@ -1,17 +1,58 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import AiExplanationModal from '../components/AiExplanationModal';
+import { buildDatosEstructurados } from '../../lib/buildDatosEstructurados';
+import DiamanteCiclos from './DiamanteCiclos';
+import EditableReportModal from '../components/EditableReportModal';
 
 type NumerologyResult = any;
 
-/** Helper to display a numerology number, showing special notation if present */
-function displayNum(n: { digit: number; isMaster: boolean, isKarmic: boolean, masterValue?: number, karmicValue?: number } | undefined): string {
+const CASAS_INFO: Record<number, { nombre: string; temas: string }> = {
+    1: { nombre: 'El Rey', temas: 'Ego, identidad, figura paterna, liderazgo' },
+    2: { nombre: 'La Reina', temas: 'Emociones, figura materna, pareja' },
+    3: { nombre: 'El Príncipe', temas: 'Creatividad, niño interior, expresión' },
+    4: { nombre: 'La Cocina', temas: 'Trabajo, cuerpo, raíces familiares' },
+    5: { nombre: 'Sala de Guardia', temas: 'Libertad, cambio, sexualidad' },
+    6: { nombre: 'Hab. del Amor', temas: 'Afectos, maternidad/paternidad' },
+    7: { nombre: 'La Biblioteca', temas: 'Espiritualidad, conocimiento' },
+    8: { nombre: 'Sala de Admin.', temas: 'Talentos, poder, realización' },
+    9: { nombre: 'La Capilla', temas: 'Conciencia universal, servicio' },
+};
+
+const HABITANTES_INFO: Record<number, string> = {
+    0: 'Aspecto kármico a desarrollar — gran potencial latente',
+    1: 'Autonomía, liderazgo, dinamismo, impaciencia, orgullo',
+    2: 'Sensibilidad, ternura, intuición, duda, inseguridad',
+    3: 'Creatividad, alegría, comunicación, dispersión, necesidad de aprobación',
+    4: 'Estructura, responsabilidad, disciplina, rigidez, miedos',
+    5: 'Libertad, aventura, cambio, inestabilidad, rebeldía',
+    6: 'Amor, servicio, armonía, vulnerabilidad, sacrificio',
+    7: 'Sabiduría, perfección, introspección, aislamiento, soberbia',
+    8: 'Poder, estrategia, realización, dominación, materialismo',
+    9: 'Idealismo, humanismo, compasión, ilusión, desánimo',
+};
+
+/** Helper to display a numerology number, showing full chain */
+function displayNum(n: { digit: number; sequence?: number[]; isMaster: boolean; isKarmic: boolean; masterValue?: number; karmicValue?: number; label?: string } | undefined): string {
     if (!n) return '-';
-    if (n.isMaster) return `${n.masterValue}/${n.digit}`;
-    if (n.isKarmic) return `${n.karmicValue}/${n.digit}`;
+    if (n.label) return n.label;
+    if (n.sequence && n.sequence.length > 1) {
+        let lbl = n.sequence.join('/');
+        if (n.isMaster) lbl += ' MAESTRO';
+        if (n.isKarmic) lbl += ' KÁRMICO';
+        return lbl;
+    }
+    if (n.isMaster) return `${n.masterValue}/${n.digit} MAESTRO`;
+    if (n.isKarmic) return `${n.karmicValue}/${n.digit} KÁRMICO`;
+    return String(n.digit);
+}
+
+function displayNumShort(n: any): string {
+    if (!n) return '-';
+    if (n.sequence && n.sequence.length > 1) return n.sequence.join('/');
     return String(n.digit);
 }
 
@@ -30,6 +71,10 @@ export default function ResultadosPage() {
     const isFirstRender = useRef(true);
 
     const [explanations, setExplanations] = useState<Record<string, string>>({});
+    const [analistaLoading, setAnalistaLoading] = useState(false);
+    const [clienteLoading, setClienteLoading] = useState(false);
+    const [clienteModalOpen, setClienteModalOpen] = useState(false);
+    const [clienteReportText, setClienteReportText] = useState('');
     const [explanationState, setExplanationState] = useState<{ isOpen: boolean, title: string, num: string | number, text?: string }>({
         isOpen: false,
         title: '',
@@ -46,7 +91,7 @@ export default function ResultadosPage() {
     };
 
     // Total de cartas estático, mostramos Sistema Familiar aunque caiga en fallback
-    const totalCards = 11;
+    const totalCards = 15;
 
     // Agregar estilos para las partículas flotantes
     useEffect(() => {
@@ -75,6 +120,7 @@ export default function ResultadosPage() {
         // Read numerology results from sessionStorage
         const stored = sessionStorage.getItem('numerologyResult');
         const storedExplanations = sessionStorage.getItem('geminiExplanations');
+        const storedCliente = sessionStorage.getItem('clientReportEdited');
 
         if (storedExplanations) {
             try {
@@ -83,6 +129,8 @@ export default function ResultadosPage() {
                 // Ignore parsing errors for explanations
             }
         }
+
+        if (storedCliente) setClienteReportText(storedCliente);
 
         if (stored) {
             try {
@@ -238,8 +286,27 @@ export default function ResultadosPage() {
         tl.to(sidebar, { autoAlpha: 1, y: 0 }, '-=0.5');
     };
 
+    // Section order for the bento grid layout per mejoras_ui_tercera_ronda.md §6
+    const sectionOrder: Record<number, number> = {
+        0: 0,   // Vibración Interna
+        1: 1,   // Misión
+        2: 2,   // Alma
+        3: 3,   // Camino de Vida
+        4: 4,   // Personalidad
+        11: 5,  // Cuadro del Nombre Completo
+        12: 6,  // Cuadro de Fecha de Nacimiento
+        8: 7,   // Atributos de la Fecha (Talento, Karma, Memoria)
+        13: 8,  // Ciclos de Realización y Desafíos
+        5: 9,   // Frecuencias Potenciadoras
+        6: 10,  // Planos Existenciales
+        7: 11,  // Tránsito Actual (Año/Mes Personal)
+        14: 13, // Cuadro de las 9 Casas
+        9: 12,  // Conteo de Letras / Deudas Kármicas
+        10: 14, // Sistema Familiar
+    };
+
     const getCardStyle = (cardIndex: number, wide = false): React.CSSProperties => {
-        if (!showingCards) return { opacity: 1 }; // Forzamos visibilidad luego de que GSAP lo revele
+        if (!showingCards) return { opacity: 1, order: sectionOrder[cardIndex] ?? cardIndex }; // Forzamos visibilidad luego de que GSAP lo revele
         if (currentCardIndex === cardIndex) {
             return {
                 position: 'fixed',
@@ -360,11 +427,50 @@ export default function ResultadosPage() {
                             <p className="text-xs text-slate-500">{formatDate(data.fechaNacimiento)}</p>
                         </div>
                         <button
-                            onClick={() => openExplanation('Síntesis General', 'Resumen', explanations['resumen_general'] || 'Generando síntesis general de la persona... (Si ves esto y las otras explicaciones sí cargan, intenta crear una consulta nueva)')}
-                            className="bg-indigo-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase flex items-center gap-3 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group"
+                            onClick={() => {
+                                const storedAnalista = sessionStorage.getItem('resumenAnalista');
+                                const storedGlobal = sessionStorage.getItem('geminiExplanations');
+                                let val = storedAnalista;
+                                if (!val && storedGlobal) {
+                                    try {
+                                        const global = JSON.parse(storedGlobal);
+                                        val = global.resumen_analista;
+                                    } catch {}
+                                }
+                                if (val) {
+                                    openExplanation('Resumen Analista IA', 'Uso Profesional', val);
+                                } else {
+                                    openExplanation('Resumen Analista IA', 'Atención', 'Aún no se ha generado el reporte analista de forma automática. Por favor intenta volver a realizar la consulta inicial.');
+                                }
+                            }}
+                            className={`bg-indigo-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase flex items-center gap-2 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group`}
+                            title="Ver resumen técnico exclusivo para Analista"
                         >
-                            Resumen de IA
-                            <span className="material-symbols-outlined text-base md:text-xl group-hover:rotate-12 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                            Resumen Analista
+                            <span className="material-symbols-outlined text-sm md:text-base group-hover:rotate-12 transition-transform">psychology</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                let val = clienteReportText || sessionStorage.getItem('clientReportEdited');
+                                const storedGlobal = sessionStorage.getItem('geminiExplanations');
+                                if (!val && storedGlobal) {
+                                    try {
+                                        const global = JSON.parse(storedGlobal);
+                                        val = global.resumen_cliente;
+                                    } catch {}
+                                }
+                                if (val) {
+                                    if (!clienteReportText) setClienteReportText(val);
+                                    setClienteModalOpen(true);
+                                } else {
+                                    openExplanation('Reporte Cliente', 'Atención', 'Aún no se ha generado el reporte de cliente de forma automática. Por favor intenta volver a realizar la consulta inicial.');
+                                }
+                            }}
+                            className={`bg-purple-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase flex items-center gap-2 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group`}
+                            title="Ver o editar reporte fluido para el Cliente"
+                        >
+                            Reporte Cliente
+                            <span className="material-symbols-outlined text-sm md:text-base group-hover:rotate-12 transition-transform">edit_document</span>
                         </button>
                         <Link href="/exportar" className="bg-black-accent text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase flex items-center gap-3 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group">
                             Previsualizar PDF
@@ -415,8 +521,27 @@ export default function ResultadosPage() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-dark-gray text-xs md:text-sm leading-relaxed max-w-xs mx-auto font-medium">
-                                Tu vibración central irradia una frecuencia única que define tu potencial energético.
+                            {/* Desglose por nombre de pila */}
+                            {(() => {
+                                const nombres = data?.primeraParte?.vibracionInternaPerWord?.filter((w: any) => w.isNombre) || [];
+                                if (nombres.length > 0) {
+                                    return (
+                                        <div className="flex items-center justify-center gap-2 flex-wrap mb-4">
+                                            {nombres.map((n: any, i: number) => (
+                                                <React.Fragment key={i}>
+                                                    {i > 0 && <span className="text-slate-400 font-light text-sm">+</span>}
+                                                    <span className="bg-white/60 px-3 py-1 rounded-xl text-xs font-semibold text-slate-700 border border-slate-200/50">
+                                                        {n.word} <span className="text-slate-500 font-light">{displayNumShort(n.reduction)}</span>
+                                                    </span>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
+                            <p className="text-dark-gray text-[10px] md:text-xs leading-relaxed max-w-xs mx-auto font-medium text-slate-500">
+                                Solo nombres de pila
                             </p>
                         </div>
                     </div>
@@ -439,7 +564,15 @@ export default function ResultadosPage() {
                             <h4 className="text-[10px] font-black text-teal-900 uppercase tracking-widest">Misión</h4>
                         </div>
                         <div>
-                            <div className="text-4xl lg:text-5xl font-light mb-1 text-teal-950">{displayNum(data?.primeraParte?.calculoMision)}</div>
+                            <div className="flex items-baseline gap-2 flex-wrap mb-1">
+                                <span className="text-4xl lg:text-5xl font-light text-teal-950">{displayNum(data?.primeraParte?.calculoMision)}</span>
+                                {data?.primeraParte?.misionAlternative?.isKarmic && (
+                                    <span className="text-[10px] bg-red-100/50 text-red-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} KÁRMICO</span>
+                                )}
+                                {data?.primeraParte?.misionAlternative?.isMaster && (
+                                    <span className="text-[10px] bg-amber-100/50 text-amber-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} MAESTRO</span>
+                                )}
+                            </div>
                             <p className="text-xs text-teal-900/70 font-semibold leading-snug">Propósito central.</p>
                         </div>
                     </div>
@@ -462,7 +595,15 @@ export default function ResultadosPage() {
                             <h4 className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">Alma</h4>
                         </div>
                         <div>
-                            <div className="text-4xl lg:text-5xl font-light mb-1 text-indigo-950">{displayNum(data?.primeraParte?.calculoAlma)}</div>
+                            <div className="flex items-baseline gap-2 flex-wrap mb-1">
+                                <span className="text-4xl lg:text-5xl font-light text-indigo-950">{displayNum(data?.primeraParte?.calculoAlma)}</span>
+                                {data?.primeraParte?.almaAlternative?.isKarmic && (
+                                    <span className="text-[10px] bg-red-100/50 text-red-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.almaAlternative)} KÁRMICO</span>
+                                )}
+                                {data?.primeraParte?.almaAlternative?.isMaster && (
+                                    <span className="text-[10px] bg-amber-100/50 text-amber-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.almaAlternative)} MAESTRO</span>
+                                )}
+                            </div>
                             <p className="text-xs text-indigo-900/70 font-semibold leading-snug">Deseo interno.</p>
                         </div>
                     </div>
@@ -508,7 +649,15 @@ export default function ResultadosPage() {
                             <h4 className="text-[10px] font-black text-rose-900 uppercase tracking-widest">Personalidad</h4>
                         </div>
                         <div>
-                            <div className="text-4xl lg:text-5xl font-light mb-1 text-rose-950">{displayNum(data?.primeraParte?.calculoPersonalidad)}</div>
+                            <div className="flex items-baseline gap-2 flex-wrap mb-1">
+                                <span className="text-4xl lg:text-5xl font-light text-rose-950">{displayNum(data?.primeraParte?.calculoPersonalidad)}</span>
+                                {data?.primeraParte?.personalidadAlternative?.isKarmic && (
+                                    <span className="text-[10px] bg-red-100/50 text-red-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.personalidadAlternative)} KÁRMICO</span>
+                                )}
+                                {data?.primeraParte?.personalidadAlternative?.isMaster && (
+                                    <span className="text-[10px] bg-amber-100/50 text-amber-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.personalidadAlternative)} MAESTRO</span>
+                                )}
+                            </div>
                             <p className="text-xs text-rose-900/70 font-semibold leading-snug">Percepción externa.</p>
                         </div>
                     </div>
@@ -541,11 +690,11 @@ export default function ResultadosPage() {
                                 <p className="text-[10px] text-slate-500">Iniciales del nombre</p>
                             </div>
                             <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50 relative group">
-                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Número de Sombra', displayNum(data?.primeraParte?.potenciadores?.numeroDeSombra), explanations['sombra']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Número de Sombra', displayNum(data?.primeraParte?.ciclos?.sombra), explanations['sombra']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
                                     <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                 </button>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Número de Sombra</p>
-                                <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeSombra)}</p>
+                                <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.ciclos?.sombra)}</p>
                                 <p className="text-[10px] text-slate-500">Puntos ciegos o miedos</p>
                             </div>
                             <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50">
@@ -760,7 +909,7 @@ export default function ResultadosPage() {
                                                 </div>
                                                 <div className="mt-auto pt-6 border-t border-slate-200/60 text-center bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                                                     <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2">Puente de Evolución</p>
-                                                    <p className="text-4xl font-light text-slate-800">{data.segundaParte.puentes.evolucion}</p>
+                                                    <p className="text-4xl font-light text-slate-800">{displayNum(data.segundaParte.puentes.evolucion)}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -782,6 +931,315 @@ export default function ResultadosPage() {
                             </div>
                         )}
                     </div>
+
+                    {/* 11. CUADRO DEL NOMBRE COMPLETO — UNIFICADO */}
+                    <div
+                        ref={(el) => { cardRefs.current[11] = el }}
+                        className="col-span-4 row-span-1 bg-white border border-slate-100 rounded-[2rem] p-6 lg:p-8 flex flex-col transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl overflow-x-auto"
+                        style={getCardStyle(11, true)}
+                    >
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">abc</span>
+                            Cuadro del Nombre Completo
+                        </p>
+                        {/* Letter grid per word */}
+                        <div className="flex gap-3 flex-wrap mb-5">
+                            {data?.primeraParte?.wordsBreakdown?.map((wb: any, i: number) => (
+                                <div key={i} className={`rounded-2xl p-4 border flex-1 min-w-[120px] ${wb.isNombre ? 'bg-slate-50 border-slate-100' : 'bg-amber-50/50 border-amber-200/50 border-dashed'}`}>
+                                    {!wb.isNombre && (
+                                        <p className="text-[7px] text-amber-600 font-black uppercase tracking-widest text-center mb-1">Apellido</p>
+                                    )}
+                                    <div className="flex gap-1 justify-center mb-1 flex-wrap">
+                                        {wb.letters?.map((l: any, j: number) => (
+                                            <span key={j} className="text-xs font-bold text-slate-700 w-6 text-center">{l.letter}</span>
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-1 justify-center mb-2 flex-wrap">
+                                        {wb.letters?.map((l: any, j: number) => (
+                                            <span key={j} className={`text-xs w-6 text-center font-semibold ${l.isVowel ? 'text-indigo-600' : 'text-rose-500'}`}>{l.value}</span>
+                                        ))}
+                                    </div>
+                                    <div className="text-center border-t border-slate-200 pt-2">
+                                        <p className="text-lg font-light text-slate-800">{displayNumShort(wb.reduction)}</p>
+                                        <p className="text-[8px] text-slate-400 uppercase font-bold">{wb.word}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* ALMA (vocales) */}
+                        <div className="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100/50 mb-3">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-indigo-700 mb-2 flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-indigo-400 inline-block"></span>
+                                Alma (vocales)
+                            </p>
+                            <div className="flex items-center gap-2 flex-wrap mb-2">
+                                {data?.primeraParte?.almaPerWord?.map((a: any, i: number) => (
+                                    <React.Fragment key={i}>
+                                        {i > 0 && <span className="text-indigo-300 text-sm font-light">+</span>}
+                                        <span className="text-xs text-indigo-700">
+                                            <span className="font-semibold">{a.vowelLetters?.map((l: any) => `${l.letter}=${l.value}`).join(', ')}</span>
+                                            <span className="text-indigo-500 ml-1">= {displayNumShort(a.vowelReduction)}</span>
+                                        </span>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <div className="flex items-baseline gap-2 flex-wrap">
+                                <span className="text-lg font-bold text-indigo-900">{displayNum(data?.primeraParte?.calculoAlma)}</span>
+                                {data?.primeraParte?.almaAlternative?.isKarmic && (
+                                    <span className="text-[10px] text-red-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.almaAlternative)} KÁRMICO</span>
+                                )}
+                                {data?.primeraParte?.almaAlternative?.isMaster && (
+                                    <span className="text-[10px] text-amber-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.almaAlternative)} MAESTRO</span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* PERSONALIDAD (consonantes) */}
+                        <div className="bg-rose-50/50 rounded-xl p-4 border border-rose-100/50 mb-3">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-rose-700 mb-2 flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-rose-400 inline-block"></span>
+                                Personalidad (consonantes)
+                            </p>
+                            <div className="flex items-center gap-2 flex-wrap mb-2">
+                                {data?.primeraParte?.personalidadPerWord?.map((p: any, i: number) => (
+                                    <React.Fragment key={i}>
+                                        {i > 0 && <span className="text-rose-300 text-sm font-light">+</span>}
+                                        <span className="text-xs text-rose-700">
+                                            <span className="font-semibold">{p.consonantLetters?.map((l: any) => `${l.letter}=${l.value}`).join(', ')}</span>
+                                            <span className="text-rose-500 ml-1">= {displayNumShort(p.consonantReduction)}</span>
+                                        </span>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <div className="flex items-baseline gap-2 flex-wrap">
+                                <span className="text-lg font-bold text-rose-900">{displayNum(data?.primeraParte?.calculoPersonalidad)}</span>
+                                {data?.primeraParte?.personalidadAlternative?.isMaster && (
+                                    <span className="text-[10px] text-amber-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.personalidadAlternative)} MAESTRO</span>
+                                )}
+                                {data?.primeraParte?.personalidadAlternative?.isKarmic && (
+                                    <span className="text-[10px] text-red-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.personalidadAlternative)} KÁRMICO</span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* MISIÓN = ALMA + PERSONALIDAD */}
+                        <div className="bg-teal-50/50 rounded-xl p-4 border border-teal-100/50">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-teal-700 mb-2 flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-teal-400 inline-block"></span>
+                                Misión = Alma + Personalidad
+                            </p>
+                            <div className="flex items-baseline gap-2 flex-wrap">
+                                <span className="text-xs text-teal-600">
+                                    {data?.primeraParte?.almaTotal} + {data?.primeraParte?.personalidadTotal} = {data?.primeraParte?.misionTotal}
+                                </span>
+                                <span className="text-lg font-bold text-teal-900">{displayNum(data?.primeraParte?.calculoMision)}</span>
+                                {data?.primeraParte?.misionAlternative?.isMaster && (
+                                    <span className="text-[10px] text-amber-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} MAESTRO</span>
+                                )}
+                                {data?.primeraParte?.misionAlternative?.isKarmic && (
+                                    <span className="text-[10px] text-red-600 font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} KÁRMICO</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 12. CUADRO DE FECHA DE NACIMIENTO */}
+                    <div
+                        ref={(el) => { cardRefs.current[12] = el }}
+                        className="col-span-4 md:col-span-2 row-span-1 bg-gradient-to-br from-amber-50 to-orange-50 rounded-[2rem] p-6 lg:p-8 flex flex-col transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl"
+                        style={getCardStyle(12, true)}
+                    >
+                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-800 mb-4 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">event</span>
+                            Cuadro de Fecha de Nacimiento
+                        </p>
+                        <div className="grid grid-cols-4 gap-3 text-center">
+                            <div className="bg-white/70 rounded-xl p-3 border border-orange-100">
+                                <p className="text-[9px] font-bold text-orange-700 uppercase mb-1">Día</p>
+                                <p className="text-2xl font-light text-orange-900">{data?.primeraParte?.fechaNacimiento?.dia}</p>
+                                {(() => {
+                                    const d = data?.primeraParte?.fechaNacimiento;
+                                    if (!d) return null;
+                                    const dayStr = String(d.dia);
+                                    if (dayStr.length > 1) {
+                                        return <p className="text-[9px] text-orange-600 mt-1">{dayStr.split('').join('+')}={displayNumShort(d.diaReduction)}</p>;
+                                    }
+                                    return <p className="text-xs font-semibold text-orange-600 mt-1">{displayNumShort(d.diaReduction)}</p>;
+                                })()}
+                                {data?.primeraParte?.fechaNacimiento?.diaReduction?.isMaster && (
+                                    <p className="text-[8px] text-amber-700 font-bold">MAESTRO</p>
+                                )}
+                            </div>
+                            <div className="bg-white/70 rounded-xl p-3 border border-orange-100">
+                                <p className="text-[9px] font-bold text-orange-700 uppercase mb-1">Mes</p>
+                                <p className="text-2xl font-light text-orange-900">{data?.primeraParte?.fechaNacimiento?.mes}</p>
+                                <p className="text-xs font-semibold text-orange-600 mt-1">{displayNumShort(data?.primeraParte?.fechaNacimiento?.mesReduction)}</p>
+                            </div>
+                            <div className="bg-white/70 rounded-xl p-3 border border-orange-100">
+                                <p className="text-[9px] font-bold text-orange-700 uppercase mb-1">Año</p>
+                                <p className="text-2xl font-light text-orange-900">{data?.primeraParte?.fechaNacimiento?.anio}</p>
+                                {(() => {
+                                    const d = data?.primeraParte?.fechaNacimiento;
+                                    if (!d) return null;
+                                    const yearStr = String(d.anio);
+                                    return <p className="text-[9px] text-orange-600 mt-1">{yearStr.split('').join('+')}={displayNumShort(d.anioReduction)}</p>;
+                                })()}
+                            </div>
+                            <div className="bg-orange-100/50 rounded-xl p-3 border border-orange-200">
+                                <p className="text-[9px] font-bold text-orange-800 uppercase mb-1">Camino de Vida</p>
+                                <p className="text-xl font-bold text-orange-950">{displayNumShort(data?.primeraParte?.fechaNacimiento?.caminoDeVida)}</p>
+                                {data?.primeraParte?.fechaNacimiento?.caminoDeVida?.isMaster && (
+                                    <p className="text-[8px] text-amber-700 font-bold">MAESTRO ✨</p>
+                                )}
+                                {(() => {
+                                    const d = data?.primeraParte?.fechaNacimiento;
+                                    if (!d) return null;
+                                    const diaVal = d.diaReduction?.isMaster && d.diaReduction?.masterValue ? d.diaReduction.masterValue : d.diaReduction?.digit;
+                                    const mesVal = d.mesReduction?.digit;
+                                    const anioDigits = String(d.anio).split('').reduce((a: number, c: string) => a + parseInt(c), 0);
+                                    return <p className="text-[8px] text-orange-600 mt-1">{diaVal}+{mesVal}+{anioDigits}={d.caminoDeVida?.sequence?.[0]}</p>;
+                                })()}
+                            </div>
+                        </div>
+                        {data?.primeraParte?.fechaNacimiento?.caminoDeVidaAlternative && (
+                            <p className="text-[9px] text-center text-orange-600 mt-3 font-medium">
+                                Alternativa: {displayNum(data?.primeraParte?.fechaNacimiento?.caminoDeVidaAlternative)}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* 13. CICLOS DE REALIZACIÓN */}
+                    <div
+                        ref={(el) => { cardRefs.current[13] = el }}
+                        className="col-span-4 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-[3rem] transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl relative overflow-hidden flex flex-col lg:flex-row"
+                        style={getCardStyle(13, true)}
+                    >
+                        <div className="absolute top-0 right-0 opacity-5 pointer-events-none">
+                            <span className="material-symbols-outlined text-[200px]">cycle</span>
+                        </div>
+                        
+                        {/* LEFT: GRAPHIC */}
+                        <div className="flex-1 p-8 lg:p-10 relative z-10 flex flex-col items-center border-b lg:border-b-0 lg:border-r border-white/10">
+                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2 self-start">
+                                <span className="material-symbols-outlined text-indigo-300">category</span>
+                                Mapa del Diamante (Ciclos y Desafíos)
+                            </h3>
+                            <div className="w-full overflow-hidden flex items-center justify-center">
+                                <DiamanteCiclos data={data?.primeraParte} />
+                            </div>
+                        </div>
+
+                        {/* RIGHT: AI EXPLANATION */}
+                        <div className="flex-1 p-8 lg:p-10 relative z-10 flex flex-col max-h-full">
+                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-indigo-300 shrink-0">
+                                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                Análisis Evolutivo
+                            </h3>
+                            
+                            <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
+                                {explanations && explanations['ciclos_desafios'] ? (
+                                    <div className="space-y-4 text-[15px] leading-relaxed font-medium text-slate-200">
+                                        {String(explanations['ciclos_desafios']).split('\n').map((paragraph: string, index: number) => {
+                                            if (!paragraph.trim()) return <br key={index} />;
+                                            const isPill = paragraph.match(/^[A-Z0-9/\s()=áéíóúÁÉÍÓÚ]+:/);
+                                            if (isPill) {
+                                                const parts = paragraph.split(':');
+                                                const title = parts[0];
+                                                const rest = parts.slice(1).join(':').trim();
+                                                return (
+                                                    <div 
+                                                        key={index} 
+                                                        className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-sm block break-inside-avoid cursor-pointer hover:bg-white/10 hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-lg transition-all group"
+                                                        onClick={(e) => { e.stopPropagation(); openExplanation(title.trim(), '', rest); }}
+                                                    >
+                                                        <div className="flex justify-between items-start mb-1">
+                                                            <span className="font-bold text-indigo-300 block text-xs uppercase tracking-wider">{title.trim()}:</span>
+                                                            <span className="material-symbols-outlined text-[16px] text-white/20 group-hover:text-indigo-300 transition-colors" title="Leer en detalle">open_in_full</span>
+                                                        </div>
+                                                        <span className="text-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-3">{rest}</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return (
+                                                <p key={index} className="opacity-90 leading-relaxed text-sm">
+                                                    {paragraph}
+                                                </p>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="h-full flex flex-col items-center justify-center py-12 opacity-50 space-y-4">
+                                        <div className="w-8 h-8 rounded-full border-t-2 border-indigo-500 animate-spin"></div>
+                                        <p className="text-sm">La inteligencia artificial está descifrando estos ciclos...</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 14. CUADRO DE LAS 9 CASAS */}
+                    <div
+                        ref={(el) => { cardRefs.current[14] = el }}
+                        className="col-span-4 row-span-2 bg-white border border-slate-100 rounded-[3rem] p-6 lg:p-8 flex flex-col transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl overflow-x-auto"
+                        style={getCardStyle(14, true)}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">grid_view</span>
+                                Cuadro de las 9 Casas
+                            </p>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); openExplanation('Cuadro de las 9 Casas', 'Análisis completo', explanations['casas_9']); }}
+                                className="bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-indigo-500 rounded-full p-1.5 transition-all shadow-sm"
+                                title="Ver análisis de las 9 Casas"
+                            >
+                                <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm border-collapse min-w-[600px]">
+                                <thead>
+                                    <tr className="bg-slate-50">
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Casa</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Nombre</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Habitante</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 30</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 58</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 87</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Ind. Inconsc.</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">P. Iniciático</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => {
+                                        const casas = data?.primeraParte?.casas;
+                                        const info = CASAS_INFO[casa];
+                                        const hab = casas?.habitantes?.[casa] ?? '-';
+                                        return (
+                                            <tr key={casa} className="hover:bg-slate-50 transition-colors">
+                                                <td className="p-2 text-center font-bold border border-slate-200">{casa}</td>
+                                                <td className="p-2 text-[9px] text-slate-500 border border-slate-200" title={info?.temas}>{info?.nombre}</td>
+                                                <td className={`p-2 text-center font-bold border border-slate-200 ${hab === 0 ? 'bg-red-50 text-red-600' : ''}`} title={HABITANTES_INFO[hab as number] || ''}>{hab}</td>
+                                                <td className="p-2 text-center border border-slate-200">{casas?.anos30?.[casa] ?? '-'}</td>
+                                                <td className="p-2 text-center border border-slate-200">{casas?.anos58?.[casa] ?? '-'}</td>
+                                                <td className="p-2 text-center border border-slate-200">{casas?.anos87?.[casa] ?? '-'}</td>
+                                                <td className="p-2 text-center border border-slate-200">{casas?.induccionInconsciente?.[casa] ?? '-'}</td>
+                                                <td className="p-2 text-center border border-slate-200">{casas?.puenteIniciatico?.[casa] ?? '-'}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="mt-4 flex items-center justify-center gap-6">
+                            <div className="bg-slate-50 rounded-xl px-6 py-3 border border-slate-200 text-center">
+                                <p className="text-[9px] uppercase font-bold text-slate-400">Puente de Evolución</p>
+                                <p className="text-2xl font-light text-slate-800">{displayNum(data?.primeraParte?.casas?.puenteDeEvolucion)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {/* We no longer render FullReportSection here */}
                 </div>
             </section>
 
@@ -791,6 +1249,12 @@ export default function ResultadosPage() {
                 title={explanationState.title}
                 num={explanationState.num}
                 precalculatedText={explanationState.text}
+            />
+
+            <EditableReportModal
+                isOpen={clienteModalOpen}
+                onClose={() => setClienteModalOpen(false)}
+                initialText={clienteReportText}
             />
         </div>
     );

@@ -202,7 +202,7 @@ export default function NuevaConsultaPage() {
         const apiCall = fetch('/api/numerology', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombreCompleto, fechaNacimiento, apellidosCompletos, anioActual, mesActual }),
+            body: JSON.stringify({ nombreCompleto, nombresDePila: nombre, fechaNacimiento, apellidosCompletos, anioActual, mesActual }),
         }).then(async (res) => {
             if (!res.ok) throw new Error('Error en el cálculo numérico');
             const result = await res.json();
@@ -210,30 +210,71 @@ export default function NuevaConsultaPage() {
             // Formatter para advertir a la IA si es Maestro o Kármico
             const formatGeminiNumber = (r: any) => {
                 if (!r) return '';
+                if (r.label) return r.label;
                 let val = String(r.digit);
-                if (r.isMaster && r.masterValue) val = `${r.masterValue}/${val} (Este es un Número Maestro)`;
-                else if (r.isKarmic && r.karmicValue) val = `${r.karmicValue}/${val} (Este es un Número de Deuda Kármica)`;
+                if (r.sequence && r.sequence.length > 1) val = r.sequence.join('/');
+                if (r.isMaster && r.masterValue) val += ' (Número Maestro)';
+                else if (r.isKarmic && r.karmicValue) val += ' (Número de Deuda Kármica)';
                 return val;
             };
 
-            const karmicLettersObj = result.primeraParte?.deudasKarmicasNombre || {};
-            const faltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => (karmicLettersObj[n] || 0) === 0).join(', ') || 'Ninguna (Posee todas las vibraciones kármicas, indícale qué significa estar exento de deuda en este plano)';
 
             // 8.1 Call the Gemini API to pre-calculate explanations based on the result
+            // Build rich descriptors with breakdowns for detailed AI analysis
+            const pp = result.primeraParte;
+            
+            // Vibración Interna with per-name breakdown
+            const viPerWord = pp?.vibracionInternaPerWord?.filter((w: any) => w.isNombre) || [];
+            const viDesglose = viPerWord.map((w: any) => `${w.word} = ${formatGeminiNumber(w.reduction)}`).join(' + ');
+            const viStr = `${formatGeminiNumber(pp?.vibracionInterna)}. Desglose por nombre de pila: ${viDesglose || 'N/A'}. Solo se usan nombres de pila, no apellidos. Explica la vibración de CADA nombre individual primero, y luego el total combinado.`;
+            
+            // Alma with per-word vowel breakdown
+            const almaPerWord = pp?.almaPerWord?.map((a: any) => {
+                const letras = a.vowelLetters?.map((l: any) => `${l.letter}=${l.value}`).join(', ') || '';
+                return `${a.word}: vocales [${letras}] = ${formatGeminiNumber(a.vowelReduction)}`;
+            }).join(' + ') || '';
+            const almaStr = `${formatGeminiNumber(pp?.calculoAlma)}${pp?.almaAlternative ? ` (Alternativa: ${formatGeminiNumber(pp.almaAlternative)})` : ''}. Desglose: ${almaPerWord}. Explica el significado de las vocales de cada palabra y cómo forman el Alma total.`;
+
+            // Personalidad with per-word consonant breakdown
+            const persPerWord = pp?.personalidadPerWord?.map((p: any) => {
+                const letras = p.consonantLetters?.map((l: any) => `${l.letter}=${l.value}`).join(', ') || '';
+                return `${p.word}: consonantes [${letras}] = ${formatGeminiNumber(p.consonantReduction)}`;
+            }).join(' + ') || '';
+            const persStr = `${formatGeminiNumber(pp?.calculoPersonalidad)}${pp?.personalidadAlternative ? ` (Alternativa: ${formatGeminiNumber(pp.personalidadAlternative)})` : ''}. Desglose: ${persPerWord}. Explica las consonantes de cada palabra y cómo definen la Personalidad.`;
+
+            // Misión with formula
+            const misionStr = `${formatGeminiNumber(pp?.calculoMision)}. Fórmula: Alma (${pp?.almaTotal}) + Personalidad (${pp?.personalidadTotal}) = ${pp?.misionTotal}. Explica cómo se integran Alma y Personalidad para formar la Misión de vida.`;
+
+            // Camino de Vida with date components
+            const fn = pp?.fechaNacimiento;
+            const cdvStr = `${formatGeminiNumber(fn?.caminoDeVida)}${fn?.caminoDeVidaAlternative ? ` (Alternativa: ${formatGeminiNumber(fn.caminoDeVidaAlternative)})` : ''}. Componentes: Día ${fn?.dia} (=${formatGeminiNumber(fn?.diaReduction)}), Mes ${fn?.mes} (=${formatGeminiNumber(fn?.mesReduction)}), Año ${fn?.anio} (=${formatGeminiNumber(fn?.anioReduction)}). Explica cada componente de la fecha y cómo forman el Camino de Vida.`;
+
+            const karmicLettersObj = result.primeraParte?.deudasKarmicasNombre || {};
+            const conteoStr = [1,2,3,4,5,6,7,8,9].map(n => `Nº${n}=${karmicLettersObj[n] || 0}`).join(', ');
+            const faltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => (karmicLettersObj[n] || 0) === 0).join(', ') || 'Ninguna';
+            const faltantesStr = `Números faltantes: ${faltantes}. Conteo completo: ${conteoStr}. Explica qué significa la ausencia de CADA número faltante como lección kármica.`;
+
             const metricsPayload: Record<string, string | number> = {
-                vibracion_interna: formatGeminiNumber(result.primeraParte?.vibracionInterna),
-                alma: formatGeminiNumber(result.primeraParte?.calculoAlma),
-                mision: formatGeminiNumber(result.primeraParte?.calculoMision),
-                camino_de_vida: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.caminoDeVida),
-                personalidad: formatGeminiNumber(result.primeraParte?.calculoPersonalidad),
-                fuerza: formatGeminiNumber(result.primeraParte?.potenciadores?.numeroDeFuerza),
-                sombra: formatGeminiNumber(result.primeraParte?.potenciadores?.numeroDeSombra),
-                anio_personal: formatGeminiNumber(result.primeraParte?.potenciadores?.anioPersonal),
-                mes_personal: formatGeminiNumber(result.primeraParte?.potenciadores?.mesPersonal),
-                talento: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.talento),
-                karma_mes: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.karmaMes),
-                pasado: formatGeminiNumber(result.primeraParte?.fechaNacimiento?.memoriaVidaPasada),
-                letras_faltantes: faltantes,
+                vibracion_interna: viStr,
+                alma: almaStr,
+                mision: misionStr,
+                camino_de_vida: cdvStr,
+                personalidad: persStr,
+                fuerza: formatGeminiNumber(pp?.potenciadores?.numeroDeFuerza),
+                sombra: formatGeminiNumber(pp?.ciclos?.sombra || pp?.potenciadores?.numeroDeSombra),
+                anio_personal: formatGeminiNumber(pp?.potenciadores?.anioPersonal),
+                mes_personal: formatGeminiNumber(pp?.potenciadores?.mesPersonal),
+                talento: `${formatGeminiNumber(fn?.talento)}. Es el Don que trae del día de nacimiento (día ${fn?.dia}).`,
+                karma_mes: `${formatGeminiNumber(fn?.karmaMes)}. Es el Karma que viene del mes de nacimiento (mes ${fn?.mes}).`,
+                pasado: `${formatGeminiNumber(fn?.memoriaVidaPasada)}. Es la Memoria de Vida Pasada del año de nacimiento (${fn?.anio}).`,
+                letras_faltantes: faltantesStr,
+                ...(pp?.ciclos && {
+                    subconsciente_i: formatGeminiNumber(pp.ciclos.subconscienteI),
+                    subconsciente_o: formatGeminiNumber(pp.ciclos.subconscienteO),
+                    inconsciente: formatGeminiNumber(pp.ciclos.inconsciente),
+                    ciclos_desafios: `Ciclos: C1=${formatGeminiNumber(pp.ciclos.ciclosReduction[0])}, C2=${formatGeminiNumber(pp.ciclos.ciclosReduction[1])}, C3=${formatGeminiNumber(pp.ciclos.ciclosReduction[2])}, C4=${formatGeminiNumber(pp.ciclos.ciclosReduction[3])}. Desafíos: D1=${formatGeminiNumber(pp.ciclos.desafiosReduction[0])}, D2=${formatGeminiNumber(pp.ciclos.desafiosReduction[1])}, D3=${formatGeminiNumber(pp.ciclos.desafiosReduction[2])}, D4=${formatGeminiNumber(pp.ciclos.desafiosReduction[3])}. Por favor, da una breve explicación estructurada de esta etapa de crecimiento a través del tiempo.`,
+                    ciclo_actual: `Ciclo ${pp.ciclos.cicloActual}: ${formatGeminiNumber(pp.ciclos.ciclosReduction?.[pp.ciclos.cicloActual - 1])}`,
+                }),
                 ...(result.segundaParte && {
                     sistema_familiar_herencia: formatGeminiNumber(result.segundaParte.herenciaFamiliar),
                     sistema_familiar_evolucion: formatGeminiNumber(result.segundaParte.evolucionFamiliar),
@@ -254,24 +295,53 @@ export default function NuevaConsultaPage() {
             // Remove any empty metrics
             const cleanPayload = Object.fromEntries(Object.entries(metricsPayload).filter(([_, v]) => v !== ''));
 
-            let aiDataResult = {};
+            let aiDataResult: any = {};
+            let resumenAnalista = '';
+            let resumenCliente = '';
+
             try {
-                const aiRes = await fetch('/api/explanation', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(cleanPayload),
-                });
+                const [aiRes, analistaRes, clienteRes] = await Promise.all([
+                    fetch('/api/explanation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cleanPayload),
+                    }),
+                    fetch('/api/full-report', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'analista', dataStr: JSON.stringify(result) })
+                    }),
+                    fetch('/api/full-report', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'cliente', dataStr: JSON.stringify(result) })
+                    })
+                ]);
 
                 if (aiRes.ok) {
                     const aiData = await aiRes.json();
                     aiDataResult = aiData.explanations || {};
-                    sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
-                } else {
-                    console.error("Gemini pre-fetch failed", await aiRes.text());
-                    sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
                 }
+
+                if (analistaRes.ok) {
+                    const data = await analistaRes.json();
+                    resumenAnalista = data.summary || '';
+                }
+
+                if (clienteRes.ok) {
+                    const data = await clienteRes.json();
+                    resumenCliente = data.summary || '';
+                }
+
+                aiDataResult.resumen_analista = resumenAnalista;
+                aiDataResult.resumen_cliente = resumenCliente;
+
+                sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
+                sessionStorage.setItem('resumenAnalista', resumenAnalista);
+                sessionStorage.setItem('clientReportEdited', resumenCliente);
+
             } catch (err) {
-                console.error("Gemini network error", err);
+                console.error("Gemini pre-fetch network error", err);
                 sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
             }
 
@@ -299,6 +369,14 @@ export default function NuevaConsultaPage() {
             apiCall.then((result) => {
                 // Limpiar el flag para que se muestren las tarjetas en presentación
                 sessionStorage.removeItem('cardsViewedOnce');
+                sessionStorage.removeItem('technicalAnalysis');
+                // Limpiar caches de IA on-demand de sesiones anteriores
+                const keysToRemove: string[] = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && key.startsWith('ai_section_')) keysToRemove.push(key);
+                }
+                keysToRemove.forEach(k => sessionStorage.removeItem(k));
                 sessionStorage.setItem('numerologyResult', JSON.stringify(result));
 
                 router.push('/resultados');
