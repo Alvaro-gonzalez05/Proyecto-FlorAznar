@@ -209,8 +209,9 @@ export default function NuevaConsultaPage() {
 
             // Formatter para advertir a la IA si es Maestro o Kármico
             const formatGeminiNumber = (r: any) => {
-                if (!r) return '';
+                if (!r || typeof r !== 'object') return '';
                 if (r.label) return r.label;
+                if (r.digit === undefined) return '';
                 let val = String(r.digit);
                 if (r.sequence && r.sequence.length > 1) val = r.sequence.join('/');
                 if (r.isMaster && r.masterValue) val += ' (Número Maestro)';
@@ -223,10 +224,10 @@ export default function NuevaConsultaPage() {
             // Build rich descriptors with breakdowns for detailed AI analysis
             const pp = result.primeraParte;
             
-            // Vibración Interna with per-name breakdown
-            const viPerWord = pp?.vibracionInternaPerWord?.filter((w: any) => w.isNombre) || [];
-            const viDesglose = viPerWord.map((w: any) => `${w.word} = ${formatGeminiNumber(w.reduction)}`).join(' + ');
-            const viStr = `${formatGeminiNumber(pp?.vibracionInterna)}. Desglose por nombre de pila: ${viDesglose || 'N/A'}. Solo se usan nombres de pila, no apellidos. Explica la vibración de CADA nombre individual primero, y luego el total combinado.`;
+            // Vibración Interna with per-name breakdown (NUEVO: no hay total, solo desgloses)
+            const viArray = pp?.vibracionInterna || [];
+            const viDesgloseArr = viArray.map((v: any) => `${v.word} = ${formatGeminiNumber(v.reduction)}`);
+            const viStr = `Se analizan los nombres de pila de forma individual: ${viDesgloseArr.join(' | ')}. Explica qué significa cada uno por separado como motor de vida interna. NO existe un total sumado.`;
             
             // Alma with per-word vowel breakdown
             const almaPerWord = pp?.almaPerWord?.map((a: any) => {
@@ -242,8 +243,11 @@ export default function NuevaConsultaPage() {
             }).join(' + ') || '';
             const persStr = `${formatGeminiNumber(pp?.calculoPersonalidad)}${pp?.personalidadAlternative ? ` (Alternativa: ${formatGeminiNumber(pp.personalidadAlternative)})` : ''}. Desglose: ${persPerWord}. Explica las consonantes de cada palabra y cómo definen la Personalidad.`;
 
-            // Misión with formula
-            const misionStr = `${formatGeminiNumber(pp?.calculoMision)}. Fórmula: Alma (${pp?.almaTotal}) + Personalidad (${pp?.personalidadTotal}) = ${pp?.misionTotal}. Explica cómo se integran Alma y Personalidad para formar la Misión de vida.`;
+            // Misión with ALL combinations (NUEVO)
+            const misionEspecialesStr = pp?.misionEspeciales?.length > 0
+                ? `. Además, se detectan estas combinaciones especiales de maestros o kármicos: ${pp.misionEspeciales.map((m:any) => formatGeminiNumber(m)).join(', ')}`
+                : '';
+            const misionStr = `${formatGeminiNumber(pp?.calculoMision)}${misionEspecialesStr}. Explica el propósito central y las potencias o retos adicionales encontrados en las combinaciones horizontales.`;
 
             // Camino de Vida with date components
             const fn = pp?.fechaNacimiento;

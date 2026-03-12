@@ -127,6 +127,25 @@ export function reducirANumeros(num: number): ReductionResult {
     };
 }
 
+/**
+ * Reduce un número a un solo dígito (1-9), sin mantener números maestros.
+ * Usado específicamente para los Desafíos.
+ */
+export function reducirSinMaestros(num: number): number {
+    let n = Math.abs(num);
+    if (n === 0) return 0;
+    while (n > 9) {
+        let sum = 0;
+        let temp = n;
+        while (temp > 0) {
+            sum += temp % 10;
+            temp = Math.floor(temp / 10);
+        }
+        n = sum;
+    }
+    return n;
+}
+
 // ─── Interfaces ───────────────────────────────────────────────
 
 export interface LetterDetail {
@@ -380,34 +399,37 @@ export interface CiclosData {
 }
 
 function calcularCiclos(
-    mesReduced: number,   // mes reducido (puede ser 11 si maestro)
-    diaReduced: number,   // día reducido (puede ser 11 si maestro)
-    anioReduced: number,  // año reducido (puede ser 17, 11, etc.)
+    mesVal: number,       // mes reducido (puede ser 11 si maestro)
+    diaVal: number,       // día reducido (puede ser 11 si maestro)
+    anioCiclos: number,   // año para ciclos (últimos 2 dígitos reducidos)
+    anioDesafios: number, // año para desafíos (año completo reducido)
     caminoDeVida: ReductionResult,
     edadActual: number
 ): CiclosData {
-    // Usar los dígitos reducidos para ciclos
-    const mesVal = mesReduced;
-    const diaVal = diaReduced;
-    const anioVal = anioReduced;
-    
-    // 4 Ciclos de Realización (se suman)
+    // 1. Ciclos de Realización (usan anioCiclos, maestros se mantienen)
     const ciclo1 = mesVal + diaVal;
-    const ciclo2 = diaVal + anioVal;
-    const ciclo3 = ciclo1 + ciclo2;  // 1er + 2do Ciclo (using raw sums)
-    const ciclo4 = mesVal + anioVal;
+    const ciclo2 = diaVal + anioCiclos;
+    const ciclo3 = ciclo1 + ciclo2; // 1er + 2do Ciclo (usando sumas raw)
+    const ciclo4 = mesVal + anioCiclos;
     
     const ciclosRaw = [ciclo1, ciclo2, ciclo3, ciclo4];
     const ciclosReduction = ciclosRaw.map(c => reducirANumeros(c));
     
-    // 4 Desafíos (se restan — siempre positivo)
-    const desafio1 = Math.abs(mesVal - diaVal);
-    const desafio2 = Math.abs(diaVal - anioVal);
-    const desafio3 = Math.abs(desafio2 - desafio1); // |2do - 1er Desafío|
-    const desafio4 = Math.abs(mesVal - anioVal);
+    // 2. Desafíos (usan anioDesafios, maestros SE REDUCEN)
+    // "El 10 -> 1, el 11 -> 2, etc. No hay maestros en los desafíos."
+    const d1_digit = reducirSinMaestros(Math.abs(mesVal - diaVal));
+    const d2_digit = reducirSinMaestros(Math.abs(diaVal - anioDesafios));
+    const d3_digit = reducirSinMaestros(Math.abs(d1_digit - d2_digit));
+    const d4_digit = reducirSinMaestros(Math.abs(mesVal - anioDesafios));
     
-    const desafiosRaw = [desafio1, desafio2, desafio3, desafio4];
-    const desafiosReduction = desafiosRaw.map(d => reducirANumeros(d));
+    const desafiosSingle = [d1_digit, d2_digit, d3_digit, d4_digit];
+    const desafiosReduction = desafiosSingle.map(d => ({
+        sequence: [d],
+        digit: d,
+        isMaster: false,
+        isKarmic: false,
+        label: d.toString()
+    }));
     
     // Edades de los ciclos
     const cdv = caminoDeVida.digit;
@@ -424,36 +446,37 @@ function calcularCiclos(
     else if (edadActual <= fin3) cicloActual = 3;
     else cicloActual = 4;
     
-    // Números especiales derivados
-    // Subconsciente I = 1er + 2do + 3er Ciclo (suma raw = 62)
-    const subI = ciclosRaw[0] + ciclosRaw[1] + ciclosRaw[2];
+    // 3. Números Derivados
+    // Subconsciente I = Sumar los números GRANDES de los 3 primeros ciclos
+    const subI = ciclo1 + ciclo2 + ciclo3;
     const subconscienteI = reducirANumeros(subI);
     
-    // Subconsciente O = 1er + 2do + 3er Desafío (suma de los grandes ANTES de reducir a 1 dígito)
-    // Ej: 10 + 3 + 7 = 20
-    const subO = desafiosRaw[0] + desafiosRaw[1] + desafiosRaw[2];
+    // Subconsciente O = Sumar los dígitos ya REDUCIDOS de los 3 primeros desafíos
+    const subO = d1_digit + d2_digit + d3_digit;
     const subconscienteO = reducirANumeros(subO);
     
     // Inconsciente = 4to Ciclo (reducido) + Camino de Vida (reducido/maestro)
-    // Ej: 9 + 2 = 11
     const cdvVal = caminoDeVida.isMaster && caminoDeVida.masterValue 
         ? caminoDeVida.masterValue 
         : (caminoDeVida.isKarmic && caminoDeVida.karmicValue ? caminoDeVida.karmicValue : caminoDeVida.digit);
-    const incVal = ciclosReduction[3].digit + caminoDeVida.digit;
+    
+    const incVal = ciclosReduction[3].digit + cdvVal;
     const inconsciente = reducirANumeros(incVal);
     
-    // Sombra = Subconsciente O (usando su valor maestro/kármico) + Camino de Vida (usando su valor maestro/kármico)
-    // Ej: 11 + 11 = 22
+    // Sombra = Subconsciente O + Camino de Vida
+    // Nota: Usamos el valor con maestro de SubO si llegara a dar (Nancy: 6 + 11 = 17)
     const subOVal = subconscienteO.isMaster && subconscienteO.masterValue
         ? subconscienteO.masterValue
         : (subconscienteO.isKarmic && subconscienteO.karmicValue ? subconscienteO.karmicValue : subconscienteO.digit);
+        
     const somVal = subOVal + cdvVal;
     const sombra = reducirANumeros(somVal);
     
-    // Ser Interior: Usa las sumas RAW de los desafíos (Ej: 1er desafío es 10, no 1)
-    const qVal = desafiosRaw[0] + desafiosRaw[2];
-    const rVal = desafiosRaw[1] + desafiosRaw[2];
+    // Ser Interior: usa los dígitos ya reducidos de los desafíos
+    const qVal = d1_digit + d3_digit;
+    const rVal = d2_digit + d3_digit;
     const sVal = qVal + rVal;
+    
     const serInterior = {
         Q: reducirANumeros(qVal),
         R: reducirANumeros(rVal),
@@ -463,7 +486,7 @@ function calcularCiclos(
     return {
         ciclos: ciclosRaw,
         ciclosReduction,
-        desafios: desafiosRaw,
+        desafios: desafiosSingle,
         desafiosReduction,
         edadesCiclos,
         cicloActual,
@@ -473,6 +496,51 @@ function calcularCiclos(
         sombra,
         serInterior,
     };
+}
+
+/**
+ * Genera todas las combinaciones posibles de sumas horizontales para la Misión.
+ * Para cada palabra se toma (Alma raw o reducido) y (Personalidad raw o reducido).
+ */
+function calcularTodasLasMisiones(words: WordBreakdown[]): ReductionResult[] {
+    const sets: number[][] = [];
+    words.forEach(w => {
+        // Opciones Alma para esta palabra
+        const aOptions = new Set([w.vowelSum, w.vowelReduction.digit]);
+        sets.push(Array.from(aOptions));
+        
+        // Opciones Personalidad para esta palabra
+        const pOptions = new Set([w.consonantSum, w.consonantReduction.digit]);
+        sets.push(Array.from(pOptions));
+    });
+
+    const results: number[] = [];
+
+    function combine(index: number, currentSum: number) {
+        if (index === sets.length) {
+            results.push(currentSum);
+            return;
+        }
+        for (const val of sets[index]) {
+            combine(index + 1, currentSum + val);
+        }
+    }
+
+    combine(0, 0);
+
+    // Reducir cada resultado y filtrar únicos por label
+    const seen = new Set<string>();
+    const reductions: ReductionResult[] = [];
+    
+    results.forEach(res => {
+        const red = reducirANumeros(res);
+        if (!seen.has(red.label)) {
+            seen.add(red.label);
+            reductions.push(red);
+        }
+    });
+
+    return reductions;
 }
 
 // ─── Estructura Completa ─────────────────────────────────────
@@ -529,24 +597,15 @@ export function calcularEstructura(
         }
     }
     
-    // Vibración Interna: SOLO nombres de pila (CORREGIDO — apellido NO suma)
-    const vibracionInternaPerWord = wordsWithType.map(wb => ({
-        word: wb.word,
-        totalValue: wb.totalValue,
-        reduction: wb.reduction,
-        letters: wb.letters,
-        isNombre: (wb as any).isNombre,
-    }));
-    
-    // Total vibración interna = sum of ONLY nombre de pila words
-    const nombreOnlySum = wordsWithType
+    // Vibración Interna: SOLO nombres de pila (NUEVO: no se suma, se devuelve array)
+    const vibracionInterna = wordsWithType
         .filter(wb => (wb as any).isNombre)
-        .reduce((sum, wb) => sum + wb.totalValue, 0);
+        .map(wb => ({
+            word: wb.word,
+            reduction: wb.reduction
+        }));
     
-    // If we filtered out everything, fallback to the total. Otherwise use the specific sum.
-    const vibracionInterna = reducirANumeros(nombreOnlySum || totalesNombre.totalLetras);
-    
-    // Alma: vocales del nombre completo (CORREGIDO 1.2 — uses Y logic)
+    // Alma: vocales del nombre completo
     const almaPerWord = wordsBreakdown.map(wb => ({
         word: wb.word,
         vowelSum: wb.vowelSum,
@@ -561,7 +620,7 @@ export function calcularEstructura(
     const almaAlternativeSum = almaPerWordDigits.reduce((sum, d) => sum + d, 0);
     const almaAlternative = reducirANumeros(almaAlternativeSum);
     
-    // Personalidad: consonantes del nombre completo (CORREGIDO 1.3)
+    // Personalidad: consonantes del nombre completo
     const personalidadPerWord = wordsBreakdown.map(wb => ({
         word: wb.word,
         consonantSum: wb.consonantSum,
@@ -576,12 +635,15 @@ export function calcularEstructura(
     const persAlternativeSum = persPerWordDigits.reduce((sum, d) => sum + d, 0);
     const personalidadAlternative = reducirANumeros(persAlternativeSum);
     
-    // Misión = Alma (número grande) + Personalidad (número grande) (CORREGIDO 1.4)
-    const misionTotal = almaTotal + personalidadTotal;
-    const calculoMision = reducirANumeros(misionTotal);
-    // Alternative
-    const misionAlternativeSum = almaAlternativeSum + persAlternativeSum;
-    const misionAlternative = reducirANumeros(misionAlternativeSum);
+    // Misión: TODAS las combinaciones posibles (NUEVO)
+    const misionCombinaciones = calcularTodasLasMisiones(wordsBreakdown);
+    // El "resultado principal" es el que viene de la suma máxima ( almaTotal + personalidadTotal )
+    const calculoMision = reducirANumeros(almaTotal + personalidadTotal);
+    
+    // Detectar maestros y kármicos en las combinaciones (excluyendo el principal si ya se mostró)
+    const misionEspeciales = misionCombinaciones.filter(m => 
+        (m.isMaster || m.isKarmic) && m.label !== calculoMision.label
+    );
     
     // Deudas kármicas / conteo de letras
     const deudasKarmicasNombre = totalesNombre.letrasConteo;
@@ -649,10 +711,18 @@ export function calcularEstructura(
 
     // ─── Ciclos de Realización (NUEVO - Parte 2) ─────────────────
     const edadActual = anioActual - year;
+    
+    // Año para ciclos (últimos 2 dígitos reducidos)
+    const anioCiclos = reducirANumeros(year % 100).digit;
+    
+    // Año para desafíos (año completo reducido sin maestros)
+    const anioDesafios = reducirSinMaestros(year);
+
     const ciclosData = calcularCiclos(
         mesReduction.digit,
-        diaParaCDV,  // use master value if applicable (e.g., 11)
-        anioReduction.digit, // año reducido a un dígito para ciclos
+        diaParaCDV,  // usa valor maestro si aplica (ej: 11)
+        anioCiclos,
+        anioDesafios,
         caminoDeVida,
         edadActual
     );
@@ -662,7 +732,6 @@ export function calcularEstructura(
 
     const primeraParte = {
         vibracionInterna,
-        vibracionInternaPerWord,
         calculoAlma,
         almaPerWord,
         almaAlternative,
@@ -672,8 +741,8 @@ export function calcularEstructura(
         personalidadAlternative,
         personalidadTotal,
         calculoMision,
-        misionAlternative,
-        misionTotal,
+        misionEspeciales,
+        misionCombinaciones,
         deudasKarmicasNombre,
         planosExistenciales,
         wordsBreakdown: wordsWithType.map(wb => ({ ...wb, isNombre: (wb as any).isNombre })),

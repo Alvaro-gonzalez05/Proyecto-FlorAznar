@@ -490,58 +490,50 @@ export default function ResultadosPage() {
                         style={getCardStyle(0)}
                     >
                         <button
-                            onClick={(e) => { e.stopPropagation(); openExplanation('Vibración Interna', displayNum(data?.primeraParte?.vibracionInterna), explanations['vibracion_interna']); }}
+                            onClick={(e) => { e.stopPropagation(); openExplanation('Vibración Interna', 'Múltiples Nombres', explanations['vibracion_interna']); }}
                             className="absolute top-6 right-6 bg-white/50 hover:bg-white text-indigo-500 rounded-full p-2 transition-colors shadow-sm z-20 group"
                             title="Ver Significado Profundo"
                         >
                             <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                         </button>
                         <div className="absolute inset-0 sacred-geo-bg opacity-40"></div>
-                        <div className="relative z-10 text-center flex flex-col items-center justify-center">
+                        <div className="relative z-10 text-center flex flex-col items-center justify-center w-full">
                             <h3 className="text-sm font-extrabold uppercase tracking-widest mb-6 md:mb-10 text-slate-600">Vibración Interna</h3>
-                            <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mb-6 md:mb-8 flex items-center justify-center mx-auto scale-90 md:scale-100">
-                                <svg className="absolute inset-0 w-full h-full text-black-accent/10 animate-spin-slow" viewBox="0 0 100 100" style={{ animationDuration: '40s' }}>
-                                    <circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeWidth="0.25"></circle>
-                                    <circle cx="50" cy="50" fill="none" r="32" stroke="currentColor" strokeWidth="0.25"></circle>
-                                    <path d="M50 5 L50 95 M5 50 L95 50" stroke="currentColor" strokeWidth="0.25"></path>
-                                    <polygon fill="none" points="50,5 95,50 50,95 5,50" stroke="currentColor" strokeWidth="0.25"></polygon>
-                                </svg>
-                                <div className="flex flex-col items-center justify-center">
-                                    <span className="text-6xl sm:text-7xl md:text-8xl font-thin tracking-tighter text-black-accent relative">
-                                        {displayNum(data?.primeraParte?.vibracionInterna)}
-                                        {data?.primeraParte?.vibracionInterna?.isMaster && (
-                                            <span className="absolute -top-4 -right-4 text-amber-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} title="Posees un Número Maestro en tu Esencia Vital">auto_awesome</span>
-                                        )}
-                                        {data?.primeraParte?.vibracionInterna?.isKarmic && (
-                                            <span className="absolute -top-4 -right-4 text-rose-500/40 text-4xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} title="Posees un Número de Deuda Kármica en tu Esencia Vital">warning</span>
-                                        )}
-                                    </span>
-                                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500 mt-2">
-                                        {data?.primeraParte?.vibracionInterna?.isMaster ? 'Número Maestro' : data?.primeraParte?.vibracionInterna?.isKarmic ? 'Deuda Kármica' : 'Esencia Vital'}
-                                    </span>
-                                </div>
-                            </div>
-                            {/* Desglose por nombre de pila */}
-                            {(() => {
-                                const nombres = data?.primeraParte?.vibracionInternaPerWord?.filter((w: any) => w.isNombre) || [];
-                                if (nombres.length > 0) {
-                                    return (
-                                        <div className="flex items-center justify-center gap-2 flex-wrap mb-4">
-                                            {nombres.map((n: any, i: number) => (
-                                                <React.Fragment key={i}>
-                                                    {i > 0 && <span className="text-slate-400 font-light text-sm">+</span>}
-                                                    <span className="bg-white/60 px-3 py-1 rounded-xl text-xs font-semibold text-slate-700 border border-slate-200/50">
-                                                        {n.word} <span className="text-slate-500 font-light">{displayNumShort(n.reduction)}</span>
-                                                    </span>
-                                                </React.Fragment>
-                                            ))}
+                            
+                            {/* Nombres en paralelo */}
+                            <div className="flex flex-wrap items-start justify-center gap-8 md:gap-12 w-full mb-8">
+                                {(data?.primeraParte?.vibracionInterna || []).map((v: any, idx: number) => (
+                                    <div key={idx} className="flex flex-col items-center">
+                                        <div className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-2 truncate max-w-[120px]">
+                                            {v.word}
                                         </div>
-                                    );
-                                }
-                                return null;
-                            })()}
-                            <p className="text-dark-gray text-[10px] md:text-xs leading-relaxed max-w-xs mx-auto font-medium text-slate-500">
-                                Solo nombres de pila
+                                        <div className="relative flex flex-col items-center">
+                                            {/* Círculo decorativo pequeño detrás */}
+                                            <div className="absolute inset-0 scale-150 opacity-10">
+                                                <svg viewBox="0 0 100 100" className="w-full h-full text-indigo-500 animate-spin-slow">
+                                                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" />
+                                                </svg>
+                                            </div>
+                                            
+                                            <span className="text-2xl font-bold text-slate-400 mb-1">
+                                                {v.reduction?.sequence?.join('/') || v.reduction?.digit}
+                                            </span>
+                                            <span className="text-6xl md:text-7xl font-thin tracking-tighter text-black-accent relative">
+                                                {v.reduction?.digit}
+                                                {v.reduction?.isMaster && (
+                                                    <span className="absolute -top-2 -right-4 text-amber-500/40 text-2xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                )}
+                                                {v.reduction?.isKarmic && (
+                                                    <span className="absolute -top-2 -right-4 text-rose-500/40 text-2xl material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <p className="text-dark-gray text-[10px] md:text-xs leading-relaxed max-w-xs mx-auto font-medium text-slate-500 italic">
+                                Resultados individuales por nombre de pila
                             </p>
                         </div>
                     </div>
@@ -564,14 +556,13 @@ export default function ResultadosPage() {
                             <h4 className="text-[10px] font-black text-teal-900 uppercase tracking-widest">Misión</h4>
                         </div>
                         <div>
-                            <div className="flex items-baseline gap-2 flex-wrap mb-1">
+                            <div className="flex flex-col gap-1 mb-1">
                                 <span className="text-4xl lg:text-5xl font-light text-teal-950">{displayNum(data?.primeraParte?.calculoMision)}</span>
-                                {data?.primeraParte?.misionAlternative?.isKarmic && (
-                                    <span className="text-[10px] bg-red-100/50 text-red-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} KÁRMICO</span>
-                                )}
-                                {data?.primeraParte?.misionAlternative?.isMaster && (
-                                    <span className="text-[10px] bg-amber-100/50 text-amber-600 px-2 py-0.5 rounded-full font-bold">Alt: {displayNumShort(data?.primeraParte?.misionAlternative)} MAESTRO</span>
-                                )}
+                                {data?.primeraParte?.misionEspeciales?.map((esp: any, i: number) => (
+                                    <div key={i} className={`text-[10px] px-2 py-0.5 rounded-full font-bold w-fit ${esp.isMaster ? 'bg-amber-100/50 text-amber-600' : 'bg-red-100/50 text-red-600'}`}>
+                                        También: {displayNumShort(esp)} {esp.isMaster ? 'MAESTRO' : 'KÁRMICO'}
+                                    </div>
+                                ))}
                             </div>
                             <p className="text-xs text-teal-900/70 font-semibold leading-snug">Propósito central.</p>
                         </div>

@@ -21,14 +21,13 @@ function buildSectionData(title: string, storedResult: any): any {
 
     // Vibración Interna — include per-word breakdown
     if (titleLower.includes('vibración interna') || titleLower.includes('vibracion interna')) {
-        const perWord = pp.vibracionInternaPerWord?.filter((w: any) => w.isNombre) || [];
+        const viArray = pp.vibracionInterna || [];
         return {
-            total: pp.vibracionInterna?.label,
-            desglosePorNombre: perWord.map((w: any) => ({
-                nombre: w.word,
-                valor: w.reduction?.label || w.reduction?.sequence?.join('/'),
+            individuales: viArray.map((v: any) => ({
+                nombre: v.word,
+                valor: v.reduction?.label || v.reduction?.sequence?.join('/') || v.reduction?.digit,
             })),
-            nota: 'Solo se usan nombres de pila, no apellidos',
+            nota: 'Si hay varios nombres, se analizan por separado. No se suma un total.',
         };
     }
 
@@ -62,9 +61,10 @@ function buildSectionData(title: string, storedResult: any): any {
     if (titleLower.includes('misión') || titleLower.includes('mision')) {
         return {
             total: pp.calculoMision?.label,
+            especiales: pp.misionEspeciales?.map((m: any) => m.label),
             alma: pp.calculoAlma?.label,
             personalidad: pp.calculoPersonalidad?.label,
-            formula: `${pp.almaTotal} + ${pp.personalidadTotal} = ${pp.misionTotal}`,
+            nota: 'Se analizan todas las combinaciones de sumas horizontales buscando maestros y kármicos.'
         };
     }
 
@@ -287,8 +287,8 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
                         const alma = pp?.calculoAlma?.label || '';
                         const mision = pp?.calculoMision?.label || '';
                         const pers = pp?.calculoPersonalidad?.label || '';
-                        const vi = pp?.vibracionInterna?.label || '';
-                        contextStr = `Camino de Vida: ${cdv}, Alma: ${alma}, Personalidad: ${pers}, Misión: ${mision}, Vibración Interna: ${vi}`;
+                        const viLabels = pp?.vibracionInterna?.map((v: any) => `${v.word}=${v.reduction?.label || v.reduction?.digit}`).join(', ') || '';
+                        contextStr = `Camino de Vida: ${cdv}, Alma: ${alma}, Personalidad: ${pers}, Misión: ${mision}, Vibraciones Internas: ${viLabels}`;
                         nombre = d.nombreCompleto || '';
                         sectionData = buildSectionData(title, d);
                     }

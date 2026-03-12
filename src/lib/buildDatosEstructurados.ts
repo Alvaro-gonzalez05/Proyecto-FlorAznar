@@ -25,14 +25,10 @@ FECHA: ${data.fechaNacimiento}
 
 VIBRACIÓN INTERNA:
 `;
-
-    // Per-word vibration (ONLY for first names, do not confuse AI with surnames here)
-    if (p?.vibracionInternaPerWord) {
-        p.vibracionInternaPerWord
-            .filter((v: any) => v.isNombre)
-            .forEach((v: any) => {
-                text += `- ${v.word}: ${dn(v.reduction)} (letras: ${v.letters?.map((l: any) => `${l.letter}=${l.value}`).join(', ')})\n`;
-            });
+    if (p?.vibracionInterna) {
+        p.vibracionInterna.forEach((v: any) => {
+            text += `- ${v.word}: ${dn(v.reduction)}\n`;
+        });
     }
 
     text += `
@@ -49,8 +45,10 @@ NÚMERO DE PERSONALIDAD: ${dn(p?.calculoPersonalidad)}`;
 
     text += `
 NÚMERO DE MISIÓN: ${dn(p?.calculoMision)}`;
-    if (p?.misionAlternative?.isKarmic || p?.misionAlternative?.isMaster) {
-        text += ` (alternativa: ${dn(p?.misionAlternative)})`;
+    if (p?.misionEspeciales && p.misionEspeciales.length > 0) {
+        p.misionEspeciales.forEach((m: any) => {
+            text += ` (también se detecta: ${dn(m)})`;
+        });
     }
 
     text += `
