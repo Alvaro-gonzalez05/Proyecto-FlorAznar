@@ -303,8 +303,9 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const anos30: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const hab = habitantes[casa] || 0;
-        if (hab >= 1 && hab <= 9) {
-            anos30[casa] = habitantes[hab] || 0;
+        const casaSiguiente = reducirANumeros(hab).digit;
+        if (casaSiguiente >= 1 && casaSiguiente <= 9) {
+            anos30[casa] = habitantes[casaSiguiente] || 0;
         } else {
             anos30[casa] = 0;
         }
@@ -314,8 +315,9 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const anos58: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const val30 = anos30[casa] || 0;
-        if (val30 >= 1 && val30 <= 9) {
-            anos58[casa] = habitantes[val30] || 0;
+        const casaSiguiente = reducirANumeros(val30).digit;
+        if (casaSiguiente >= 1 && casaSiguiente <= 9) {
+            anos58[casa] = habitantes[casaSiguiente] || 0;
         } else {
             anos58[casa] = 0;
         }
@@ -325,8 +327,9 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const anos87: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const val58 = anos58[casa] || 0;
-        if (val58 >= 1 && val58 <= 9) {
-            anos87[casa] = habitantes[val58] || 0;
+        const casaSiguiente = reducirANumeros(val58).digit;
+        if (casaSiguiente >= 1 && casaSiguiente <= 9) {
+            anos87[casa] = habitantes[casaSiguiente] || 0;
         } else {
             anos87[casa] = 0;
         }
@@ -349,23 +352,26 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
         puenteIniciatico[casa] = Math.abs((habitantes[casa] || 0) - casa);
     }
     
-    // Puente de Evolución: contar cuántas veces se repite el habitante más frecuente, sumar esas casas
-    const habitanteFrequency: Record<number, number[]> = {};
+    // Puente de Evolución: habitante más frecuente + (frecuencia - 1), 0 cuenta como 1
+    const frecuenciasEvolucion: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
-        const h = habitantes[casa] || 0;
-        if (!habitanteFrequency[h]) habitanteFrequency[h] = [];
-        habitanteFrequency[h].push(casa);
+        let hab = habitantes[casa] || 0;
+        if (hab === 0) hab = 1; // 0 siempre vale 1 para esta regla
+        frecuenciasEvolucion[hab] = (frecuenciasEvolucion[hab] || 0) + 1;
     }
     
     let maxFreq = 0;
-    let sumaEvolucion = 0;
-    for (const [hab, casas] of Object.entries(habitanteFrequency)) {
-        if (casas.length > maxFreq) {
-            maxFreq = casas.length;
-            sumaEvolucion = casas.reduce((sum, c) => sum + c, 0);
+    let maxHabitante = 0;
+    for (const [habStr, freq] of Object.entries(frecuenciasEvolucion)) {
+        const habVal = parseInt(habStr, 10);
+        if (freq > maxFreq) {
+            maxFreq = freq;
+            maxHabitante = habVal;
         }
     }
-    const puenteDeEvolucion = reducirANumeros(sumaEvolucion);
+    
+    const resultadoEvolucion = maxHabitante + (maxFreq > 0 ? maxFreq - 1 : 0);
+    const puenteDeEvolucion = reducirANumeros(resultadoEvolucion);
     
     return {
         habitantes,
@@ -788,17 +794,19 @@ export function calcularEstructura(
         const herenciaFamiliar = reducirANumeros(herenciaFamiliarSuma);
 
         // Evolución Familiar: cantidad de letras del nombre completo → buscar habitante de esa casa → sumar ambos
-        const cantLetras = totalesNombre.letterCount;
+        const cantLetras = nombreCompleto.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ]/g, '').length;
         const cantLetrasReduced = reducirANumeros(cantLetras).digit;
         const habitanteDeCasa = (cantLetrasReduced >= 1 && cantLetrasReduced <= 9) ? (hab[cantLetrasReduced] || 0) : 0;
-        const evolucionFamiliar = reducirANumeros(cantLetras + habitanteDeCasa);
+        const evolFamRaw = cantLetras + habitanteDeCasa;
+        const evolucionFamiliar = reducirANumeros(evolFamRaw);
 
         // Campo de Expresión Profesional: cantidad de letras + suma de casas 6+7+8+9
         const sumaCasas6a9 = (hab[6] || 0) + (hab[7] || 0) + (hab[8] || 0) + (hab[9] || 0);
-        const campoDeExpresion = reducirANumeros(cantLetras + sumaCasas6a9);
+        const campoExpRaw = cantLetras + sumaCasas6a9;
+        const campoDeExpresion = reducirANumeros(campoExpRaw);
 
         // Potencial Evolutivo = Evolución Familiar + Campo de Expresión Profesional
-        const potencialEvolutivo = reducirANumeros(evolucionFamiliar.digit + campoDeExpresion.digit);
+        const potencialEvolutivo = reducirANumeros(evolFamRaw + campoExpRaw);
 
         segundaParte = {
             habitantes: hab,
