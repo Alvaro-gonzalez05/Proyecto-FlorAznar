@@ -7,6 +7,7 @@ import AiExplanationModal from '../components/AiExplanationModal';
 import { buildDatosEstructurados } from '../../lib/buildDatosEstructurados';
 import DiamanteCiclos from './DiamanteCiclos';
 import EditableReportModal from '../components/EditableReportModal';
+import { reducirANumeros } from '../../lib/numerology';
 
 type NumerologyResult = any;
 
@@ -36,8 +37,13 @@ const HABITANTES_INFO: Record<number, string> = {
 };
 
 /** Helper to display a numerology number, showing full chain */
-function displayNum(n: { digit: number; sequence?: number[]; isMaster: boolean; isKarmic: boolean; masterValue?: number; karmicValue?: number; label?: string } | undefined): string {
-    if (!n) return '-';
+function displayNum(n: any): string {
+    if (n === null || n === undefined || n === '') return '-';
+    if (typeof n === 'number' || typeof n === 'string') {
+        const parsed = Number(n);
+        if (!isNaN(parsed)) n = reducirANumeros(parsed);
+    }
+    if (!n || typeof n !== 'object') return String(n);
     if (n.label) return n.label;
     if (n.sequence && n.sequence.length > 1) {
         let lbl = n.sequence.join('/');
@@ -47,7 +53,7 @@ function displayNum(n: { digit: number; sequence?: number[]; isMaster: boolean; 
     }
     if (n.isMaster) return `${n.masterValue}/${n.digit} MAESTRO`;
     if (n.isKarmic) return `${n.karmicValue}/${n.digit} KÁRMICO`;
-    return String(n.digit);
+    return String(n.digit ?? n);
 }
 
 function displayNumShort(n: any): string {
@@ -1200,6 +1206,7 @@ export default function ResultadosPage() {
                                         <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 87</th>
                                         <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Ind. Inconsc.</th>
                                         <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">P. Iniciático</th>
+                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">P. Evolución</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1211,12 +1218,13 @@ export default function ResultadosPage() {
                                             <tr key={casa} className="hover:bg-slate-50 transition-colors">
                                                 <td className="p-2 text-center font-bold border border-slate-200">{casa}</td>
                                                 <td className="p-2 text-[9px] text-slate-500 border border-slate-200" title={info?.temas}>{info?.nombre}</td>
-                                                <td className={`p-2 text-center font-bold border border-slate-200 ${hab === 0 ? 'bg-red-50 text-red-600' : ''}`} title={HABITANTES_INFO[hab as number] || ''}>{hab}</td>
-                                                <td className="p-2 text-center border border-slate-200">{casas?.anos30?.[casa] ?? '-'}</td>
-                                                <td className="p-2 text-center border border-slate-200">{casas?.anos58?.[casa] ?? '-'}</td>
-                                                <td className="p-2 text-center border border-slate-200">{casas?.anos87?.[casa] ?? '-'}</td>
-                                                <td className="p-2 text-center border border-slate-200">{casas?.induccionInconsciente?.[casa] ?? '-'}</td>
-                                                <td className="p-2 text-center border border-slate-200">{casas?.puenteIniciatico?.[casa] ?? '-'}</td>
+                                                <td className={`p-2 text-center font-bold border border-slate-200 ${hab === 0 ? 'bg-red-50 text-red-600' : ''}`} title={HABITANTES_INFO[hab as number] || ''}>{displayNum(hab)}</td>
+                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos30?.[casa])}</td>
+                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos58?.[casa])}</td>
+                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos87?.[casa])}</td>
+                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.induccionInconsciente?.[casa])}</td>
+                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.puenteIniciatico?.[casa])}</td>
+                                                <td className="p-2 text-center border border-slate-200 font-bold text-indigo-700">{displayNum(casas?.propuestaEvolucion?.[casa])}</td>
                                             </tr>
                                         );
                                     })}

@@ -223,12 +223,12 @@ export default function NuevaConsultaPage() {
             // 8.1 Call the Gemini API to pre-calculate explanations based on the result
             // Build rich descriptors with breakdowns for detailed AI analysis
             const pp = result.primeraParte;
-            
+
             // Vibración Interna with per-name breakdown (NUEVO: no hay total, solo desgloses)
             const viArray = pp?.vibracionInterna || [];
             const viDesgloseArr = viArray.map((v: any) => `${v.word} = ${formatGeminiNumber(v.reduction)}`);
             const viStr = `Se analizan los nombres de pila de forma individual: ${viDesgloseArr.join(' | ')}. Explica qué significa cada uno por separado como motor de vida interna. NO existe un total sumado.`;
-            
+
             // Alma with per-word vowel breakdown
             const almaPerWord = pp?.almaPerWord?.map((a: any) => {
                 const letras = a.vowelLetters?.map((l: any) => `${l.letter}=${l.value}`).join(', ') || '';
@@ -245,7 +245,7 @@ export default function NuevaConsultaPage() {
 
             // Misión with ALL combinations (NUEVO)
             const misionEspecialesStr = pp?.misionEspeciales?.length > 0
-                ? `. Además, se detectan estas combinaciones especiales de maestros o kármicos: ${pp.misionEspeciales.map((m:any) => formatGeminiNumber(m)).join(', ')}`
+                ? `. Además, se detectan estas combinaciones especiales de maestros o kármicos: ${pp.misionEspeciales.map((m: any) => formatGeminiNumber(m)).join(', ')}`
                 : '';
             const misionStr = `${formatGeminiNumber(pp?.calculoMision)}${misionEspecialesStr}. Explica el propósito central y las potencias o retos adicionales encontrados en las combinaciones horizontales.`;
 
@@ -254,7 +254,7 @@ export default function NuevaConsultaPage() {
             const cdvStr = `${formatGeminiNumber(fn?.caminoDeVida)}${fn?.caminoDeVidaAlternative ? ` (Alternativa: ${formatGeminiNumber(fn.caminoDeVidaAlternative)})` : ''}. Componentes: Día ${fn?.dia} (=${formatGeminiNumber(fn?.diaReduction)}), Mes ${fn?.mes} (=${formatGeminiNumber(fn?.mesReduction)}), Año ${fn?.anio} (=${formatGeminiNumber(fn?.anioReduction)}). Explica cada componente de la fecha y cómo forman el Camino de Vida.`;
 
             const karmicLettersObj = result.primeraParte?.deudasKarmicasNombre || {};
-            const conteoStr = [1,2,3,4,5,6,7,8,9].map(n => `Nº${n}=${karmicLettersObj[n] || 0}`).join(', ');
+            const conteoStr = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `Nº${n}=${karmicLettersObj[n] || 0}`).join(', ');
             const faltantes = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => (karmicLettersObj[n] || 0) === 0).join(', ') || 'Ninguna';
             const faltantesStr = `Números faltantes: ${faltantes}. Conteo completo: ${conteoStr}. Explica qué significa la ausencia de CADA número faltante como lección kármica.`;
 
@@ -284,7 +284,10 @@ export default function NuevaConsultaPage() {
                     sistema_familiar_evolucion: formatGeminiNumber(result.segundaParte.evolucionFamiliar),
                     sistema_familiar_expresion: formatGeminiNumber(result.segundaParte.campoDeExpresion),
                     sistema_familiar_potencial: formatGeminiNumber(result.segundaParte.potencialEvolutivo),
-                })
+                }),
+                ...(pp?.casas && {
+                    casas_9: `Habitantes principales por casa: C1=${pp.casas.habitantes[1] || 0}, C2=${pp.casas.habitantes[2] || 0}, C3=${pp.casas.habitantes[3] || 0}, C4=${pp.casas.habitantes[4] || 0}, C5=${pp.casas.habitantes[5] || 0}, C6=${pp.casas.habitantes[6] || 0}, C7=${pp.casas.habitantes[7] || 0}, C8=${pp.casas.habitantes[8] || 0}, C9=${pp.casas.habitantes[9] || 0}. Puente de Evolución Global = ${formatGeminiNumber(pp.casas.puenteDeEvolucion)}. Explica brevemente el panorama general de esta distribución de habitantes en su vida y el potencial o lección de su puente de evolución global.`,
+                }),
             };
 
             // Iterar sobre los linajes dinámicamente y agregarlos al payload JSON

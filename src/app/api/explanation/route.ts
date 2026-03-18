@@ -43,6 +43,7 @@ export async function POST(request: Request) {
             'inconsciente': 'Número del Inconsciente (4to ciclo + camino de vida)',
             'ciclo_actual': 'Ciclo de Realización Actual (etapa vital actual)',
             'ciclos_desafios': 'Mapa del Diamante (Análisis en conjunto de los 4 Ciclos de Realización y los 4 Desafíos)',
+            'casas_9': 'Cuadro de las 9 Casas (panorama general de los habitantes y puente de evolución global)',
             'sistema_familiar_herencia': 'Sistema Familiar - Herencia Familiar',
             'sistema_familiar_evolucion': 'Sistema Familiar - Evolución Familiar',
             'sistema_familiar_expresion': 'Sistema Familiar - Campo de Expresión',
