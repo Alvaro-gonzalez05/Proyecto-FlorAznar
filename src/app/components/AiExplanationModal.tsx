@@ -9,6 +9,8 @@ interface ExplanationModalProps {
     title: string;
     num: string | number;
     precalculatedText?: string;
+    isLoading?: boolean;
+    onRegenerate?: () => void;
 }
 
 /** Build rich section data from the full numerology result for detailed AI analysis */
@@ -245,18 +247,13 @@ function buildSectionData(title: string, storedResult: any): any {
     return null;
 }
 
-export default function AiExplanationModal({ isOpen, onClose, title, num, precalculatedText }: ExplanationModalProps) {
+export default function AiExplanationModal({ isOpen, onClose, title, num, precalculatedText, isLoading, onRegenerate }: ExplanationModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const [generatedText, setGeneratedText] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!isOpen) return;
-
-        setGeneratedText(null);
-        setLoading(false);
 
         // Animation in
         gsap.set(overlayRef.current, { autoAlpha: 0 });
@@ -266,55 +263,7 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
         tl.to(overlayRef.current, { autoAlpha: 1, duration: 0.3, ease: 'power2.out' })
             .to(modalRef.current, { y: 0, scale: 1, autoAlpha: 1, duration: 0.4, ease: 'back.out(1.5)' }, '-=0.1');
 
-        // If no precalculated text, fetch from AI on demand
-        if (!precalculatedText && title && num) {
-            const cacheKey = `ai_section_${title}_${num}`;
-            const cached = sessionStorage.getItem(cacheKey);
-            if (cached) {
-                setGeneratedText(cached);
-            } else {
-                setLoading(true);
-                // Get full context from sessionStorage
-                let contextStr = '';
-                let nombre = '';
-                let sectionData: any = null;
-                try {
-                    const storedResult = sessionStorage.getItem('numerologyResult');
-                    if (storedResult) {
-                        const d = JSON.parse(storedResult);
-                        const pp = d.primeraParte;
-                        const cdv = pp?.fechaNacimiento?.caminoDeVida?.label || '';
-                        const alma = pp?.calculoAlma?.label || '';
-                        const mision = pp?.calculoMision?.label || '';
-                        const pers = pp?.calculoPersonalidad?.label || '';
-                        const viLabels = pp?.vibracionInterna?.map((v: any) => `${v.word}=${v.reduction?.label || v.reduction?.digit}`).join(', ') || '';
-                        contextStr = `Camino de Vida: ${cdv}, Alma: ${alma}, Personalidad: ${pers}, Misión: ${mision}, Vibraciones Internas: ${viLabels}`;
-                        nombre = d.nombreCompleto || '';
-                        sectionData = buildSectionData(title, d);
-                    }
-                } catch { /* ignore */ }
-
-                fetch('/api/explain', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ section: title, value: String(num), context: contextStr, nombre, sectionData })
-                })
-                    .then(res => res.json())
-                    .then(result => {
-                        if (result.explanation) {
-                            setGeneratedText(result.explanation);
-                            sessionStorage.setItem(cacheKey, result.explanation);
-                        } else {
-                            setGeneratedText('No se pudo generar la explicación. Intenta de nuevo.');
-                        }
-                    })
-                    .catch(() => {
-                        setGeneratedText('Error de conexión al generar la explicación.');
-                    })
-                    .finally(() => setLoading(false));
-            }
-        }
-    }, [isOpen, title, num, precalculatedText]);
+    }, [isOpen]);
 
     const handleClose = () => {
         const tl = gsap.timeline({ onComplete: onClose });
@@ -325,7 +274,7 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
     if (!isOpen) return null;
 
     // Ensure displayText is always a string (Gemini may return objects/nested data)
-    const rawText = precalculatedText || generatedText;
+    const rawText = precalculatedText;
     const displayText = (() => {
         if (!rawText) return null;
         if (typeof rawText === 'string') return rawText;
@@ -371,12 +320,24 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
                             </h2>
                         </div>
                     </div>
-                    <button
-                        onClick={handleClose}
-                        className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-[20px]">close</span>
-                    </button>
+                    <div className="flex gap-2">
+                        {onRegenerate && (
+                            <button
+                                onClick={onRegenerate}
+                                disabled={isLoading}
+                                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-indigo-500 hover:bg-slate-100 transition-colors disabled:opacity-50"
+                                title="Regenerar explicación con IA"
+                            >
+                                <span className={`material-symbols-outlined text-[20px] ${isLoading ? 'animate-spin' : ''}`}>sync</span>
+                            </button>
+                        )}
+                        <button
+                            onClick={handleClose}
+                            className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content area */}
@@ -384,9 +345,9 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
                     ref={contentRef}
                     className="flex-1 overflow-y-auto pr-2 custom-scrollbar styling-text relative"
                 >
-                    {loading ? (
-                        <div className="py-12 text-center text-slate-400 font-medium">
-                            <span className="material-symbols-outlined text-4xl mb-3 animate-spin-slow opacity-60">auto_awesome</span>
+                    {isLoading ? (
+                        <div className="py-12 text-center text-slate-400 font-medium flex flex-col items-center">
+                            <span className="material-symbols-outlined text-4xl mb-4 animate-spin-slow opacity-60 text-indigo-500">sync</span>
                             <p className="text-sm">Generando análisis detallado con IA...</p>
                         </div>
                     ) : !displayText ? (

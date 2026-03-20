@@ -26,10 +26,11 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
 
     // Navigation items
     const navItems = [
-        { href: '/', icon: 'grid_view' },
-        { href: '/historial', icon: 'history' },
-        { href: '/agenda', icon: 'calendar_month' },
-        { href: '/nueva-consulta', icon: 'add' },
+        { href: '/', icon: 'grid_view', label: 'Inicio' },
+        { href: '/historial', icon: 'history', label: 'Historial' },
+        { href: '/agenda', icon: 'calendar_month', label: 'Agenda' },
+        { href: '/nueva-consulta', icon: 'add', label: 'Nueva Consulta' },
+        { href: '/prompts', icon: 'auto_awesome', label: 'Prompts IA' },
     ];
 
     useEffect(() => {
@@ -109,14 +110,15 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                     {navItems.map((item, index) => {
                         const isActive = activePath === item.href;
                         return (
-                            <TransitionLink
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setActivePath(item.href)}
-                                className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-colors relative z-10 ${isActive ? 'text-white' : 'text-slate-400 hover:text-black-accent'}`}
-                            >
-                                <span className="material-symbols-outlined">{item.icon}</span>
-                            </TransitionLink>
+                            <div key={item.href} title={item.label}>
+                                <TransitionLink
+                                    href={item.href}
+                                    onClick={() => setActivePath(item.href)}
+                                    className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-colors relative z-10 group ${isActive ? 'text-white' : 'text-slate-400 hover:text-black-accent'}`}
+                                >
+                                    <span className="material-symbols-outlined">{item.icon}</span>
+                                </TransitionLink>
+                            </div>
                         );
                     })}
                 </nav>

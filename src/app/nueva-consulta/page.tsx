@@ -307,48 +307,19 @@ export default function NuevaConsultaPage() {
             let resumenCliente = '';
 
             try {
-                const [aiRes, analistaRes, clienteRes] = await Promise.all([
-                    fetch('/api/explanation', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cleanPayload),
-                    }),
-                    fetch('/api/full-report', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'analista', dataStr: JSON.stringify(result) })
-                    }),
-                    fetch('/api/full-report', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'cliente', dataStr: JSON.stringify(result) })
-                    })
-                ]);
+                // Generaciones diferidas (no se hacen en la carga inicial para ahorrar tiempo)
+                // Solo inicializamos el estado o los defaults.
+                aiDataResult.resumen_analista = "";
+                aiDataResult.resumen_cliente = "";
 
-                if (aiRes.ok) {
-                    const aiData = await aiRes.json();
-                    aiDataResult = aiData.explanations || {};
-                }
-
-                if (analistaRes.ok) {
-                    const data = await analistaRes.json();
-                    resumenAnalista = data.summary || '';
-                }
-
-                if (clienteRes.ok) {
-                    const data = await clienteRes.json();
-                    resumenCliente = data.summary || '';
-                }
-
-                aiDataResult.resumen_analista = resumenAnalista;
-                aiDataResult.resumen_cliente = resumenCliente;
-
+                // Guardamos el payload de la métrica por carta para usarlo en la página de resultados
+                sessionStorage.setItem('aiMetricsPayload', JSON.stringify(cleanPayload));
                 sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
                 sessionStorage.setItem('resumenAnalista', resumenAnalista);
                 sessionStorage.setItem('clientReportEdited', resumenCliente);
 
             } catch (err) {
-                console.error("Gemini pre-fetch network error", err);
+                console.error("Gemini context setup error", err);
                 sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
             }
 

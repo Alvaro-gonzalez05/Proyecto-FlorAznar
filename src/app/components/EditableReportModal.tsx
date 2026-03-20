@@ -7,9 +7,11 @@ interface EditableReportModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialText: string;
+    onRegenerate?: () => void;
+    isLoading?: boolean;
 }
 
-export default function EditableReportModal({ isOpen, onClose, initialText }: EditableReportModalProps) {
+export default function EditableReportModal({ isOpen, onClose, initialText, onRegenerate, isLoading }: EditableReportModalProps) {
     const [text, setText] = useState(initialText);
 
     useEffect(() => {
@@ -84,6 +86,16 @@ export default function EditableReportModal({ isOpen, onClose, initialText }: Ed
                         </div>
                     </div>
                     <div className="flex gap-4">
+                        {onRegenerate && (
+                            <button
+                                onClick={onRegenerate}
+                                disabled={isLoading}
+                                className="bg-purple-100 hover:bg-purple-200 text-purple-600 p-2 md:px-6 md:py-2 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+                            >
+                                <span className={`material-symbols-outlined text-sm hidden md:block ${isLoading ? 'animate-spin' : ''}`}>sync</span>
+                                {isLoading ? 'Generando...' : 'Regenerar'}
+                            </button>
+                        )}
                         <button
                             onClick={handleCopy}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 md:px-6 md:py-2 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all shadow-md flex items-center gap-2"
@@ -101,11 +113,20 @@ export default function EditableReportModal({ isOpen, onClose, initialText }: Ed
                 </div>
 
                 {/* Body */}
-                <div className="flex-1 overflow-hidden p-6 bg-slate-50">
+                <div className="flex-1 overflow-hidden p-6 bg-slate-50 relative">
+                    {isLoading && (
+                        <div className="absolute inset-0 z-10 bg-white/50 backdrop-blur-sm flex items-center justify-center">
+                            <div className="flex flex-col items-center">
+                                <span className="material-symbols-outlined text-4xl mb-4 animate-spin-slow opacity-60 text-purple-500">sync</span>
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Generando nuevo reporte...</p>
+                            </div>
+                        </div>
+                    )}
                     <textarea
                         value={text}
                         onChange={(e) => setText(e.target.value)}
-                        className="w-full h-full bg-white border border-slate-200 rounded-2xl p-6 text-slate-700 text-[15px] leading-relaxed focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-shadow shadow-sm resize-none custom-scrollbar"
+                        disabled={isLoading}
+                        className="w-full h-full bg-white border border-slate-200 rounded-2xl p-6 text-slate-700 text-[15px] leading-relaxed focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-shadow shadow-sm resize-none custom-scrollbar disabled:opacity-50"
                     />
                 </div>
             </div>

@@ -81,19 +81,146 @@ export default function ResultadosPage() {
     const [clienteLoading, setClienteLoading] = useState(false);
     const [clienteModalOpen, setClienteModalOpen] = useState(false);
     const [clienteReportText, setClienteReportText] = useState('');
-    const [explanationState, setExplanationState] = useState<{ isOpen: boolean, title: string, num: string | number, text?: string }>({
+    const [explanationState, setExplanationState] = useState<{ isOpen: boolean, title: string, num: string | number, text?: string, metricKey?: string, isLoading?: boolean }>({
         isOpen: false,
         title: '',
         num: '',
-        text: undefined
+        text: undefined,
+        metricKey: undefined,
+        isLoading: false
     });
 
-    const openExplanation = (title: string, num: string | number, text?: string) => {
-        setExplanationState({ isOpen: true, title, num, text });
+    const getMetricKeyFromTitle = (title: string, fallbackText?: string): string => {
+        // Reverse mapping or hints from title
+        const map: Record<string, string> = {
+            'Vibración Interna': 'vibracion_interna',
+            'Misión': 'mision',
+            'Alma': 'alma',
+            'Personalidad': 'personalidad',
+            'Camino de Vida / Día de Nacimiento': 'camino_de_vida',
+            'Número de Fuerza': 'fuerza',
+            'Número de Sombra': 'sombra',
+            'Conteo de Letras / Deudas Kármicas': 'letras_faltantes',
+            'Subconsciente I': 'subconsciente_i',
+            'Subconsciente O': 'subconsciente_o',
+            'Inconsciente': 'inconsciente',
+            'Día (Don/Talento)': 'talento',
+            'Mes (Karma/Tensión)': 'karma_mes',
+            'Año (Memoria de Vida Pasada)': 'pasado',
+            'Ciclo de Vida Actual': 'ciclo_actual',
+            'Análisis de Ciclos y Desafíos': 'ciclos_desafios',
+            'Cuadro de las 9 Casas': 'casas_9',
+            'Herencia Familiar': 'sistema_familiar_herencia',
+            'Evolución Familiar': 'sistema_familiar_evolucion',
+            'Expresión Profesional': 'sistema_familiar_expresion',
+            'Potencial Evolutivo': 'sistema_familiar_potencial',
+            'Año Personal': 'anio_personal',
+            'Mes Personal': 'mes_personal'
+        };
+        for (const [k, v] of Object.entries(map)) {
+            if (title.includes(k)) return v;
+        }
+        // Hack: if we can't find it, we might check if 'fallbackText' has something unique or we return the title
+        return title; 
+    };
+
+    const openExplanation = async (title: string, num: string | number, text?: string, forceRegenerate = false) => {
+        if (num === 'Atención') {
+            setExplanationState({ isOpen: true, title, num, text });
+            return;
+        }
+        
+        let metricKey = getMetricKeyFromTitle(title);
+
+        if (!forceRegenerate && explanations[metricKey]) {
+            setExplanationState({ isOpen: true, title, num, text: explanations[metricKey], metricKey });
+            return;
+        }
+
+        // If text was explicitly provided (and we aren't regenerating), just show it
+        if (!forceRegenerate && text && text !== '') {
+            setExplanationState({ isOpen: true, title, num, text, metricKey });
+            return;
+        }
+
+        setExplanationState({ isOpen: true, title, num, isLoading: true, metricKey });
+
+        try {
+            const storedPayload = sessionStorage.getItem('aiMetricsPayload');
+            const payloadObj = storedPayload ? JSON.parse(storedPayload) : {};
+            let numValue = payloadObj[metricKey];
+            
+            if (!numValue || numValue === '') numValue = num;
+
+            // Special handling for full reports that need the entire dataset
+            if (metricKey === 'resumen_analista' || title === 'Resumen Analista IA') {
+                const dataStr = sessionStorage.getItem('numerologyResult');
+                const res = await fetch('/api/full-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'analista', dataStr })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    sessionStorage.setItem('resumenAnalista', data.summary);
+                    setExplanationState({ isOpen: true, title, num, text: data.summary, metricKey });
+                } else {
+                    setExplanationState({ isOpen: true, title, num, text: 'Error al generar la explicación.', metricKey });
+                }
+                return;
+            }
+
+            // Normal single card explanations
+            const res = await fetch('/api/explanation/single', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: metricKey, numValue }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                
+                setExplanations(prev => {
+                    const newExps = { ...prev, [metricKey]: data.explanation };
+                    sessionStorage.setItem('geminiExplanations', JSON.stringify(newExps));
+                    return newExps;
+                });
+                
+                setExplanationState({ isOpen: true, title, num, text: data.explanation, metricKey });
+            } else {
+                setExplanationState({ isOpen: true, title, num, text: 'Error al generar la explicación.', metricKey });
+            }
+        } catch (e) {
+            setExplanationState({ isOpen: true, title, num, text: 'No se pudo conectar.', metricKey });
+        }
     };
 
     const closeExplanation = () => {
         setExplanationState(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const handleRegenerateCliente = async () => {
+        setClienteLoading(true);
+        try {
+            const dataStr = sessionStorage.getItem('numerologyResult');
+            const res = await fetch('/api/full-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'cliente', dataStr })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                sessionStorage.setItem('clientReportEdited', data.summary);
+                setClienteReportText(data.summary);
+            } else {
+                alert('Ocurrió un error al regenerar el reporte de cliente.');
+            }
+        } catch(e) {
+            alert('Error al conectar para regenerar el reporte de cliente.');
+        } finally {
+            setClienteLoading(false);
+        }
     };
 
     // Total de cartas estático, mostramos Sistema Familiar aunque caiga en fallback
@@ -434,19 +561,17 @@ export default function ResultadosPage() {
                         </div>
                         <button
                             onClick={() => {
-                                const storedAnalista = sessionStorage.getItem('resumenAnalista');
+                                let val = sessionStorage.getItem('resumenAnalista');
                                 const storedGlobal = sessionStorage.getItem('geminiExplanations');
-                                let val = storedAnalista;
                                 if (!val && storedGlobal) {
                                     try {
-                                        const global = JSON.parse(storedGlobal);
-                                        val = global.resumen_analista;
+                                        val = JSON.parse(storedGlobal).resumen_analista;
                                     } catch {}
                                 }
                                 if (val) {
                                     openExplanation('Resumen Analista IA', 'Uso Profesional', val);
                                 } else {
-                                    openExplanation('Resumen Analista IA', 'Atención', 'Aún no se ha generado el reporte analista de forma automática. Por favor intenta volver a realizar la consulta inicial.');
+                                    openExplanation('Resumen Analista IA', 'Uso Profesional'); // will trigger generic loading & /api/full-report fetch
                                 }
                             }}
                             className={`bg-indigo-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase flex items-center gap-2 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group`}
@@ -456,27 +581,49 @@ export default function ResultadosPage() {
                             <span className="material-symbols-outlined text-sm md:text-base group-hover:rotate-12 transition-transform">psychology</span>
                         </button>
                         <button
-                            onClick={() => {
+                            onClick={async () => {
                                 let val = clienteReportText || sessionStorage.getItem('clientReportEdited');
                                 const storedGlobal = sessionStorage.getItem('geminiExplanations');
                                 if (!val && storedGlobal) {
                                     try {
-                                        const global = JSON.parse(storedGlobal);
-                                        val = global.resumen_cliente;
+                                        val = JSON.parse(storedGlobal).resumen_cliente;
                                     } catch {}
                                 }
                                 if (val) {
                                     if (!clienteReportText) setClienteReportText(val);
                                     setClienteModalOpen(true);
                                 } else {
-                                    openExplanation('Reporte Cliente', 'Atención', 'Aún no se ha generado el reporte de cliente de forma automática. Por favor intenta volver a realizar la consulta inicial.');
+                                    // Generate client report on the fly 
+                                    setClienteLoading(true);
+                                    try {
+                                        const dataStr = sessionStorage.getItem('numerologyResult');
+                                        const res = await fetch('/api/full-report', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ type: 'cliente', dataStr })
+                                        });
+                                        if (res.ok) {
+                                            const data = await res.json();
+                                            sessionStorage.setItem('clientReportEdited', data.summary);
+                                            setClienteReportText(data.summary);
+                                            setClienteModalOpen(true);
+                                        } else {
+                                            alert('Ocurrió un error al procesar el reporte de cliente.');
+                                        }
+                                    } catch(e) {
+                                        alert('Error al conectar para generar el reporte de cliente.');
+                                    } finally {
+                                        setClienteLoading(false);
+                                    }
                                 }
                             }}
-                            className={`bg-purple-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase flex items-center gap-2 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group`}
+                            className={`bg-purple-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-full font-bold text-[10px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase flex items-center gap-2 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group ${clienteLoading ? 'opacity-70 pointer-events-none' : ''}`}
                             title="Ver o editar reporte fluido para el Cliente"
                         >
-                            Reporte Cliente
-                            <span className="material-symbols-outlined text-sm md:text-base group-hover:rotate-12 transition-transform">edit_document</span>
+                            {clienteLoading ? 'Generando...' : 'Reporte Cliente'}
+                            <span className={`material-symbols-outlined text-sm md:text-base group-hover:rotate-12 transition-transform ${clienteLoading ? 'animate-spin' : ''}`}>
+                                {clienteLoading ? 'sync' : 'edit_document'}
+                            </span>
                         </button>
                         <Link href="/exportar" className="bg-black-accent text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase flex items-center gap-3 hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl group">
                             Previsualizar PDF
@@ -1248,12 +1395,16 @@ export default function ResultadosPage() {
                 title={explanationState.title}
                 num={explanationState.num}
                 precalculatedText={explanationState.text}
+                isLoading={explanationState.isLoading}
+                onRegenerate={explanationState.metricKey ? () => openExplanation(explanationState.title, explanationState.num, undefined, true) : undefined}
             />
 
             <EditableReportModal
                 isOpen={clienteModalOpen}
                 onClose={() => setClienteModalOpen(false)}
                 initialText={clienteReportText}
+                isLoading={clienteLoading}
+                onRegenerate={handleRegenerateCliente}
             />
         </div>
     );
