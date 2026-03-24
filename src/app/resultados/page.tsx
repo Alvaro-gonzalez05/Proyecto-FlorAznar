@@ -62,6 +62,15 @@ function displayNumShort(n: any): string {
     return String(n.digit);
 }
 
+/** Muestra solo el dígito reducido (sin cadena completa). Para casas: Año 30/58/87, Ind.Inc., Puentes */
+function digitOnly(n: any): string | number {
+    if (n === null || n === undefined) return '-';
+    if (typeof n === 'object' && 'digit' in n) return n.digit;
+    const v = Number(n);
+    if (isNaN(v)) return '-';
+    return v > 9 ? reducirANumeros(v).digit : v;
+}
+
 export default function ResultadosPage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLElement>(null);
@@ -1341,42 +1350,65 @@ export default function ResultadosPage() {
                                 <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                             </button>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm border-collapse min-w-[600px]">
-                                <thead>
-                                    <tr className="bg-slate-50">
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Casa</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Nombre</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Habitante</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 30</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 58</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Año 87</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">Ind. Inconsc.</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">P. Iniciático</th>
-                                        <th className="p-2 text-[9px] font-black uppercase text-slate-500 border border-slate-200">P. Evolución</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => {
-                                        const casas = data?.primeraParte?.casas;
-                                        const info = CASAS_INFO[casa];
-                                        const hab = casas?.habitantes?.[casa] ?? '-';
-                                        return (
-                                            <tr key={casa} className="hover:bg-slate-50 transition-colors">
-                                                <td className="p-2 text-center font-bold border border-slate-200">{casa}</td>
-                                                <td className="p-2 text-[9px] text-slate-500 border border-slate-200" title={info?.temas}>{info?.nombre}</td>
-                                                <td className={`p-2 text-center font-bold border border-slate-200 ${hab === 0 ? 'bg-red-50 text-red-600' : ''}`} title={HABITANTES_INFO[hab as number] || ''}>{displayNum(hab)}</td>
-                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos30?.[casa])}</td>
-                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos58?.[casa])}</td>
-                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.anos87?.[casa])}</td>
-                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.induccionInconsciente?.[casa])}</td>
-                                                <td className="p-2 text-center border border-slate-200">{displayNum(casas?.puenteIniciatico?.[casa])}</td>
-                                                <td className="p-2 text-center border border-slate-200 font-bold text-indigo-700">{displayNum(casas?.propuestaEvolucion?.[casa])}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                        <div className="space-y-3">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => {
+                                const casas = data?.primeraParte?.casas;
+                                const info = CASAS_INFO[casa];
+                                const hab = casas?.habitantes?.[casa];
+                                return (
+                                    <div key={casa} className="bg-slate-50/80 rounded-2xl border border-slate-200/80 p-4 hover:border-indigo-200 transition-colors">
+                                        {/* Encabezado: número de casa, nombre y habitante */}
+                                        <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/60">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+                                                    <span className="text-sm font-bold text-indigo-600">{casa}</span>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-700">{info?.nombre}</p>
+                                                    <p className="text-[9px] text-slate-400 leading-tight">{info?.temas}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[9px] uppercase font-bold text-slate-400">Habitante</p>
+                                                <p className={`text-xl font-bold ${hab === 0 ? 'text-red-500' : 'text-slate-800'}`} title={HABITANTES_INFO[hab as number] || ''}>
+                                                    {displayNum(hab)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {/* Datos: años, inducción, puentes */}
+                                        <div className="grid grid-cols-3 gap-4 text-center">
+                                            <div className="space-y-1.5">
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 30</p>
+                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos30?.[casa])}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 58</p>
+                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos58?.[casa])}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 87</p>
+                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos87?.[casa])}</p>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="text-[9px] uppercase font-bold text-slate-400">Ind. Inconsc.</p>
+                                                <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.induccionInconsciente?.[casa])}</p>
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-bold text-slate-400">P. Iniciático</p>
+                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.puenteIniciatico?.[casa])}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-bold text-slate-400">P. Evolución</p>
+                                                    <p className="text-sm font-bold text-indigo-700">{digitOnly(casas?.propuestaEvolucion?.[casa])}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                         <div className="mt-4 flex items-center justify-center gap-6">
                             <div className="bg-slate-50 rounded-xl px-6 py-3 border border-slate-200 text-center">

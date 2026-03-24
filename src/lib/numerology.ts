@@ -375,23 +375,21 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const puenteDeEvolucion = reducirANumeros(resultadoEvolucion);
 
     // Propuesta de Evolución (por casa)
+    // Fórmula confirmada por Flor: habitante + cantidad de veces que aparece
+    // Normalizar: 0 y 10 cuentan como 1 para agrupación de frecuencias
     const frecuenciasPropuesta: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
-        let habOriginal = habitantes[casa] || 0;
-        // Para conteo de frecuencias de propuesta, mapeamos 0 y 10 como 1 también,
-        // o los contamos como están. Según el ejemplo de Flor (0 y 1 sumaron frecuencia junta o no).
-        // Usamos la frecuencia del original para coincidir con el ejemplo:
-        frecuenciasPropuesta[habOriginal] = (frecuenciasPropuesta[habOriginal] || 0) + 1;
+        const habOriginal = habitantes[casa] || 0;
+        const habNorm = (habOriginal === 0 || habOriginal === 10) ? 1 : habOriginal;
+        frecuenciasPropuesta[habNorm] = (frecuenciasPropuesta[habNorm] || 0) + 1;
     }
 
     const propuestaEvolucion: Record<number, ReductionResult> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const habOriginal = habitantes[casa] || 0;
-        let habValor = habOriginal;
-        if (habValor === 0 || habValor === 10) habValor = 1;
-
-        const frecuencia = frecuenciasPropuesta[habOriginal] || 1;
-        const resultado = habValor + (frecuencia - 1);
+        const habValor = (habOriginal === 0 || habOriginal === 10) ? 1 : habOriginal;
+        const frecuencia = frecuenciasPropuesta[habValor] || 1;
+        const resultado = habValor + frecuencia;
         propuestaEvolucion[casa] = reducirANumeros(resultado);
     }
 
@@ -430,26 +428,28 @@ export interface CiclosData {
 function calcularCiclos(
     mesVal: number,       // mes reducido (puede ser 11 si maestro)
     diaVal: number,       // día reducido (puede ser 11 si maestro)
-    anioCiclos: number,   // año para ciclos (últimos 2 dígitos reducidos)
-    anioDesafios: number, // año para desafíos (año completo reducido)
+    anioCiclos: number,   // año para ciclos (año completo reducido)
+    anioDesafios: number, // año para desafíos (año completo reducido sin maestros)
     caminoDeVida: ReductionResult,
     edadActual: number
 ): CiclosData {
-    // 1. Ciclos de Realización (usan anioCiclos, maestros se mantienen)
-    const ciclo1 = mesVal + diaVal;
-    const ciclo2 = diaVal + anioCiclos;
-    const ciclo3 = ciclo1 + ciclo2; // 1er + 2do Ciclo (usando sumas raw)
-    const ciclo4 = mesVal + anioCiclos;
+    // 1. Ciclos de Realización (DEFINITIVO según diamante de Flor)
+    // E(C1)=A+B, F(C2)=B+C, G(C3)=E+F, H(C4)=A+C
+    const ciclo1 = mesVal + diaVal;          // E = MES + DÍA
+    const ciclo2 = diaVal + anioCiclos;      // F = DÍA + AÑO
+    const ciclo3 = ciclo1 + ciclo2;          // G = C1 + C2
+    const ciclo4 = mesVal + anioCiclos;      // H = MES + AÑO
 
     const ciclosRaw = [ciclo1, ciclo2, ciclo3, ciclo4];
     const ciclosReduction = ciclosRaw.map(c => reducirANumeros(c));
 
     // 2. Desafíos (usan anioDesafios, maestros SE REDUCEN)
     // "El 10 -> 1, el 11 -> 2, etc. No hay maestros en los desafíos."
-    const d1_digit = reducirSinMaestros(Math.abs(mesVal - diaVal));
-    const d2_digit = reducirSinMaestros(Math.abs(diaVal - anioDesafios));
-    const d3_digit = reducirSinMaestros(Math.abs(d1_digit - d2_digit));
-    const d4_digit = reducirSinMaestros(Math.abs(mesVal - anioDesafios));
+    // K(D1)=|A-B|, L(D2)=|B-C|, M(D3)=|K-L|, N(D4)=|A-C|
+    const d1_digit = reducirSinMaestros(Math.abs(mesVal - diaVal));       // K = |MES - DÍA|
+    const d2_digit = reducirSinMaestros(Math.abs(diaVal - anioDesafios)); // L = |DÍA - AÑO|
+    const d3_digit = reducirSinMaestros(Math.abs(d1_digit - d2_digit));   // M = |D1 - D2|
+    const d4_digit = reducirSinMaestros(Math.abs(mesVal - anioDesafios)); // N = |MES - AÑO|
 
     const desafiosSingle = [d1_digit, d2_digit, d3_digit, d4_digit];
     const desafiosReduction = desafiosSingle.map(d => ({
@@ -476,19 +476,20 @@ function calcularCiclos(
     else cicloActual = 4;
 
     // 3. Números Derivados
-    // Subconsciente I = Sumar los números GRANDES de los 3 primeros ciclos
-    const subI = ciclo1 + ciclo2 + ciclo3;
-    const subconscienteI = reducirANumeros(subI);
-
-    // Subconsciente O = Sumar los dígitos ya REDUCIDOS de los 3 primeros desafíos
-    const subO = d1_digit + d2_digit + d3_digit;
-    const subconscienteO = reducirANumeros(subO);
-
-    // Inconsciente = 4to Ciclo (reducido) + Camino de Vida (reducido/maestro)
+    // CDV con valor maestro/kármico preservado
     const cdvVal = caminoDeVida.isMaster && caminoDeVida.masterValue
         ? caminoDeVida.masterValue
         : (caminoDeVida.isKarmic && caminoDeVida.karmicValue ? caminoDeVida.karmicValue : caminoDeVida.digit);
 
+    // Subconsciente I = C1+C2+C3 (números grandes antes de reducir)
+    const subI = ciclo1 + ciclo2 + ciclo3;
+    const subconscienteI = reducirANumeros(subI);
+
+    // Subconsciente O = D1+D2+D3 (dígitos reducidos de los 3 primeros desafíos)
+    const subO = d1_digit + d2_digit + d3_digit;
+    const subconscienteO = reducirANumeros(subO);
+
+    // Inconsciente = C4 (reducido) + Camino de Vida
     const incVal = ciclosReduction[3].digit + cdvVal;
     const inconsciente = reducirANumeros(incVal);
 
@@ -741,8 +742,8 @@ export function calcularEstructura(
     // ─── Ciclos de Realización (NUEVO - Parte 2) ─────────────────
     const edadActual = anioActual - year;
 
-    // Año para ciclos (últimos 2 dígitos reducidos)
-    const anioCiclos = reducirANumeros(year % 100).digit;
+    // Año para ciclos (año completo: suma de dígitos reducida)
+    const anioCiclos = reducirANumeros(anioSum).digit;
 
     // Año para desafíos (año completo reducido sin maestros)
     const anioDesafios = reducirSinMaestros(year);
