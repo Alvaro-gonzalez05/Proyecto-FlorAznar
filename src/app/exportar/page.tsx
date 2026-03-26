@@ -138,7 +138,24 @@ export default function ExportPage() {
     if (!mounted) return null;
 
     const clientName = resultData?.nombreCompleto || 'Cargando...';
-    const vibracionDisplay = displayNum(resultData?.primeraParte?.vibracionInterna);
+    const vibracionArr: any[] = resultData?.primeraParte?.vibracionInterna || [];
+    const vibracionDisplay: { value: string; label?: string } = vibracionArr.length === 0
+        ? { value: '-' }
+        : vibracionArr.length === 1
+            ? displayNum(vibracionArr[0].reduction)
+            : (() => {
+                const digits = vibracionArr.map((v: any) => {
+                    const r = v.reduction;
+                    if (r?.sequence?.length > 1) return r.sequence.join('/');
+                    return String(r?.digit ?? '-');
+                });
+                const hasMaster = vibracionArr.some((v: any) => v.reduction?.isMaster);
+                const hasKarmic = vibracionArr.some((v: any) => v.reduction?.isKarmic);
+                return {
+                    value: digits.join(' · '),
+                    label: hasMaster ? 'MAESTRO' : hasKarmic ? 'KÁRMICO' : undefined,
+                };
+            })();
     const misionDisplay = displayNum(resultData?.primeraParte?.calculoMision);
     const destinoDisplay = displayNum(resultData?.primeraParte?.fechaNacimiento?.caminoDeVida);
 

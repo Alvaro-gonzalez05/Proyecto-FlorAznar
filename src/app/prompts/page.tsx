@@ -9,11 +9,29 @@ export default function PromptsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
-    // Only show the 3 specific prompts the user wants to edit
     const promptKeys = [
-        { id: 'global_instruction', name: 'INSTUCCIÓN MAESTRA GLOBAL (Afecta a todas las tarjetas)' },
+        { id: 'global_instruction', name: 'INSTRUCCIÓN MAESTRA GLOBAL (Afecta a todas las tarjetas)' },
+        // Per-card section prompts
+        { id: 'vibracion_interna', name: 'Vibración Interna' },
+        { id: 'alma', name: 'Número de Alma' },
+        { id: 'personalidad', name: 'Número de Personalidad' },
+        { id: 'mision', name: 'Misión' },
+        { id: 'camino_de_vida', name: 'Camino de Vida' },
+        { id: 'fecha', name: 'Talento / Karma / Memoria (Fecha)' },
+        { id: 'ciclos', name: 'Ciclos y Desafíos' },
+        { id: 'subconsciente', name: 'Subconsciente I y O' },
+        { id: 'inconsciente', name: 'Inconsciente y Sombra' },
+        { id: 'ser_interior', name: 'Ser Interior (Q, R, S)' },
+        { id: 'casas_9', name: 'Las 9 Casas' },
+        { id: 'anio_personal', name: 'Año y Mes Personal' },
+        { id: 'letras_faltantes', name: 'Letras Faltantes / Deudas Kármicas' },
+        { id: 'fuerza', name: 'Número de Fuerza' },
+        { id: 'equilibrio', name: 'Número de Equilibrio' },
+        { id: 'regalo_divino', name: 'Regalo Divino' },
+        { id: 'planos_existenciales', name: 'Planos Existenciales' },
+        // Full report prompts
         { id: 'resumen_analista', name: 'Resumen Analista (Reporte Técnico)' },
-        { id: 'resumen_cliente', name: 'Resumen Cliente (Reporte Amigable)' }
+        { id: 'resumen_cliente', name: 'Resumen Cliente (Reporte Amigable)' },
     ];
     
     const [selectedId, setSelectedId] = useState<string>(promptKeys[0].id);

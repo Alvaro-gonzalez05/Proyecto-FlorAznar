@@ -401,9 +401,55 @@ ESTILO:
 
 export const DEFAULT_PROMPTS: Record<string, string> = {
     'global_instruction': GLOBAL_PROMPT_TEXT,
-    
+
+    // ── Prompts por tarjeta individual ──────────────────────────────────────
+    'vibracion_interna': `Explica qué significa esta vibración interna en la vida de la persona. Menciona cómo se manifiesta en su mundo interior, qué la mueve profundamente y qué necesita para estar en paz. Si hay varios nombres de pila, comenta brevemente cómo interactúan sus vibraciones. Máximo 150 palabras.`,
+
+    'alma': `Explica el número de Alma: qué desea profundamente esta persona, qué la mueve a nivel emocional e inconsciente, qué bloqueos o heridas del corazón pueden aparecer cuando este número está desequilibrado. Menciona si hay número maestro o kármico y qué implica. Máximo 150 palabras.`,
+
+    'personalidad': `Explica el número de Personalidad: cómo se muestra esta persona al mundo, qué imagen proyecta, cómo la perciben los demás, y si existe una brecha entre ese exterior y su mundo interno. Menciona si hay número maestro o kármico. Máximo 150 palabras.`,
+
+    'mision': `Explica la Misión numerológica: qué vino a desarrollar esta persona en esta vida, qué cualidades necesita cultivar, qué desafíos aparecen en ese propósito y cómo el número de misión se relaciona con su camino. Menciona si hay número maestro o kármico en el número raíz. Máximo 150 palabras.`,
+
+    'camino_de_vida': `Explica el Camino de Vida: qué aprendizajes centrales van a repetirse en su vida, qué tipo de experiencias atrae, cómo se relaciona con su misión. Analiza el número raíz antes de la reducción si aplica. Menciona si hay número maestro o kármico. Máximo 150 palabras.`,
+
+    'fecha': `Explica las tres energías de la fecha de nacimiento como un conjunto integrado: el Talento (día), el Karma o tensión (mes) y la Memoria de Vida Pasada (año). Qué capacidades trae naturalmente, qué tensión o deuda viene a trabajar, y qué rastro de vida anterior puede estar influyendo. Máximo 150 palabras.`,
+
+    'ciclos': `Explica el ciclo de realización actual y su desafío asociado. Qué aprendizaje trae esta etapa de vida, qué energía predomina ahora y qué le pide a la persona. Si hay números maestros o kármicos en ciclos o desafíos, menciónalo. Máximo 150 palabras.`,
+
+    'ciclo_1': `Explica el 1er Ciclo de Realización (infancia y juventud temprana). Describe qué energía marcó esa primera etapa, qué herida o aprendizaje llegó en esos años y cómo esa base sigue influyendo en la vida de la persona. Si el número es maestro o kármico, analízalo. Máximo 120 palabras.`,
+    'ciclo_2': `Explica el 2do Ciclo de Realización (etapa adulta de construcción). Qué aprendizajes centrales caracterizan este período, qué desafíos o talentos se activan y cómo esta energía moldea el desarrollo de la identidad adulta. Si el número es maestro o kármico, analízalo. Máximo 120 palabras.`,
+    'ciclo_3': `Explica el 3er Ciclo de Realización (madurez y cosecha). Qué tipo de integración o plenitud propone este ciclo, qué sabiduría emerge y cómo la persona puede cosechar lo sembrado. Si el número es maestro o kármico, analízalo. Máximo 120 palabras.`,
+    'ciclo_4': `Explica el 4to Ciclo de Realización (cierre y trascendencia). Qué energía acompaña el tramo final de la vida, qué legado se invita a construir y qué propone esta vibración para el cierre del ciclo vital. Si el número es maestro o kármico, analízalo. Máximo 120 palabras.`,
+
+    'desafio_1': `Explica el 1er Desafío numerológico. Qué tensión o aprendizaje pide ser integrado en la primera etapa de vida, cómo puede manifestarse como obstáculo recurrente y qué cualidad necesita desarrollar la persona para superarlo. Máximo 100 palabras.`,
+    'desafio_2': `Explica el 2do Desafío numerológico. Qué tensión o aprendizaje emerge en la etapa adulta, cómo puede bloquear el avance y qué movimiento interno necesita la persona para integrarlo. Máximo 100 palabras.`,
+    'desafio_3': `Explica el 3er Desafío numerológico (el central o mayor). Este desafío suele ser el más profundo y transversal. Describe qué patrón representa, cómo se manifiesta a lo largo de toda la vida y qué transformación propone. Máximo 100 palabras.`,
+    'desafio_4': `Explica el 4to Desafío numerológico. Qué reto o aprendizaje acompaña el cierre del ciclo vital, cómo invita a la integración final y qué sabiduría emerge al resolverlo. Máximo 100 palabras.`,
+
+    'subconsciente': `Explica el Subconsciente I (recursos internos) y el Subconsciente O (patrones automáticos) como un par complementario. Qué fortalezas emergen en situaciones difíciles (SubI) y qué patrones automáticos pueden operar sin conciencia plena (SubO). Máximo 150 palabras.`,
+
+    'inconsciente': `Explica el Inconsciente y la Sombra como un par: qué mueve a la persona desde capas profundas sin que lo vea (inconsciente) y qué aspecto de sí misma puede estar reprimiendo o proyectando (sombra). Qué necesita integrar para avanzar. Máximo 150 palabras.`,
+
+    'ser_interior': `Explica el Ser Interior (Q, R y S): qué revela sobre la estructura interna más profunda de la persona, cómo se relacionan estos tres números, qué patrón muestran en conjunto sobre su esencia y sus desafíos de integración. Máximo 150 palabras.`,
+
+    'casas_9': `Analiza el Cuadro de las 9 Casas. Para cada casa, explica brevemente qué significa el habitante presente (en su luz y en su sombra) y qué patrón revela. Luego haz una integración general de los habitan del cuadro. Máximo 300 palabras.`,
+
+    'anio_personal': `Explica el Año Personal y el Mes Personal actual como una etapa concreta: qué energía predomina ahora mismo en la vida de la persona, qué oportunidades trae, qué revisa o transforma, y cómo aprovechar mejor este momento. Máximo 150 palabras.`,
+
+    'letras_faltantes': `Explica las lecciones kármicas (números faltantes en el nombre). Qué aprendizajes o cualidades le cuestan más a esta persona por no estar presentes en su nombre, y cómo pueden manifestarse como obstáculos recurrentes. Máximo 150 palabras.`,
+
+    'fuerza': `Explica el Número de Fuerza como energía potenciadora: qué capacidad o impulso interno refuerza el avance de la persona hacia su propósito. Menciona si hay número maestro o kármico. Máximo 100 palabras.`,
+
+    'equilibrio': `Explica el Número de Equilibrio (obtenido de las iniciales del nombre). Qué tipo de equilibrio interno necesita encontrar esta persona ante situaciones de crisis, conflicto o inestabilidad emocional. Qué actitud o recurso interno necesita activar para sostenerse. Menciona si hay número maestro o kármico. Máximo 100 palabras.`,
+
+    'regalo_divino': `Explica el Regalo Divino de esta persona: el don o talento especial que trae a esta vida desde el alma. Cómo se expresa este don naturalmente, en qué áreas puede brillar más y cómo puede ponerlo al servicio de los demás y de su propósito. Menciona si hay número maestro o kármico. Máximo 100 palabras.`,
+
+    'planos_existenciales': `Explica los Planos Existenciales de esta persona: Mental, Físico, Emotivo e Intuitivo. Analiza cuál o cuáles predominan en su carácter según las letras de su nombre, qué tipo de inteligencia o percepción domina, y cómo esa distribución influye en su forma de vivir, tomar decisiones y relacionarse. Máximo 150 palabras.`,
+
+    // ── Reportes completos ───────────────────────────────────────────────────
     'resumen_analista': `Eres un experto en reportes de Numerología. Usa el contexto global para generar un resumen técnico detallado.`,
-    
+
     'resumen_cliente': `Eres un experto en reportes de Numerología. Usa el contexto global para generar un reporte amigable para el cliente.`
 };
 

@@ -169,34 +169,27 @@ export default function NuevaConsultaPage() {
             ease: 'power2.out',
         }, 1.5);
 
-        // 7. Change text to "ANALIZANDO" after a delay
-        tl.add(() => {
-            if (loadingTextRef.current) {
-                const h3 = loadingTextRef.current.querySelector('h3');
-                const p = loadingTextRef.current.querySelector('p');
-                if (h3 && p) {
-                    gsap.to([h3, p], {
-                        opacity: 0,
-                        y: -10,
-                        duration: 0.4,
-                        ease: 'power2.in',
-                        onComplete: () => {
-                            h3.textContent = 'ANALIZANDO';
-                            p.textContent = 'Descifrando tu mapa numérico';
-                            gsap.fromTo([h3, p], {
-                                opacity: 0,
-                                y: 10,
-                            }, {
-                                opacity: 1,
-                                y: 0,
-                                duration: 0.4,
-                                ease: 'power2.out',
-                            });
-                        },
-                    });
-                }
-            }
-        }, 3.5);
+        // Helper para animar cambio de texto en el loading
+        const changeLoadingText = (h3Text: string, pText: string) => {
+            if (!loadingTextRef.current) return;
+            const h3 = loadingTextRef.current.querySelector('h3');
+            const p = loadingTextRef.current.querySelector('p');
+            if (!h3 || !p) return;
+            gsap.to([h3, p], {
+                opacity: 0, y: -10, duration: 0.4, ease: 'power2.in',
+                onComplete: () => {
+                    h3.textContent = h3Text;
+                    p.textContent = pText;
+                    gsap.fromTo([h3, p], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+                },
+            });
+        };
+
+        // 7a. Cambiar texto al terminar el cálculo numérico (~3.5s)
+        tl.add(() => changeLoadingText('ANALIZANDO', 'La IA está interpretando tu mapa...'), 3.5);
+
+        // 7b. Segundo mensaje mientras la IA trabaja (~8s)
+        tl.add(() => changeLoadingText('CASI LISTO', 'Generando todas las explicaciones...'), 8);
 
         // 8. Call the API in parallel with the animation
         const apiCall = fetch('/api/numerology', {
@@ -265,6 +258,9 @@ export default function NuevaConsultaPage() {
                 camino_de_vida: cdvStr,
                 personalidad: persStr,
                 fuerza: formatGeminiNumber(pp?.potenciadores?.numeroDeFuerza),
+                equilibrio: formatGeminiNumber(pp?.potenciadores?.numeroDeEquilibrio),
+                regalo_divino: formatGeminiNumber(pp?.potenciadores?.regaloDivino),
+                planos_existenciales: `Mental=${pp?.planosExistenciales?.mental ?? 0}, Físico=${pp?.planosExistenciales?.fisico ?? 0}, Emotivo=${pp?.planosExistenciales?.emotivo ?? 0}, Intuitivo=${pp?.planosExistenciales?.intuitivo ?? 0}.`,
                 sombra: formatGeminiNumber(pp?.ciclos?.sombra || pp?.potenciadores?.numeroDeSombra),
                 anio_personal: formatGeminiNumber(pp?.potenciadores?.anioPersonal),
                 mes_personal: formatGeminiNumber(pp?.potenciadores?.mesPersonal),
@@ -278,6 +274,14 @@ export default function NuevaConsultaPage() {
                     inconsciente: formatGeminiNumber(pp.ciclos.inconsciente),
                     ciclos_desafios: `Ciclos: C1=${formatGeminiNumber(pp.ciclos.ciclosReduction[0])}, C2=${formatGeminiNumber(pp.ciclos.ciclosReduction[1])}, C3=${formatGeminiNumber(pp.ciclos.ciclosReduction[2])}, C4=${formatGeminiNumber(pp.ciclos.ciclosReduction[3])}. Desafíos: D1=${formatGeminiNumber(pp.ciclos.desafiosReduction[0])}, D2=${formatGeminiNumber(pp.ciclos.desafiosReduction[1])}, D3=${formatGeminiNumber(pp.ciclos.desafiosReduction[2])}, D4=${formatGeminiNumber(pp.ciclos.desafiosReduction[3])}. Por favor, da una breve explicación estructurada de esta etapa de crecimiento a través del tiempo.`,
                     ciclo_actual: `Ciclo ${pp.ciclos.cicloActual}: ${formatGeminiNumber(pp.ciclos.ciclosReduction?.[pp.ciclos.cicloActual - 1])}`,
+                    ciclo_1: `Valor: ${formatGeminiNumber(pp.ciclos.ciclosReduction[0])}. Edades: 0 a ${pp.ciclos.edadesCiclos?.[0] || '?'} años.`,
+                    ciclo_2: `Valor: ${formatGeminiNumber(pp.ciclos.ciclosReduction[1])}. Edades: ${pp.ciclos.edadesCiclos?.[0] || '?'} a ${pp.ciclos.edadesCiclos?.[1] || '?'} años.`,
+                    ciclo_3: `Valor: ${formatGeminiNumber(pp.ciclos.ciclosReduction[2])}. Edades: ${pp.ciclos.edadesCiclos?.[1] || '?'} a ${pp.ciclos.edadesCiclos?.[2] || '?'} años.`,
+                    ciclo_4: `Valor: ${formatGeminiNumber(pp.ciclos.ciclosReduction[3])}. Desde los ${pp.ciclos.edadesCiclos?.[2] || '?'} años en adelante.`,
+                    desafio_1: `Valor: ${formatGeminiNumber(pp.ciclos.desafiosReduction[0])}.`,
+                    desafio_2: `Valor: ${formatGeminiNumber(pp.ciclos.desafiosReduction[1])}.`,
+                    desafio_3: `Valor: ${formatGeminiNumber(pp.ciclos.desafiosReduction[2])}. (Desafío Mayor / Central)`,
+                    desafio_4: `Valor: ${formatGeminiNumber(pp.ciclos.desafiosReduction[3])}.`,
                 }),
                 ...(result.segundaParte && {
                     sistema_familiar_herencia: formatGeminiNumber(result.segundaParte.herenciaFamiliar),
@@ -302,26 +306,31 @@ export default function NuevaConsultaPage() {
             // Remove any empty metrics
             const cleanPayload = Object.fromEntries(Object.entries(metricsPayload).filter(([_, v]) => v !== ''));
 
+            // Guardar el payload de métricas antes de llamar a la IA
+            sessionStorage.setItem('aiMetricsPayload', JSON.stringify(cleanPayload));
+
+            // Llamar a analysis-complete AQUÍ, en paralelo con la animación de carga
             let aiDataResult: any = {};
-            let resumenAnalista = '';
-            let resumenCliente = '';
-
             try {
-                // Generaciones diferidas (no se hacen en la carga inicial para ahorrar tiempo)
-                // Solo inicializamos el estado o los defaults.
-                aiDataResult.resumen_analista = "";
-                aiDataResult.resumen_cliente = "";
-
-                // Guardamos el payload de la métrica por carta para usarlo en la página de resultados
-                sessionStorage.setItem('aiMetricsPayload', JSON.stringify(cleanPayload));
-                sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
-                sessionStorage.setItem('resumenAnalista', resumenAnalista);
-                sessionStorage.setItem('clientReportEdited', resumenCliente);
-
+                const analysisRes = await fetch('/api/analysis-complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dataStr: JSON.stringify(result),
+                        metricsPayload: cleanPayload,
+                    }),
+                });
+                if (analysisRes.ok) {
+                    const analysisData = await analysisRes.json();
+                    aiDataResult = analysisData.explanations || {};
+                }
             } catch (err) {
-                console.error("Gemini context setup error", err);
-                sessionStorage.setItem('geminiExplanations', JSON.stringify({}));
+                console.error("Error en analysis-complete:", err);
             }
+
+            sessionStorage.setItem('geminiExplanations', JSON.stringify(aiDataResult));
+            sessionStorage.setItem('resumenAnalista', '');
+            sessionStorage.setItem('clientReportEdited', '');
 
             // --- SUPABASE STORAGE ---
             // Guardar silenciosamente el registro en la base de datos PostgreSQL

@@ -118,7 +118,18 @@ export default function ResultadosPage() {
             'Año (Memoria de Vida Pasada)': 'pasado',
             'Ciclo de Vida Actual': 'ciclo_actual',
             'Análisis de Ciclos y Desafíos': 'ciclos_desafios',
+            '1er Ciclo': 'ciclo_1',
+            '2do Ciclo': 'ciclo_2',
+            '3er Ciclo': 'ciclo_3',
+            '4to Ciclo': 'ciclo_4',
+            '1er Desafío': 'desafio_1',
+            '2do Desafío': 'desafio_2',
+            '3er Desafío': 'desafio_3',
+            '4to Desafío': 'desafio_4',
             'Cuadro de las 9 Casas': 'casas_9',
+            'Número de Equilibrio': 'equilibrio',
+            'Regalo Divino': 'regalo_divino',
+            'Planos Existenciales': 'planos_existenciales',
             'Herencia Familiar': 'sistema_familiar_herencia',
             'Evolución Familiar': 'sistema_familiar_evolucion',
             'Expresión Profesional': 'sistema_familiar_expresion',
@@ -213,10 +224,12 @@ export default function ResultadosPage() {
         setClienteLoading(true);
         try {
             const dataStr = sessionStorage.getItem('numerologyResult');
+            const storedExplanations = sessionStorage.getItem('geminiExplanations');
+            const explicaciones = storedExplanations ? JSON.parse(storedExplanations) : {};
             const res = await fetch('/api/full-report', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'cliente', dataStr })
+                body: JSON.stringify({ type: 'cliente', dataStr, explicaciones })
             });
             if (res.ok) {
                 const data = await res.json();
@@ -266,7 +279,10 @@ export default function ResultadosPage() {
 
         if (storedExplanations) {
             try {
-                setExplanations(JSON.parse(storedExplanations));
+                const parsed = JSON.parse(storedExplanations);
+                if (parsed && typeof parsed === 'object') {
+                    setExplanations(parsed);
+                }
             } catch {
                 // Ignore parsing errors for explanations
             }
@@ -278,8 +294,6 @@ export default function ResultadosPage() {
             try {
                 const parsedData = JSON.parse(stored);
                 setData(parsedData);
-
-                // Siempre mostrar presentación la primera vez
                 setShowingCards(true);
             } catch {
                 // Invalid data, ignore
@@ -495,6 +509,8 @@ export default function ResultadosPage() {
             </div>
         );
     }
+
+
 
     return (
         <div className="flex flex-col xl:flex-row h-full w-full overflow-hidden">
@@ -837,7 +853,10 @@ export default function ResultadosPage() {
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeFuerza)}</p>
                                 <p className="text-[10px] text-slate-500">Misión + Camino de Vida</p>
                             </div>
-                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50">
+                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Número de Equilibrio', displayNum(data?.primeraParte?.potenciadores?.numeroDeEquilibrio), explanations['equilibrio']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-amber-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Número de Equilibrio</p>
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.numeroDeEquilibrio)}</p>
                                 <p className="text-[10px] text-slate-500">Iniciales del nombre</p>
@@ -850,7 +869,10 @@ export default function ResultadosPage() {
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.ciclos?.sombra)}</p>
                                 <p className="text-[10px] text-slate-500">Puntos ciegos o miedos</p>
                             </div>
-                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50">
+                            <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-1 border border-slate-100/50 relative group">
+                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Regalo Divino', displayNum(data?.primeraParte?.potenciadores?.regaloDivino), explanations['regalo_divino']); }} className="absolute top-2 right-2 bg-white/50 hover:bg-white text-slate-400 hover:text-amber-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                </button>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Regalo Divino</p>
                                 <p className="text-3xl font-light text-slate-800">{displayNum(data?.primeraParte?.potenciadores?.regaloDivino)}</p>
                                 <p className="text-[10px] text-slate-500">Don de nacimiento</p>
@@ -864,10 +886,15 @@ export default function ResultadosPage() {
                         className="col-span-2 md:col-span-1 row-span-1 bg-white border border-slate-100 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl"
                         style={getCardStyle(6)}
                     >
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">layers</span>
-                            Planos Existenciales
-                        </p>
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">layers</span>
+                                Planos Existenciales
+                            </p>
+                            <button onClick={(e) => { e.stopPropagation(); openExplanation('Planos Existenciales', '', explanations['planos_existenciales']); }} className="bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-indigo-500 rounded-full p-1.5 transition-all shadow-sm" title="Ver análisis de Planos Existenciales">
+                                <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                            </button>
+                        </div>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-semibold text-slate-600 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>Mental</span>
@@ -1283,50 +1310,122 @@ export default function ResultadosPage() {
                             </div>
                         </div>
 
-                        {/* RIGHT: AI EXPLANATION */}
-                        <div className="flex-1 p-8 lg:p-10 relative z-10 flex flex-col max-h-full">
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-indigo-300 shrink-0">
+                        {/* RIGHT: INDIVIDUAL CYCLE / DESAFÍO CARDS */}
+                        <div className="flex-1 p-6 lg:p-8 relative z-10 flex flex-col max-h-full">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-indigo-300 shrink-0">
                                 <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                 Análisis Evolutivo
                             </h3>
-                            
-                            <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
-                                {explanations && explanations['ciclos_desafios'] ? (
-                                    <div className="space-y-4 text-[15px] leading-relaxed font-medium text-slate-200">
-                                        {String(explanations['ciclos_desafios']).split('\n').map((paragraph: string, index: number) => {
-                                            if (!paragraph.trim()) return <br key={index} />;
-                                            const isPill = paragraph.match(/^[A-Z0-9/\s()=áéíóúÁÉÍÓÚ]+:/);
-                                            if (isPill) {
-                                                const parts = paragraph.split(':');
-                                                const title = parts[0];
-                                                const rest = parts.slice(1).join(':').trim();
-                                                return (
-                                                    <div 
-                                                        key={index} 
-                                                        className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-sm block break-inside-avoid cursor-pointer hover:bg-white/10 hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-lg transition-all group"
-                                                        onClick={(e) => { e.stopPropagation(); openExplanation(title.trim(), '', rest); }}
-                                                    >
-                                                        <div className="flex justify-between items-start mb-1">
-                                                            <span className="font-bold text-indigo-300 block text-xs uppercase tracking-wider">{title.trim()}:</span>
-                                                            <span className="material-symbols-outlined text-[16px] text-white/20 group-hover:text-indigo-300 transition-colors" title="Leer en detalle">open_in_full</span>
-                                                        </div>
-                                                        <span className="text-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-3">{rest}</span>
-                                                    </div>
-                                                );
-                                            }
+
+                            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar space-y-5">
+                                {/* CICLOS */}
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/70 mb-3">Ciclos de Realización</p>
+                                    <div className="space-y-2">
+                                        {(
+                                            [
+                                                { key: 'ciclo_1', label: '1er Ciclo', idx: 0 },
+                                                { key: 'ciclo_2', label: '2do Ciclo', idx: 1 },
+                                                { key: 'ciclo_3', label: '3er Ciclo', idx: 2 },
+                                                { key: 'ciclo_4', label: '4to Ciclo', idx: 3 },
+                                            ] as const
+                                        ).map(({ key, label, idx }) => {
+                                            const ciclos = data?.primeraParte?.ciclos;
+                                            const val = ciclos?.ciclosReduction?.[idx];
+                                            const ages = ciclos?.edadesCiclos;
+                                            const isCurrent = ciclos?.cicloActual === idx + 1;
+                                            const ageLabel =
+                                                idx === 0 ? `0–${ages?.[0] ?? '?'} años` :
+                                                idx === 1 ? `${ages?.[0] ?? '?'}–${ages?.[1] ?? '?'} años` :
+                                                idx === 2 ? `${ages?.[1] ?? '?'}–${ages?.[2] ?? '?'} años` :
+                                                `${ages?.[2] ?? '?'}+ años`;
+                                            const text = explanations?.[key];
                                             return (
-                                                <p key={index} className="opacity-90 leading-relaxed text-sm">
-                                                    {paragraph}
-                                                </p>
+                                                <div
+                                                    key={key}
+                                                    className={`group rounded-xl border p-3 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg ${
+                                                        isCurrent
+                                                            ? 'bg-indigo-500/15 border-indigo-400/40 hover:border-indigo-400/70'
+                                                            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-indigo-500/30'
+                                                    }`}
+                                                    onClick={(e) => { e.stopPropagation(); openExplanation(label, displayNum(val), text); }}
+                                                >
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <span className="text-2xl font-black text-white shrink-0">{displayNum(val)}</span>
+                                                            <div className="min-w-0">
+                                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                                    <span className="text-[11px] font-bold text-indigo-300">{label}</span>
+                                                                    {isCurrent && (
+                                                                        <span className="text-[9px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-1.5 py-0.5 rounded-full">Actual</span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-[10px] text-white/40">{ageLabel}</p>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 hover:bg-indigo-500/30 rounded-full p-1"
+                                                            onClick={(e) => { e.stopPropagation(); openExplanation(label, displayNum(val), undefined, true); }}
+                                                            title="Regenerar explicación"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                        </button>
+                                                    </div>
+                                                    {text ? (
+                                                        <p className="mt-2 text-[12px] leading-relaxed text-white/70 line-clamp-3">{text}</p>
+                                                    ) : (
+                                                        <p className="mt-2 text-[11px] text-white/30 italic">Generando análisis...</p>
+                                                    )}
+                                                </div>
                                             );
                                         })}
                                     </div>
-                                ) : (
-                                    <div className="h-full flex flex-col items-center justify-center py-12 opacity-50 space-y-4">
-                                        <div className="w-8 h-8 rounded-full border-t-2 border-indigo-500 animate-spin"></div>
-                                        <p className="text-sm">La inteligencia artificial está descifrando estos ciclos...</p>
+                                </div>
+
+                                {/* DESAFÍOS */}
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-rose-400/70 mb-3">Desafíos</p>
+                                    <div className="space-y-2">
+                                        {(
+                                            [
+                                                { key: 'desafio_1', label: '1er Desafío', idx: 0 },
+                                                { key: 'desafio_2', label: '2do Desafío', idx: 1 },
+                                                { key: 'desafio_3', label: '3er Desafío (Mayor)', idx: 2 },
+                                                { key: 'desafio_4', label: '4to Desafío', idx: 3 },
+                                            ] as const
+                                        ).map(({ key, label, idx }) => {
+                                            const ciclos = data?.primeraParte?.ciclos;
+                                            const val = ciclos?.desafiosReduction?.[idx];
+                                            const text = explanations?.[key];
+                                            return (
+                                                <div
+                                                    key={key}
+                                                    className="group rounded-xl border bg-white/5 border-white/10 p-3 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:bg-white/10 hover:border-rose-500/30"
+                                                    onClick={(e) => { e.stopPropagation(); openExplanation(label, displayNum(val), text); }}
+                                                >
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-2xl font-black text-white shrink-0">{displayNum(val)}</span>
+                                                            <span className="text-[11px] font-bold text-rose-300">{label}</span>
+                                                        </div>
+                                                        <button
+                                                            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 hover:bg-rose-500/30 rounded-full p-1"
+                                                            onClick={(e) => { e.stopPropagation(); openExplanation(label, displayNum(val), undefined, true); }}
+                                                            title="Regenerar explicación"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                                                        </button>
+                                                    </div>
+                                                    {text ? (
+                                                        <p className="mt-2 text-[12px] leading-relaxed text-white/70 line-clamp-3">{text}</p>
+                                                    ) : (
+                                                        <p className="mt-2 text-[11px] text-white/30 italic">Generando análisis...</p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1350,72 +1449,79 @@ export default function ResultadosPage() {
                                 <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                             </button>
                         </div>
-                        <div className="space-y-3">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => {
-                                const casas = data?.primeraParte?.casas;
-                                const info = CASAS_INFO[casa];
-                                const hab = casas?.habitantes?.[casa];
-                                return (
-                                    <div key={casa} className="bg-slate-50/80 rounded-2xl border border-slate-200/80 p-4 hover:border-indigo-200 transition-colors">
-                                        {/* Encabezado: número de casa, nombre y habitante */}
-                                        <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/60">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                                                    <span className="text-sm font-bold text-indigo-600">{casa}</span>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-700">{info?.nombre}</p>
-                                                    <p className="text-[9px] text-slate-400 leading-tight">{info?.temas}</p>
-                                                </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-slate-200">
+                                        <th className="text-left py-2 px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 whitespace-nowrap"></th>
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => (
+                                            <th key={casa} className="text-center py-2 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 text-xs font-bold">{casa}</span>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                    <tr className="border-b border-slate-100 bg-slate-50/50">
+                                        <td className="py-1.5 px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 whitespace-nowrap">Nombre</td>
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(casa => (
+                                            <td key={casa} className="py-1.5 px-2 text-center text-[11px] font-medium text-slate-600 whitespace-nowrap">
+                                                {CASAS_INFO[casa]?.nombre}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(() => {
+                                        const casas = data?.primeraParte?.casas;
+                                        const rows = [
+                                            { label: 'Habitante', render: (c: number) => { const h = casas?.habitantes?.[c]; return <span className={`font-bold text-base ${h === 0 ? 'text-red-500' : 'text-slate-800'}`} title={HABITANTES_INFO[h as number] || ''}>{displayNum(h)}</span>; } },
+                                            { label: 'Año 30',    render: (c: number) => <span className="text-slate-700">{digitOnly(casas?.anos30?.[c])}</span> },
+                                            { label: 'Año 58',    render: (c: number) => <span className="text-slate-700">{digitOnly(casas?.anos58?.[c])}</span> },
+                                            { label: 'Año 87',    render: (c: number) => <span className="text-slate-700">{digitOnly(casas?.anos87?.[c])}</span> },
+                                            { label: 'Ind. Inconsc.', render: (c: number) => <span className="text-slate-700">{digitOnly(casas?.induccionInconsciente?.[c])}</span> },
+                                            { label: 'P. Iniciático', render: (c: number) => <span className="text-slate-700">{digitOnly(casas?.puenteIniciatico?.[c])}</span> },
+                                            { label: 'P. Evolución',  render: (c: number) => <span className="font-bold text-indigo-700">{digitOnly(casas?.propuestaEvolucion?.[c])}</span> },
+                                        ];
+                                        return rows.map((row, ri) => (
+                                            <tr key={row.label} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${ri % 2 === 0 ? '' : 'bg-slate-50/30'}`}>
+                                                <td className="py-2 px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 whitespace-nowrap">{row.label}</td>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(c => (
+                                                    <td key={c} className="py-2 px-2 text-center text-sm font-semibold">{row.render(c)}</td>
+                                                ))}
+                                            </tr>
+                                        ));
+                                    })()}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* CONTEO DE LETRAS DEL NOMBRE COMPLETO */}
+                        {(() => {
+                            const letterCounts: Record<string, number> = {};
+                            const letterOrder: string[] = [];
+                            (data?.primeraParte?.wordsBreakdown ?? []).forEach((wb: any) => {
+                                (wb.letters ?? []).forEach((ld: any) => {
+                                    const l = ld.letter?.toUpperCase();
+                                    if (l) {
+                                        if (!letterCounts[l]) letterOrder.push(l);
+                                        letterCounts[l] = (letterCounts[l] || 0) + 1;
+                                    }
+                                });
+                            });
+                            if (letterOrder.length === 0) return null;
+                            return (
+                                <div className="mt-4 border-t border-slate-100 pt-4">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Conteo de letras</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {letterOrder.map(letter => (
+                                            <div key={letter} className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                                                <span className="text-sm font-black text-indigo-600">{letter}</span>
+                                                <span className="text-[10px] text-slate-400">×</span>
+                                                <span className="text-sm font-bold text-slate-700">{letterCounts[letter]}</span>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-[9px] uppercase font-bold text-slate-400">Habitante</p>
-                                                <p className={`text-xl font-bold ${hab === 0 ? 'text-red-500' : 'text-slate-800'}`} title={HABITANTES_INFO[hab as number] || ''}>
-                                                    {displayNum(hab)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        {/* Datos: años, inducción, puentes */}
-                                        <div className="grid grid-cols-3 gap-4 text-center">
-                                            <div className="space-y-1.5">
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 30</p>
-                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos30?.[casa])}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 58</p>
-                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos58?.[casa])}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-bold text-slate-400">Año 87</p>
-                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.anos87?.[casa])}</p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <p className="text-[9px] uppercase font-bold text-slate-400">Ind. Inconsc.</p>
-                                                <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.induccionInconsciente?.[casa])}</p>
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-bold text-slate-400">P. Iniciático</p>
-                                                    <p className="text-sm font-semibold text-slate-700">{digitOnly(casas?.puenteIniciatico?.[casa])}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-bold text-slate-400">P. Evolución</p>
-                                                    <p className="text-sm font-bold text-indigo-700">{digitOnly(casas?.propuestaEvolucion?.[casa])}</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                );
-                            })}
-                        </div>
-                        <div className="mt-4 flex items-center justify-center gap-6">
-                            <div className="bg-slate-50 rounded-xl px-6 py-3 border border-slate-200 text-center">
-                                <p className="text-[9px] uppercase font-bold text-slate-400">Puente de Evolución</p>
-                                <p className="text-2xl font-light text-slate-800">{displayNum(data?.primeraParte?.casas?.puenteDeEvolucion)}</p>
-                            </div>
-                        </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                     {/* We no longer render FullReportSection here */}
                 </div>

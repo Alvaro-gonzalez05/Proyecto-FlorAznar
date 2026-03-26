@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(request: Request) {
     try {
-        const { type, dataStr } = await request.json();
+        const { type, dataStr, explicaciones } = await request.json();
 
         if (!dataStr) {
             return NextResponse.json({ error: 'Faltan datos de consulta.' }, { status: 400 });
@@ -39,6 +39,14 @@ export async function POST(request: Request) {
 
             promptText = customCliente || DEFAULT_PROMPTS['resumen_cliente'];
             promptText = promptText.replace('[DATOS_PERSONA]', dataStr).replace('[PEGAR AQUÍ EL ANÁLISIS INTERNO COMPLETO]', dataStr).replace('[PEGAR AQUÍ EL ANÁLISIS GENERADO POR EL PROMPT INTERNO]', dataStr);
+
+            // If per-card explanations are available, inject them as context
+            if (explicaciones && typeof explicaciones === 'object' && Object.keys(explicaciones).length > 0) {
+                const explicacionesStr = Object.entries(explicaciones)
+                    .map(([k, v]) => `[${k}]: ${v}`)
+                    .join('\n\n');
+                promptText += `\n\n=== ANÁLISIS PREVIO POR SECCIÓN (úsalo como base para el reporte al cliente) ===\n${explicacionesStr}`;
+            }
         } else {
             return NextResponse.json({ error: 'Tipo de resumen inválido.' }, { status: 400 });
         }

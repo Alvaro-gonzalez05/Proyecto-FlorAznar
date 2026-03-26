@@ -25,59 +25,46 @@ export async function POST(request: Request) {
             readableType = 'Sistema Familiar - Linaje';
         }
 
-        // Fetch custom global instruction
-        let globalInstruction = DEFAULT_PROMPTS['global_instruction'];
-        try {
-            const { data, error } = await supabase.from('prompts').select('prompt_text').eq('id', 'global_instruction').single();
-            if (!error && data) {
-                globalInstruction = data.prompt_text;
-            }
-        } catch (e) {
-            console.error('Error fetching global instruction', e);
-        }
-
-        // Fetch custom prompt specific to this metric
-        let specificInstruction = '';
+        // Fetch per-card specific instruction — prefer Supabase, fall back to DEFAULT_PROMPTS
+        let specificInstruction = DEFAULT_PROMPTS[key] || '';
         try {
             const { data, error } = await supabase.from('prompts').select('prompt_text').eq('id', key).single();
-            if (!error && data) {
+            if (!error && data?.prompt_text) {
                 specificInstruction = data.prompt_text;
             }
         } catch (e) {
             console.error('Error fetching custom prompt', e);
         }
 
-        // Leer documentos de base
+        // Leer documentos de base (bibliografía numerológica de referencia)
         const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
         const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
 
         const file1Text = await fs.readFile(file1Path, 'utf8').catch(() => '');
         const file2Text = await fs.readFile(file2Path, 'utf8').catch(() => '');
 
-        let promptText = `${globalInstruction}
+        // Build a focused, single-section prompt.
+        // The per-card instruction is the PRIMARY directive — the docs are just knowledge reference.
+        const promptText = `Eres un especialista en numerología pitagórica aplicada al autoconocimiento y desarrollo personal.
 
-=== DOCUMENTO 1 ===
+INSTRUCCIÓN ESPECÍFICA (sigue esto al pie de la letra, es lo único que debes responder):
+"""
+${specificInstruction || `Explica el significado de ${readableType} con valor ${numValue}. Máximo 200 palabras.`}
+"""
+
+DATOS A INTERPRETAR:
+Sección: ${readableType}
+Valores: ${numValue}
+
+BIBLIOGRAFÍA DE REFERENCIA (usa solo como conocimiento base, NO generes un reporte completo del mapa):
+
+--- DOCUMENTO 1 ---
 ${file1Text}
 
-=== DOCUMENTO 2 ===
+--- DOCUMENTO 2 ---
 ${file2Text}
 
-=== TU TAREA ===
-Analiza la siguiente métrica específica de la persona:
-Métrica: ${readableType}
-Valor/Número: ${numValue}
-`;
-
-        if (specificInstruction) {
-            promptText = `INSTRUCCIÓN PRINCIPAL Y OBLIGATORIA DEL USUARIO:
-"""
-${specificInstruction}
-"""
-
-NOTA PARA LA IA: Debes obedecer AL PIE DE LA LETRA la instrucción anterior por encima de TODO lo demás. Si te pide decir algo específico, cambiar el formato, o simplemente omitir el análisis y retornar algo exacto (ej: "solo di hola"), hazlo sin justificaciones ni agregados. El siguiente contenido es sólo contexto de apoyo:
-
-${promptText}`;
-        }
+RECUERDA: Tu respuesta debe limitarse estrictamente a lo que pide la instrucción específica. No generes análisis de otras secciones, ni un reporte completo del mapa numerológico.`;
 
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
