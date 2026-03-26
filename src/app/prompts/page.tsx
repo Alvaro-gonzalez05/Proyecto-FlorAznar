@@ -9,10 +9,11 @@ export default function PromptsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
-    // Add global instruction manually since it's not in TYPE_TRANSLATIONS
+    // Only show the 3 specific prompts the user wants to edit
     const promptKeys = [
-        { id: 'global_instruction', name: 'Instrucción Global (Para todas las tarjetas individuales)' },
-        ...Object.entries(TYPE_TRANSLATIONS).map(([id, name]) => ({ id, name }))
+        { id: 'global_instruction', name: 'INSTUCCIÓN MAESTRA GLOBAL (Afecta a todas las tarjetas)' },
+        { id: 'resumen_analista', name: 'Resumen Analista (Reporte Técnico)' },
+        { id: 'resumen_cliente', name: 'Resumen Cliente (Reporte Amigable)' }
     ];
     
     const [selectedId, setSelectedId] = useState<string>(promptKeys[0].id);
@@ -25,7 +26,8 @@ export default function PromptsPage() {
                 const res = await fetch('/api/prompts');
                 if (res.ok) {
                     const data = await res.json();
-                    setPrompts(data.prompts || DEFAULT_PROMPTS);
+                    // Merge DB prompts with defaults, ensuring missing keys have default values
+                    setPrompts({ ...DEFAULT_PROMPTS, ...(data.prompts || {}) });
                 } else {
                     setPrompts(DEFAULT_PROMPTS);
                 }

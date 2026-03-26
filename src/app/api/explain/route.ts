@@ -1,82 +1,112 @@
+
 import { NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
 import fs from 'fs/promises';
 import path from 'path';
-import { GoogleGenAI } from '@google/genai';
+import { supabase } from '@/lib/supabase';
+import { DEFAULT_PROMPTS } from '@/lib/defaultPrompts';
 
+// Initialize Gemini client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(request: Request) {
     try {
-        const { section, value, context, nombre, sectionData } = await request.json();
+        const body = await request.json();
+        const { section, value, context, nombre, sectionData } = body;
 
         if (!section || !value) {
             return NextResponse.json({ error: 'Faltan parámetros requeridos' }, { status: 400 });
         }
 
         if (!process.env.GEMINI_API_KEY) {
-            throw new Error("GEMINI_API_KEY is not defined.");
+            console.error("GEMINI_API_KEY is not defined.");
+            return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
         }
 
-        // Read the reference documents for grounding
+        // --- FETCH CUSTOM PROMPTS FROM DB ---
+        // Start mixed prompts logic
+        let finalGlobalPrompt = DEFAULT_PROMPTS['global_instruction'] || '';
+        
+        // --- NEW LOGIC: ALWAYS USE GENERIC SECTION TEMPLATE ---
+        // We no longer fetch specific section prompts from DB for cards, only the global one.
+        // We use the GENERIC_SECTION_PROMPT from defaults, which relies on the Global Instruction.
+        let finalSectionPrompt = DEFAULT_PROMPTS['GENERIC_SECTION_PROMPT'] || `
+TAREA: Analiza la sección "[SECCION]" de la carta numerológica de [NOMBRE].
+
+VALOR PRINCIPAL: [VALOR]
+[CONTEXTO]
+[DATOS]
+
+INSTRUCCIONES:
+1. Usa la INSTRUCCIÓN GLOBAL MAESTRA para interpretar este resultado.
+2. Sé conciso pero profundo.
+`;
+
+        try {
+            // Fetch ONLY global instruction (and maybe reports if we were in that endpoint, but this is explain route)
+            const { data: promptsData } = await supabase
+                .from('prompts')
+                .select('id, prompt_text')
+                .eq('id', 'global_instruction')
+                .maybeSingle(); // Changed single to maybeSingle
+
+            if (promptsData && promptsData.prompt_text) {
+                finalGlobalPrompt = promptsData.prompt_text;
+            }
+        } catch (dbError) {
+            console.warn('Could not fetch custom prompts, using defaults.', dbError);
+        }
+
+        // Read reference docs
         const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
         const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
 
         let referenceText = '';
         try {
-            const file1Text = await fs.readFile(file1Path, 'utf8');
-            const file2Text = await fs.readFile(file2Path, 'utf8');
+            const [file1Text, file2Text] = await Promise.all([
+                 fs.readFile(file1Path, 'utf8'),
+                 fs.readFile(file2Path, 'utf8')
+            ]);
             referenceText = `=== DOCUMENTO REFERENCIA 1 ===\n${file1Text}\n\n=== DOCUMENTO REFERENCIA 2 ===\n${file2Text}`;
-        } catch {
+        } catch (err) {
+            console.warn("Could not read reference files:", err);
             referenceText = '';
         }
 
-        // Build section-specific detailed data block
-        const dataBlock = sectionData ? `\nDATOS COMPLETOS DE ESTA SECCIÓN:\n${JSON.stringify(sectionData, null, 2)}\n` : '';
+        // Build data blocks
+        const dataBlock = sectionData ? `\n\n=== DATOS COMPLETOS (Raw Data) ===\n${JSON.stringify(sectionData, null, 2)}\n` : '';
+        const contextBlock = context ? `\n\n=== CONTEXTO PREVIO ===\n${context}` : '';
+        const nameBlock = nombre || 'el consultante';
 
-        const promptText = `Eres un experto en Numerología Pitagórica de alto nivel.
-${referenceText ? `Tu fuente bibliográfica principal:\n${referenceText}\n\n` : ''}
+        // --- REPLACE PLACEHOLDERS ---
+        let processedSectionPrompt = finalSectionPrompt
+            .replace(/\[SECCION\]/g, section)
+            .replace(/\[NOMBRE\]/g, nameBlock)
+            .replace(/\[VALOR\]/g, String(value))
+            .replace(/\[CONTEXTO\]/g, contextBlock)
+            .replace(/\[DATOS\]/g, dataBlock);
 
-TAREA: Analiza la sección "${section}" de la carta numerológica de ${nombre || 'esta persona'}.
+        // Fallback: If placeholders are missing in custom prompt, append data automatically so AI context is not lost
+        if (!finalSectionPrompt.includes('[VALOR]') && !finalSectionPrompt.includes('[DATOS]')) {
+             processedSectionPrompt += `\n\n--- DATOS AUTOMÁTICOS ---\nVALOR PRINCIPAL: ${value}\n${contextBlock}\n${dataBlock}`;
+        }
 
-VALOR PRINCIPAL: ${value}
-${context ? `CONTEXTO GENERAL: ${context}` : ''}
-${dataBlock}
+        const fullPrompt = `${finalGlobalPrompt}\n\n${referenceText ? `Tu fuente bibliográfica principal:\n${referenceText}\n\n` : ''}\n\n${processedSectionPrompt}`;
 
-INSTRUCCIONES ESTRICTAS:
-1. DESGLOSE DETALLADO: Si hay sub-componentes (nombres, casas, ciclos), DEBES listar CADA UNO con este formato:
-   COMPONENTE = NÚMERO: explicación de este componente.
-   Por ejemplo: "CASA 1 (El Rey) - Habitante 6: El número 6 en la casa del ego..."
-   O: "NANCY = 21/3: Tu nombre Nancy vibra con la energía del 3..."
-   O: "CICLO 1 = 12/3: Tu primer ciclo de vida..."
-2. Después de listar cada sub-componente, escribí un párrafo final de SÍNTESIS TOTAL.
-3. Para cada número, explica su vibración, su energía y cómo influye en la vida de la persona.
-4. Si un número es MAESTRO (11, 22, 33, 44) o KÁRMICO (13, 14, 16, 19), explica su significado especial.
-5. Si hay un número alternativo, explica ambas interpretaciones.
-6. Habla en segunda persona del singular, de forma elegante, empoderante y profunda.
-7. Ve directo al grano — NUNCA uses "Aquí tienes", "Estimada...", "Para ofrecerte..." ni "necesito que me indiques". 
-8. NUNCA pidas más datos. Ya tenés TODA la información en los DATOS de arriba. Analizá TODO directamente.
-9. Usa párrafos claros y separados con líneas vacías entre ellos.
-
-FORMATO:
-- Cada sub-componente en su propia línea/párrafo con el formato NOMBRE = NÚMERO: explicación.
-- Un párrafo de síntesis al final.
-- Máximo 500 palabras total.
-- Solo texto plano. Sin JSON, sin markdown, sin asteriscos, sin encabezados.`;
-
+        // Call Gemini 1.5 Flash
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: promptText,
+            model: 'gemini-1.5-flash',
+            contents: fullPrompt,
             config: {
                 temperature: 0.4,
             }
         });
 
         const explanation = response.text || '';
-
         return NextResponse.json({ explanation });
 
     } catch (error: any) {
-        console.error('API Error with section explanation:', error);
-        return NextResponse.json({ error: 'Error al generar la explicación.' }, { status: 500 });
+        console.error('Error in /api/explain:', error);
+        return NextResponse.json({ error: 'Failed to generate explanation', details: error.message }, { status: 500 });
     }
 }

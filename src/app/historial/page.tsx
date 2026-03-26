@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { supabase } from '@/lib/supabase';
 import { Toaster, sileo } from 'sileo';
@@ -50,9 +50,28 @@ export default function HistorialPage() {
     const controlsRef = useRef<HTMLDivElement>(null);
     const gridRef = useRef<HTMLDivElement>(null);
     const sidebarRef = useRef<HTMLElement>(null);
+    const observerTarget = useRef<HTMLDivElement>(null);
 
     const [consults, setConsults] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
+    const isFirstLoad = useRef(true);
+    const pageRef = useRef(0);
+    const loadingMoreRef = useRef(false);
+    const hasMoreRef = useRef(true);
+    const ITEMS_PER_PAGE = 6;
+
+    // Search & Date filter
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+    const nameRef = useRef('');
+    const dateRef = useRef('');
+    const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const dateInputRef = useRef<HTMLInputElement>(null);
+    const initialLoadDone = useRef(false);
+
     const router = useRouter();
 
     const handleViewResults = (consult: any) => {
@@ -99,6 +118,7 @@ export default function HistorialPage() {
 
                         // Actualizar estado local
                         setConsults(prev => prev.filter(c => c.id !== consult.id));
+                        setTotalCount(prev => Math.max(0, prev - 1));
 
                         sileo.success({
                             title: "Eliminado",
@@ -118,29 +138,143 @@ export default function HistorialPage() {
         });
     };
 
-    // Initial Data Fetch
-    useEffect(() => {
-        async function fetchHistory() {
-            try {
-                const { data, error } = await supabase
-                    .from('consultas')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (!error && data) {
-                    setConsults(data);
-                }
-            } catch (err) {
-                console.error("Error fetching history:", err);
-            } finally {
-                setLoading(false);
+    // Data Fetch with Pagination + Filters
+    const fetchHistory = useCallback(async (pageToLoad: number) => {
+        try {
+            // Only show full-page loading on very first load
+            if (pageToLoad === 0 && !initialLoadDone.current) {
+                setLoading(true);
+            } else if (pageToLoad > 0) {
+                setLoadingMore(true);
+                loadingMoreRef.current = true;
             }
+
+            const from = pageToLoad * ITEMS_PER_PAGE;
+            const to = from + ITEMS_PER_PAGE - 1;
+
+            let query = supabase
+                .from('consultas')
+                .select('*', pageToLoad === 0 ? { count: 'exact' } : undefined)
+                .order('created_at', { ascending: false });
+
+            // Apply name filter (server-side)
+            const term = nameRef.current.trim();
+            if (term) {
+                // Use ILIKE with wildcards for partial match
+                query = query.ilike('nombre_completo', `%${term}%`);
+            }
+
+            // Apply date filter (server-side)
+            if (dateRef.current) {
+                const startOfDay = `${dateRef.current}T00:00:00`;
+                const endOfDay = `${dateRef.current}T23:59:59`;
+                query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
+            }
+
+            const { data, error, count } = await query.range(from, to);
+
+            // Handle potential errors, but be permissive if data exists
+            if (error) {
+                if (data === null) {
+                    console.warn("Supabase fetch error:", error);
+                    // Often an abortion or network hiccup, don't crash the app
+                    return; 
+                }
+                // If data exists despite error, log warning but continue
+                console.warn("Supabase returned data with error warning:", error);
+            }
+
+            if (data) {
+                if (pageToLoad === 0) {
+                    setConsults(data);
+                    if (count !== null) setTotalCount(count);
+                } else {
+                    setConsults(prev => [...prev, ...data]);
+                }
+                
+                if (data.length < ITEMS_PER_PAGE) {
+                    setHasMore(false);
+                    hasMoreRef.current = false;
+                }
+            }
+
+            initialLoadDone.current = true;
+        } catch (err: any) {
+            console.error("Error fetching history:", err?.message || err);
+        } finally {
+            setLoading(false);
+            setLoadingMore(false);
+            loadingMoreRef.current = false;
         }
-        fetchHistory();
     }, []);
 
+    // Reset pagination and re-fetch when filters change
+    const resetAndFetch = useCallback(() => {
+        pageRef.current = 0;
+        hasMoreRef.current = true;
+        setHasMore(true);
+        setConsults([]);
+        fetchHistory(0);
+    }, [fetchHistory]);
+
+    // Initial Data Fetch
+    useEffect(() => {
+        fetchHistory(0);
+    }, [fetchHistory]);
+
+    // Debounced search handler
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        nameRef.current = value;
+
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+        debounceTimer.current = setTimeout(() => {
+            resetAndFetch();
+        }, 500);
+    };
+
+    // Date picker handler
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSelectedDate(value);
+        dateRef.current = value;
+        resetAndFetch();
+    };
+
+    // Clear date filter
+    const clearDateFilter = () => {
+        setSelectedDate('');
+        dateRef.current = '';
+        resetAndFetch();
+    };
+
+    // Infinite Scroll Observer — stable, no state in deps
+    useEffect(() => {
+        const target = observerTarget.current;
+        if (!target) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMoreRef.current && !loadingMoreRef.current) {
+                    const nextPage = pageRef.current + 1;
+                    pageRef.current = nextPage;
+                    fetchHistory(nextPage);
+                }
+            },
+            { threshold: 0, rootMargin: '100px' }
+        );
+
+        observer.observe(target);
+
+        return () => {
+            observer.unobserve(target);
+        };
+    }, [fetchHistory]);
+
     // Estadísticas reales
-    const totalConsultas = consults.length;
+    const totalConsultas = totalCount;
+
     const guardadasCount = consults.filter(c =>
         c.explicaciones_ia &&
         typeof c.explicaciones_ia === 'object' &&
@@ -152,6 +286,7 @@ export default function HistorialPage() {
 
     useEffect(() => {
         if (loading) return;
+        if (!isFirstLoad.current) return;
 
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({
@@ -217,10 +352,12 @@ export default function HistorialPage() {
                     clearProps: "willChange,filter"
                 }, "<0.4");
             }
+            
+            isFirstLoad.current = false;
         });
 
         return () => ctx.revert();
-    }, [loading, consults]);
+    }, [loading]);
 
     return (
         <div className="flex flex-col lg:flex-row h-full overflow-hidden">
@@ -243,12 +380,47 @@ export default function HistorialPage() {
                 <div ref={controlsRef} className="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between opacity-0">
                     <div className="relative w-full md:w-96">
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                        <input className="w-full pl-12 pr-4 py-3 bg-white border-none rounded-2xl soft-shadow text-sm focus:ring-2 focus:ring-lavender transition-all" placeholder="Buscar por nombre o fecha..." type="text" />
+                        <input
+                            className="w-full pl-12 pr-28 py-3 bg-white border-none rounded-2xl soft-shadow text-sm focus:ring-2 focus:ring-lavender transition-all"
+                            placeholder="Buscar por nombre..."
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                        />
+                        {/* Calendar picker inside the input */}
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            {selectedDate && (
+                                <button
+                                    onClick={clearDateFilter}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                                    title="Limpiar fecha"
+                                >
+                                    <span className="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            )}
+                            <button
+                                onClick={() => dateInputRef.current?.showPicker()}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
+                                    selectedDate
+                                        ? 'bg-lavender/20 text-purple-700'
+                                        : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
+                                }`}
+                                title="Filtrar por fecha"
+                            >
+                                <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                {selectedDate ? new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short' }).toUpperCase() : 'Fecha'}
+                            </button>
+                            <input
+                                ref={dateInputRef}
+                                type="date"
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                className="absolute opacity-0 w-0 h-0 pointer-events-none"
+                                tabIndex={-1}
+                            />
+                        </div>
                     </div>
                     <div className="flex gap-3">
-                        <button className="px-6 py-3 bg-white rounded-xl text-xs font-bold uppercase tracking-widest border border-slate-100 flex items-center gap-2 hover:bg-slate-50 transition-colors">
-                            <span className="material-symbols-outlined text-sm">filter_list</span> Filtrar
-                        </button>
                         <Link href="/nueva-consulta" className="px-6 py-3 bg-black-accent text-white rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all">
                             <span className="material-symbols-outlined text-sm">add</span> Nueva
                         </Link>
@@ -263,8 +435,8 @@ export default function HistorialPage() {
                     ) : consults.length === 0 ? (
                         <div className="col-span-full py-20 flex flex-col items-center text-center">
                             <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">folder_open</span>
-                            <h3 className="text-xl font-bold text-slate-400">Sin registros</h3>
-                            <p className="text-slate-400 mt-2 max-w-sm">Aún no tienes análisis numerológicos guardados en el historial.</p>
+                            <h3 className="text-xl font-bold text-slate-400">{searchTerm.trim() ? 'Sin coincidencias' : 'Sin registros'}</h3>
+                            <p className="text-slate-400 mt-2 max-w-sm">{searchTerm.trim() ? `No se encontraron registros para "${searchTerm.trim()}"` : 'Aún no tienes análisis numerológicos guardados en el historial.'}</p>
                         </div>
                     ) : (
                         consults.map((consult, index) => {
@@ -280,7 +452,7 @@ export default function HistorialPage() {
                             const st = styles[index % styles.length];
 
                             return (
-                                <div key={consult.id} className={`opacity-0 bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group ${st.border} hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden`}>
+                                <div key={consult.id} className={`${isFirstLoad.current && index < ITEMS_PER_PAGE ? 'opacity-0' : 'opacity-100'} bg-white p-7 rounded-3xl border border-slate-50 soft-shadow group ${st.border} hover:-translate-y-2 hover:shadow-lg transition-all duration-300 relative overflow-hidden`}>
                                     <div className="flex justify-between items-start mb-8">
                                         <div className={`w-12 h-12 ${st.bg} rounded-2xl flex items-center justify-center`}>
                                             <span className={`material-symbols-outlined ${st.iconText}`}>{st.icon}</span>
@@ -340,6 +512,13 @@ export default function HistorialPage() {
                         <p className="text-sm font-bold uppercase tracking-widest text-slate-400">Nuevo Análisis</p>
                         <p className="text-xs text-slate-300 mt-1 max-w-[150px]">Comienza una nueva lectura personalizada</p>
                     </Link>
+                </div>
+
+                {/* Sentinel for Infinite Scroll */}
+                <div ref={observerTarget} className="h-20 w-full flex justify-center items-center">
+                    {loadingMore && (
+                         <span className="material-symbols-outlined text-3xl text-slate-300 animate-spin">refresh</span>
+                    )}
                 </div>
             </main>
 
