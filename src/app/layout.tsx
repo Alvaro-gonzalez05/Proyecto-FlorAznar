@@ -10,8 +10,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Numerología | Descubre tu Camino",
+  title: "METODO RAP | Flor Aznar",
   description: "Descubre el significado oculto de tus números y transforma tu vida.",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
