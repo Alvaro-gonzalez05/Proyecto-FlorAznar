@@ -36,6 +36,9 @@ export default function Home() {
     if (consult.explicaciones_ia) {
       sessionStorage.setItem('geminiExplanations', JSON.stringify(consult.explicaciones_ia));
     }
+    sessionStorage.removeItem('aiMetricsPayload');
+    sessionStorage.removeItem('resumenAnalista');
+    sessionStorage.removeItem('clientReportEdited');
     router.push('/resultados');
   };
 

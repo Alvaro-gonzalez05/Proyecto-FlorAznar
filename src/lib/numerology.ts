@@ -375,21 +375,22 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const puenteDeEvolucion = reducirANumeros(resultadoEvolucion);
 
     // Propuesta de Evolución (por casa)
-    // Fórmula confirmada por Flor: habitante + cantidad de veces que aparece
-    // Normalizar: 0 y 10 cuentan como 1 para agrupación de frecuencias
+    // Fórmula confirmada por Flor: habitante + (veces que aparece - 1)
+    // Contamos frecuencias sobre el valor ORIGINAL (no agrupamos el 0 con el 1 para frecuencias en esta parte)
     const frecuenciasPropuesta: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const habOriginal = habitantes[casa] || 0;
-        const habNorm = (habOriginal === 0 || habOriginal === 10) ? 1 : habOriginal;
-        frecuenciasPropuesta[habNorm] = (frecuenciasPropuesta[habNorm] || 0) + 1;
+        frecuenciasPropuesta[habOriginal] = (frecuenciasPropuesta[habOriginal] || 0) + 1;
     }
 
     const propuestaEvolucion: Record<number, ReductionResult> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const habOriginal = habitantes[casa] || 0;
+        // El 0 y el 10 valen 1 matemáticamente para la suma
         const habValor = (habOriginal === 0 || habOriginal === 10) ? 1 : habOriginal;
-        const frecuencia = frecuenciasPropuesta[habValor] || 1;
-        const resultado = habValor + frecuencia;
+        // Pero la frecuencia se lee de cuántas veces apareció ese habOriginal
+        const frecuencia = frecuenciasPropuesta[habOriginal] || 1;
+        const resultado = habValor + (frecuencia - 1);
         propuestaEvolucion[casa] = reducirANumeros(resultado);
     }
 

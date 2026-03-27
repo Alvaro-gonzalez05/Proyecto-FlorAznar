@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 import AiExplanationModal from '../components/AiExplanationModal';
 import { buildDatosEstructurados } from '../../lib/buildDatosEstructurados';
+import { buildAiMetricsPayload } from '@/lib/buildAiMetricsPayload';
 import DiamanteCiclos from './DiamanteCiclos';
 import EditableReportModal from '../components/EditableReportModal';
 import { reducirANumeros } from '../../lib/numerology';
@@ -293,6 +294,8 @@ export default function ResultadosPage() {
         if (stored) {
             try {
                 const parsedData = JSON.parse(stored);
+                const metricsPayload = buildAiMetricsPayload(parsedData);
+                sessionStorage.setItem('aiMetricsPayload', JSON.stringify(metricsPayload));
                 setData(parsedData);
                 setShowingCards(true);
             } catch {
