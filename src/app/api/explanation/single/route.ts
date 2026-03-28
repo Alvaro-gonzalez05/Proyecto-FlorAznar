@@ -9,7 +9,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(request: Request) {
     try {
-        const { key, numValue } = await request.json();
+        const { key, numValue, tipo, palabra } = await request.json();
 
         if (!key || !numValue) {
             return NextResponse.json({ error: 'Payload incompleto' }, { status: 400 });
@@ -34,6 +34,14 @@ export async function POST(request: Request) {
             }
         } catch (e) {
             console.error('Error fetching custom prompt', e);
+        }
+
+        // For linaje_individual: substitute template variables {tipo}, {palabra}, {numero}
+        if (key === 'linaje_individual') {
+            specificInstruction = specificInstruction
+                .replace(/\{tipo\}/g, tipo || 'nombre')
+                .replace(/\{palabra\}/g, palabra || '')
+                .replace(/\{numero\}/g, String(numValue));
         }
 
         // Leer documentos de base (bibliografía numerológica de referencia)

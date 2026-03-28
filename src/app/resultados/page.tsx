@@ -131,10 +131,11 @@ export default function ResultadosPage() {
             'Número de Equilibrio': 'equilibrio',
             'Regalo Divino': 'regalo_divino',
             'Planos Existenciales': 'planos_existenciales',
-            'Herencia Familiar': 'sistema_familiar_herencia',
-            'Evolución Familiar': 'sistema_familiar_evolucion',
-            'Expresión Profesional': 'sistema_familiar_expresion',
-            'Potencial Evolutivo': 'sistema_familiar_potencial',
+            'Herencia Familiar': 'herencia_familiar',
+            'Evolución Familiar': 'evolucion_familiar',
+            'Campo de Expresión': 'expresion_profesional',
+            'Expresión Profesional': 'expresion_profesional',
+            'Potencial Evolutivo': 'potencial_evolutivo',
             'Año Personal': 'anio_personal',
             'Mes Personal': 'mes_personal'
         };
@@ -219,6 +220,43 @@ export default function ResultadosPage() {
 
     const closeExplanation = () => {
         setExplanationState(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const handleLinajeExplanation = async (linaje: any, forceRegenerate = false) => {
+        const tipo: string = linaje.tipo || 'nombre';
+        const palabra: string = linaje.nombre;
+        const numStr = displayNum(linaje.reduccion);
+        const title = `Linaje de ${palabra.charAt(0) + palabra.slice(1).toLowerCase()}`;
+        const metricKey = `linaje_${palabra.toLowerCase()}`;
+
+        if (!forceRegenerate && explanations[metricKey]) {
+            setExplanationState({ isOpen: true, title, num: numStr, text: explanations[metricKey], metricKey });
+            return;
+        }
+
+        setExplanationState({ isOpen: true, title, num: numStr, isLoading: true, metricKey });
+
+        try {
+            const res = await fetch('/api/explanation/single', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'linaje_individual', numValue: numStr, tipo, palabra }),
+            });
+
+            if (res.ok) {
+                const resData = await res.json();
+                setExplanations(prev => {
+                    const newExps = { ...prev, [metricKey]: resData.explanation };
+                    sessionStorage.setItem('geminiExplanations', JSON.stringify(newExps));
+                    return newExps;
+                });
+                setExplanationState({ isOpen: true, title, num: numStr, text: resData.explanation, metricKey });
+            } else {
+                setExplanationState({ isOpen: true, title, num: numStr, text: 'Error al generar la explicación.', metricKey });
+            }
+        } catch (e) {
+            setExplanationState({ isOpen: true, title, num: numStr, text: 'No se pudo conectar.', metricKey });
+        }
     };
 
     const handleRegenerateCliente = async () => {
@@ -1040,28 +1078,28 @@ export default function ResultadosPage() {
                                         {/* Left Side: 4 Stats */}
                                         <div className="lg:col-span-7 grid grid-cols-2 gap-4">
                                             <div className="bg-gradient-to-br from-indigo-50 to-blue-50/60 rounded-[2.5rem] p-8 border border-indigo-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
-                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Herencia Familiar', displayNum(data.segundaParte.herenciaFamiliar), explanations['sistema_familiar_herencia']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-indigo-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Herencia Familiar', displayNum(data.segundaParte.herenciaFamiliar), explanations['herencia_familiar']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-indigo-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
                                                     <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                                 </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-3">Herencia</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.herenciaFamiliar)}</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50/60 rounded-[2.5rem] p-8 border border-violet-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
-                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Evolución Familiar', displayNum(data.segundaParte.evolucionFamiliar), explanations['sistema_familiar_evolucion']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-violet-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Evolución Familiar', displayNum(data.segundaParte.evolucionFamiliar), explanations['evolucion_familiar']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-violet-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
                                                     <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                                 </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400 mb-3">Evolución</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.evolucionFamiliar)}</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-[2.5rem] p-8 border border-emerald-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
-                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Campo de Expresión', displayNum(data.segundaParte.campoDeExpresion), explanations['sistema_familiar_expresion']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-emerald-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Campo de Expresión', displayNum(data.segundaParte.campoDeExpresion), explanations['expresion_profesional']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-emerald-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
                                                     <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                                 </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 mb-3">Expresión</p>
                                                 <p className="text-5xl md:text-6xl font-light text-slate-700">{displayNum(data.segundaParte.campoDeExpresion)}</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-[2.5rem] p-8 border border-amber-100 flex flex-col items-center justify-center text-center shadow-[inset_0_2px_10px_rgba(255,255,255,1)] hover:shadow-md transition-shadow relative group">
-                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Potencial Evolutivo', displayNum(data.segundaParte.potencialEvolutivo), explanations['sistema_familiar_potencial']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-amber-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
+                                                <button onClick={(e) => { e.stopPropagation(); openExplanation('Potencial Evolutivo', displayNum(data.segundaParte.potencialEvolutivo), explanations['potencial_evolutivo']); }} className="absolute top-4 right-4 bg-white/50 hover:bg-white text-amber-500 rounded-full p-1.5 transition-colors shadow-sm opacity-0 group-hover:opacity-100" title="Ver Significado Profundo">
                                                     <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                                 </button>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500/70 mb-3">Potencial</p>
@@ -1080,7 +1118,7 @@ export default function ResultadosPage() {
                                                         <div key={idx} className="flex justify-between items-center bg-white px-5 py-4 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 transition-all hover:border-slate-300 relative group">
                                                             <span className="text-sm font-bold capitalize text-slate-600">{linaje.nombre.toLowerCase()}</span>
                                                             <div className="flex items-center gap-3">
-                                                                <button onClick={(e) => { e.stopPropagation(); openExplanation(`Linaje ${displayNum(linaje.reduccion)} para ${linaje.nombre.toLowerCase()}`, displayNum(linaje.reduccion), explanations[`sistema_familiar_linaje_${idx}`]); }} className="bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
+                                                                <button onClick={(e) => { e.stopPropagation(); handleLinajeExplanation(linaje); }} className="bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-indigo-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all shadow-sm" title="Ver Significado Profundo">
                                                                     <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                                                                 </button>
                                                                 <div className="bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">

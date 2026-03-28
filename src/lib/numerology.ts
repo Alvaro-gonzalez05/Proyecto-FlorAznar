@@ -375,20 +375,27 @@ function calcularCasas(totalesNombre: NombreTotales): CasasData {
     const puenteDeEvolucion = reducirANumeros(resultadoEvolucion);
 
     // Propuesta de Evolución (por casa)
-    // Fórmula confirmada por Flor: habitante + (veces que aparece - 1)
-    // Contamos frecuencias sobre el valor ORIGINAL (no agrupamos el 0 con el 1 para frecuencias en esta parte)
+    // Regla confirmada por Flor:
+    //   - hab=0 → siempre Propuesta=1 fijo (no entra en el conteo de frecuencias)
+    //   - hab≠0 → habitante + (veces que aparece ese valor - 1)
     const frecuenciasPropuesta: Record<number, number> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const habOriginal = habitantes[casa] || 0;
+        if (habOriginal === 0) continue; // el 0 no cuenta para frecuencias
         frecuenciasPropuesta[habOriginal] = (frecuenciasPropuesta[habOriginal] || 0) + 1;
     }
 
     const propuestaEvolucion: Record<number, ReductionResult> = {};
     for (let casa = 1; casa <= 9; casa++) {
         const habOriginal = habitantes[casa] || 0;
-        // El 0 y el 10 valen 1 matemáticamente para la suma
-        const habValor = (habOriginal === 0 || habOriginal === 10) ? 1 : habOriginal;
-        // Pero la frecuencia se lee de cuántas veces apareció ese habOriginal
+        if (habOriginal === 0) {
+            // El 0 siempre da Propuesta=1 fijo
+            propuestaEvolucion[casa] = reducirANumeros(1);
+            continue;
+        }
+        // Para hab≠0: habitante + (frecuencia - 1)
+        // El 10 vale 1 matemáticamente (se reduce)
+        const habValor = habOriginal === 10 ? 1 : habOriginal;
         const frecuencia = frecuenciasPropuesta[habOriginal] || 1;
         const resultado = habValor + (frecuencia - 1);
         propuestaEvolucion[casa] = reducirANumeros(resultado);
@@ -806,10 +813,13 @@ export function calcularEstructura(
     const apellidosCount = apellidosCompletos.length;
 
     if (apellidosCount >= 3) {
-        const linajes: Array<{ nombre: string, reduccion: ReductionResult }> = [];
+        const apellidoWords = apellidosCompletos.flatMap(a => a.toUpperCase().split(/\s+/)).filter(w => w.length > 0);
+        const linajes: Array<{ nombre: string, tipo: string, reduccion: ReductionResult }> = [];
         words.forEach(w => {
+            const tipo = apellidoWords.includes(w.toUpperCase()) ? 'apellido' : 'nombre';
             linajes.push({
                 nombre: w,
+                tipo,
                 reduccion: reducirANumeros(analyzeWord(w).totalValue)
             });
         });

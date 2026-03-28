@@ -19,10 +19,11 @@ export const TYPE_TRANSLATIONS: Record<string, string> = {
     'ciclo_actual': 'Ciclo de Realización Actual (etapa vital actual)',
     'ciclos_desafios': 'Mapa del Diamante (Análisis en conjunto de los 4 Ciclos de Realización y los 4 Desafíos)',
     'casas_9': 'Cuadro de las 9 Casas (panorama general de los habitantes y puente de evolución global)',
-    'sistema_familiar_herencia': 'Sistema Familiar - Herencia Familiar',
-    'sistema_familiar_evolucion': 'Sistema Familiar - Evolución Familiar',
-    'sistema_familiar_expresion': 'Sistema Familiar - Campo de Expresión',
-    'sistema_familiar_potencial': 'Sistema Familiar - Potencial Evolutivo',
+    'herencia_familiar': 'Sistema Familiar - Herencia Familiar',
+    'evolucion_familiar': 'Sistema Familiar - Evolución Familiar',
+    'expresion_profesional': 'Sistema Familiar - Campo de Expresión Profesional',
+    'potencial_evolutivo': 'Sistema Familiar - Potencial Evolutivo',
+    'linaje_individual': 'Sistema Familiar - Linaje Individual',
     'resumen_analista': 'Resumen Analista (Prompt para Reporte Completo)',
     'resumen_cliente': 'Resumen Cliente (Prompt para Reporte Amigable)'
 };
@@ -446,6 +447,17 @@ export const DEFAULT_PROMPTS: Record<string, string> = {
     'regalo_divino': `Explica el Regalo Divino de esta persona: el don o talento especial que trae a esta vida desde el alma. Cómo se expresa este don naturalmente, en qué áreas puede brillar más y cómo puede ponerlo al servicio de los demás y de su propósito. Menciona si hay número maestro o kármico. Máximo 100 palabras.`,
 
     'planos_existenciales': `Explica los Planos Existenciales de esta persona: Mental, Físico, Emotivo e Intuitivo. Analiza cuál o cuáles predominan en su carácter según las letras de su nombre, qué tipo de inteligencia o percepción domina, y cómo esa distribución influye en su forma de vivir, tomar decisiones y relacionarse. Máximo 150 palabras.`,
+
+    // ── Sistema Familiar ─────────────────────────────────────────────────────
+    'herencia_familiar': `Explica la Herencia Familiar: qué patrones, dones o cargas emocionales se transmiten a través del linaje. Máximo 150 palabras.`,
+
+    'evolucion_familiar': `Explica la Evolución Familiar: cómo la persona puede transformar los patrones del clan y avanzar. Máximo 150 palabras.`,
+
+    'expresion_profesional': `Explica el Campo de Expresión Profesional: en qué áreas laborales puede destacarse según su mapa familiar. Máximo 150 palabras.`,
+
+    'potencial_evolutivo': `Explica el Potencial Evolutivo: la combinación de evolución y expresión, qué puede lograr si integra el legado familiar. Máximo 150 palabras.`,
+
+    'linaje_individual': `Actúa como especialista en numerología pitagórica. Analiza el número del {tipo} "{palabra}" que da {numero}. Explica qué energía aporta este linaje a la persona, qué patrón familiar puede representar, y cómo influye en su camino de vida. Máximo 120 palabras.`,
 
     // ── Reportes completos ───────────────────────────────────────────────────
     'resumen_analista': `Eres un experto en reportes de Numerología. Usa el contexto global para generar un resumen técnico detallado.`,

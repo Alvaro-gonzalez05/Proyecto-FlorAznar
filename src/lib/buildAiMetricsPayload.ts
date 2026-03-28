@@ -76,10 +76,10 @@ export function buildAiMetricsPayload(result: any): Record<string, string | numb
             desafio_4: `Valor: ${formatGeminiNumber(pp.ciclos.desafiosReduction[3])}.`,
         }),
         ...(result?.segundaParte && {
-            sistema_familiar_herencia: formatGeminiNumber(result.segundaParte.herenciaFamiliar),
-            sistema_familiar_evolucion: formatGeminiNumber(result.segundaParte.evolucionFamiliar),
-            sistema_familiar_expresion: formatGeminiNumber(result.segundaParte.campoDeExpresion),
-            sistema_familiar_potencial: formatGeminiNumber(result.segundaParte.potencialEvolutivo),
+            herencia_familiar: formatGeminiNumber(result.segundaParte.herenciaFamiliar),
+            evolucion_familiar: formatGeminiNumber(result.segundaParte.evolucionFamiliar),
+            expresion_profesional: formatGeminiNumber(result.segundaParte.campoDeExpresion),
+            potencial_evolutivo: formatGeminiNumber(result.segundaParte.potencialEvolutivo),
         }),
         ...(pp?.casas && {
             casas_9: `Habitantes principales por casa: C1=${pp.casas.habitantes[1] || 0}, C2=${pp.casas.habitantes[2] || 0}, C3=${pp.casas.habitantes[3] || 0}, C4=${pp.casas.habitantes[4] || 0}, C5=${pp.casas.habitantes[5] || 0}, C6=${pp.casas.habitantes[6] || 0}, C7=${pp.casas.habitantes[7] || 0}, C8=${pp.casas.habitantes[8] || 0}, C9=${pp.casas.habitantes[9] || 0}. Puente de Evolución Global = ${formatGeminiNumber(pp.casas.puenteDeEvolucion)}. Explica brevemente el panorama general de esta distribución de habitantes en su vida y el potencial o lección de su puente de evolución global.`,

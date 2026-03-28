@@ -29,6 +29,12 @@ export default function PromptsPage() {
         { id: 'equilibrio', name: 'Número de Equilibrio' },
         { id: 'regalo_divino', name: 'Regalo Divino' },
         { id: 'planos_existenciales', name: 'Planos Existenciales' },
+        // Sistema Familiar
+        { id: 'herencia_familiar', name: 'Herencia Familiar' },
+        { id: 'evolucion_familiar', name: 'Evolución Familiar' },
+        { id: 'expresion_profesional', name: 'Expresión Profesional' },
+        { id: 'potencial_evolutivo', name: 'Potencial Evolutivo' },
+        { id: 'linaje_individual', name: 'Linaje Individual (genérico)' },
         // Full report prompts
         { id: 'resumen_analista', name: 'Resumen Analista (Reporte Técnico)' },
         { id: 'resumen_cliente', name: 'Resumen Cliente (Reporte Amigable)' },
@@ -153,6 +159,9 @@ export default function PromptsPage() {
                                     {item.id === 'vibracion_interna' && (
                                         <div className="px-4 py-2 mt-4 mb-1 text-[10px] font-bold uppercase text-teal-400 tracking-wider">Tarjetas Específicas</div>
                                     )}
+                                    {item.id === 'herencia_familiar' && (
+                                        <div className="px-4 py-2 mt-4 mb-1 text-[10px] font-bold uppercase text-violet-400 tracking-wider">Sistema Familiar</div>
+                                    )}
                                     {item.id === 'resumen_analista' && (
                                         <div className="px-4 py-2 mt-4 mb-1 text-[10px] font-bold uppercase text-purple-400 tracking-wider">Reportes Completos</div>
                                     )}
@@ -168,7 +177,9 @@ export default function PromptsPage() {
                                     >
                                         <span className={`material-symbols-outlined text-[18px] mt-0.5 ${isActive ? 'text-indigo-500' : 'text-slate-400 group-hover:text-slate-600'}`}>
                                             {item.id === 'global_instruction' ? 'public' : 
-                                             item.id.includes('resumen') ? 'summarize' : 'psychology'}
+                                             item.id.includes('resumen') ? 'summarize' :
+                                             ['herencia_familiar','evolucion_familiar','expresion_profesional','potencial_evolutivo','linaje_individual'].includes(item.id) ? 'family_history' :
+                                             'psychology'}
                                         </span>
                                         <span className="leading-snug">{item.name}</span>
                                     </button>
@@ -242,7 +253,11 @@ export default function PromptsPage() {
                                     ? 'Estas instrucciones sirven de "System Prompt" o comportamiento base para todas las consultas individuales, asegurando el uso de la bibliografía correcta.' 
                                     : selectedId.includes('resumen')
                                         ? 'Este prompt incluye por defecto la macro variable especial [DATOS_PERSONA] internamente para inyectar los datos numerológicos. Solo enfócate en dictar el formato y estilo de la respuesta final.'
-                                        : 'Para consultas de secciones individuales, la IA recibe qué sección es, de qué persona y los valores que debe interpretar en su contexto. Define aquí cualquier particularidad que la IA deba de tener en cuenta solo en esta sección.'}
+                                        : selectedId === 'linaje_individual'
+                                            ? 'Este prompt es genérico y se reutiliza para todos los nombres y apellidos del desglose de linajes. El sistema reemplaza automáticamente {tipo} (nombre/apellido), {palabra} (ej: Silvia, Rojas) y {numero} (ej: 27/9) antes de enviarlo a la IA.'
+                                            : ['herencia_familiar','evolucion_familiar','expresion_profesional','potencial_evolutivo'].includes(selectedId)
+                                                ? 'Este prompt se usa para el análisis del Sistema Familiar (requiere 3+ apellidos). La IA recibe los valores calculados del mapa familiar junto con estas instrucciones.'
+                                                : 'Para consultas de secciones individuales, la IA recibe qué sección es, de qué persona y los valores que debe interpretar en su contexto. Define aquí cualquier particularidad que la IA deba de tener en cuenta solo en esta sección.'}
                             </p>
                         </div>
                     </div>
