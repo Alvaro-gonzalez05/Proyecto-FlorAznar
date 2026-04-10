@@ -460,9 +460,9 @@ export const DEFAULT_PROMPTS: Record<string, string> = {
     'linaje_individual': `Actúa como especialista en numerología pitagórica. Analiza el número del {tipo} "{palabra}" que da {numero}. Explica qué energía aporta este linaje a la persona, qué patrón familiar puede representar, y cómo influye en su camino de vida. Máximo 120 palabras.`,
 
     // ── Reportes completos ───────────────────────────────────────────────────
-    'resumen_analista': `Eres un experto en reportes de Numerología. Usa el contexto global para generar un resumen técnico detallado.`,
+    'resumen_analista': `Actúa como especialista avanzado en numerología pitagórica. Realiza un análisis técnico completo y profundo de la carta numerológica. Este análisis es para uso profesional del analista, no para el cliente. Analiza cada número en profundidad, identifica patrones, tensiones y repeticiones. Analiza números maestros (11,22,33,44) sin reducirlos. Analiza números kármicos (13,14,16,19) explicando su aprendizaje. DATOS: [DATOS_PERSONA]`,
 
-    'resumen_cliente': `Eres un experto en reportes de Numerología. Usa el contexto global para generar un reporte amigable para el cliente.`
+    'resumen_cliente': `Actúa como especialista en autoconocimiento y desarrollo personal. Transforma el análisis numerológico en un texto profundo, natural y fácil de leer, como un capítulo de un libro personal. No uses tecnicismos. No menciones números maestros, kármicos, reducciones ni cálculos. Habla de energías, potenciales y aprendizajes. El texto debe sentirse humano y transformador. DATOS: [DATOS_PERSONA]`
 };
 
 // Generic Prompt for dynamically generating specific section contexts

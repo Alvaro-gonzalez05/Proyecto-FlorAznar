@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { GoogleGenAI } from '@google/genai';
+import { buildContentsWithDocs } from '@/lib/numerologyDocs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -60,22 +59,9 @@ export async function POST(request: Request) {
             analysisRequestStr += `- ${key} (${readableType}): Número ${num}\n`;
         }
 
-        // 2. Read the local text files
-        const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
-        const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
-
-        const file1Text = await fs.readFile(file1Path, 'utf8');
-        const file2Text = await fs.readFile(file2Path, 'utf8');
-
-        // 3. Ask Gemini to process ALL of them in batch and return JSON
+        // 2. Ask Gemini to process ALL of them in batch and return JSON
         const promptText = `Eres un experto en Numerología Pitagórica de alto nivel. 
-Tu única fuente de verdad bibliográfica son estos dos documentos adjuntos. Mantente muy estricto al tono y a la información contenida en estos libros, sin inventar atribuciones numéricas.
-
-=== DOCUMENTO 1 ===
-${file1Text}
-
-=== DOCUMENTO 2 ===
-${file2Text}
+Tu única fuente de verdad bibliográfica son los documentos adjuntos. Mantente muy estricto al tono y a la información contenida en estos libros, sin inventar atribuciones numéricas.
 
 === TU TAREA ===
 ${analysisRequestStr}
@@ -101,9 +87,11 @@ ADEMÁS, CREÁ una clave extra "resumen_general" con una SÍNTESIS GLOBAL de 1 o
 DEVUELVE ÚNICAMENTE UN OBJETO JSON VÁLIDO.
 Las claves del JSON deben ser EXACTAMENTE LAS MISMAS CLAVES en minúsculas que te pasé en la lista, MÁS "resumen_general". Los valores DEBEN SER STRINGS (texto plano). No agregues formatos de bloque \`\`\`json.`;
 
+        const contents = await buildContentsWithDocs(promptText);
+
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: promptText,
+            contents,
             config: {
                 temperature: 0.3, // Low temperature for high adherence to the provided document
                 responseMimeType: "application/json"

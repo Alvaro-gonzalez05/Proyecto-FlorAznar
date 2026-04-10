@@ -1,8 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-import fs from 'fs/promises';
-import path from 'path';
+import { buildContentsWithDocs } from '@/lib/numerologyDocs';
 import { supabase } from '@/lib/supabase';
 import { DEFAULT_PROMPTS } from '@/lib/defaultPrompts';
 
@@ -57,22 +56,6 @@ INSTRUCCIONES:
             console.warn('Could not fetch custom prompts, using defaults.', dbError);
         }
 
-        // Read reference docs
-        const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
-        const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
-
-        let referenceText = '';
-        try {
-            const [file1Text, file2Text] = await Promise.all([
-                 fs.readFile(file1Path, 'utf8'),
-                 fs.readFile(file2Path, 'utf8')
-            ]);
-            referenceText = `=== DOCUMENTO REFERENCIA 1 ===\n${file1Text}\n\n=== DOCUMENTO REFERENCIA 2 ===\n${file2Text}`;
-        } catch (err) {
-            console.warn("Could not read reference files:", err);
-            referenceText = '';
-        }
-
         // Build data blocks
         const dataBlock = sectionData ? `\n\n=== DATOS COMPLETOS (Raw Data) ===\n${JSON.stringify(sectionData, null, 2)}\n` : '';
         const contextBlock = context ? `\n\n=== CONTEXTO PREVIO ===\n${context}` : '';
@@ -91,12 +74,14 @@ INSTRUCCIONES:
              processedSectionPrompt += `\n\n--- DATOS AUTOMÁTICOS ---\nVALOR PRINCIPAL: ${value}\n${contextBlock}\n${dataBlock}`;
         }
 
-        const fullPrompt = `${finalGlobalPrompt}\n\n${referenceText ? `Tu fuente bibliográfica principal:\n${referenceText}\n\n` : ''}\n\n${processedSectionPrompt}`;
+        const fullPrompt = `${finalGlobalPrompt}\n\n${processedSectionPrompt}`;
+
+        const contents = await buildContentsWithDocs(fullPrompt);
 
         // Call Gemini 1.5 Flash
         const response = await ai.models.generateContent({
             model: 'gemini-1.5-flash',
-            contents: fullPrompt,
+            contents,
             config: {
                 temperature: 0.4,
             }

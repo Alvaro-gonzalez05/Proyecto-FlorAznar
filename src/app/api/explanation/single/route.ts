@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { GoogleGenAI } from '@google/genai';
+import { buildContentsWithDocs } from '@/lib/numerologyDocs';
 import { supabase } from '@/lib/supabase';
 import { TYPE_TRANSLATIONS, DEFAULT_PROMPTS } from '@/lib/defaultPrompts';
 
@@ -44,13 +43,6 @@ export async function POST(request: Request) {
                 .replace(/\{numero\}/g, String(numValue));
         }
 
-        // Leer documentos de base (bibliografía numerológica de referencia)
-        const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
-        const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
-
-        const file1Text = await fs.readFile(file1Path, 'utf8').catch(() => '');
-        const file2Text = await fs.readFile(file2Path, 'utf8').catch(() => '');
-
         // Build a focused, single-section prompt.
         // The per-card instruction is the PRIMARY directive — the docs are just knowledge reference.
         const promptText = `Eres un especialista en numerología pitagórica aplicada al autoconocimiento y desarrollo personal.
@@ -64,21 +56,17 @@ DATOS A INTERPRETAR:
 Sección: ${readableType}
 Valores: ${numValue}
 
-BIBLIOGRAFÍA DE REFERENCIA (usa solo como conocimiento base, NO generes un reporte completo del mapa):
-
---- DOCUMENTO 1 ---
-${file1Text}
-
---- DOCUMENTO 2 ---
-${file2Text}
+BIBLIOGRAFÍA DE REFERENCIA (usa solo como conocimiento base, NO generes un reporte completo del mapa): Consulta los documentos adjuntos.
 
 RECUERDA: Tu respuesta debe limitarse estrictamente a lo que pide la instrucción específica. No generes análisis de otras secciones, ni un reporte completo del mapa numerológico.`;
 
+        const contents = await buildContentsWithDocs(promptText);
+
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: promptText,
+            contents,
             config: {
-                temperature: 0.3, 
+                temperature: 0.3,
             }
         });
 

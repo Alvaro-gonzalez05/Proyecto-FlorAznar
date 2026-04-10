@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { GoogleGenAI } from '@google/genai';
 import { supabase } from '@/lib/supabase';
 import { DEFAULT_PROMPTS } from '@/lib/defaultPrompts';
 import { buildDatosEstructurados } from '@/lib/buildDatosEstructurados';
+import { buildContentsWithDocs } from '@/lib/numerologyDocs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -81,12 +80,6 @@ export async function POST(request: Request) {
             }
         } catch { /* ignore */ }
 
-        // Read reference bibliography documents
-        const file1Path = path.join(process.cwd(), 'informacionParte1.txt');
-        const file2Path = path.join(process.cwd(), 'informacionParte2.txt');
-        const file1Text = await fs.readFile(file1Path, 'utf8').catch(() => '');
-        const file2Text = await fs.readFile(file2Path, 'utf8').catch(() => '');
-
         // Build structured data string from the numerology result
         const datosStr = buildDatosEstructurados(data);
 
@@ -109,11 +102,7 @@ Tu tarea es generar explicaciones individuales y enfocadas para cada sección de
 ${datosStr}
 
 === BIBLIOGRAFÍA DE REFERENCIA (solo como base de conocimiento) ===
---- DOCUMENTO 1 ---
-${file1Text}
-
---- DOCUMENTO 2 ---
-${file2Text}
+Consulta los documentos adjuntos.
 
 === INSTRUCCIONES POR SECCIÓN ===
 Genera una explicación para cada clave JSON siguiendo estrictamente su instrucción:
@@ -125,9 +114,11 @@ Responde ÚNICAMENTE con un objeto JSON válido. Sin bloques markdown. Sin texto
 Claves exactas: ${OUTPUT_KEYS.map(k => `"${k}"`).join(', ')}.
 Cada valor es el texto de la explicación en español para esa sección.`;
 
+        const contents = await buildContentsWithDocs(superPrompt);
+
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: superPrompt,
+            contents,
             config: {
                 responseMimeType: 'application/json',
                 temperature: 0.3,
