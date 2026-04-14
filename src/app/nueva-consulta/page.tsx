@@ -287,8 +287,6 @@ export default function NuevaConsultaPage() {
                     <span className="text-xs md:text-sm font-semibold uppercase tracking-widest">Volver</span>
                 </TransitionLink>
                 <div className="flex items-center gap-3 md:gap-6">
-                    <button className="material-symbols-outlined p-2 rounded-full hover:bg-slate-100 transition-colors text-xl md:text-2xl">notifications</button>
-                    <button className="material-symbols-outlined p-2 rounded-full hover:bg-slate-100 transition-colors text-xl md:text-2xl">help_outline</button>
                 </div>
             </header>
 
@@ -433,11 +431,7 @@ export default function NuevaConsultaPage() {
 
             {/* Footer */}
             <footer ref={footerRef} className="px-6 md:px-12 py-4 md:py-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 relative z-10">
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">© 2024 Numerología Moderna</p>
-                <div className="flex gap-6 md:gap-8">
-                    <a className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] hover:text-black-accent transition-colors" href="#">Privacidad</a>
-                    <a className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] hover:text-black-accent transition-colors" href="#">Términos</a>
-                </div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">© 2026 Flor Aznar</p>
             </footer>
         </main>
     );

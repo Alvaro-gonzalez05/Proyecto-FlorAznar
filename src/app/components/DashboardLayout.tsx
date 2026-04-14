@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState, ReactNode } from 'react';
 import { gsap } from 'gsap';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { RightSidebarProvider, useRightSidebar } from './RightSidebarContext';
 import TransitionLink from './TransitionLink';
+import { supabase } from '@/lib/supabase';
 
 interface DashboardLayoutProps {
     children: ReactNode;
@@ -16,17 +17,48 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     const sidebarRef = useRef(null);
     const indicatorRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+    const router = useRouter();
     const [activePath, setActivePath] = useState(pathname);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const { content: rightSidebarContent } = useRightSidebar();
+    
+    // Close user menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (isUserMenuOpen) {
+                const target = e.target as HTMLElement;
+                if (!target.closest('.user-menu-container')) {
+                    setIsUserMenuOpen(false);
+                }
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isUserMenuOpen]);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        // Do not close the menu, because we want to animate it!
+        await supabase.auth.signOut();
+        setTimeout(() => {
+            setIsLoggingOut(false);
+            setIsUserMenuOpen(false);
+            router.refresh();
+            router.push('/login');
+        }, 2500);
+    };
 
     // Sincronizar activePath con pathname para navegación del navegador (atrás/adelante)
     useEffect(() => {
         setActivePath(pathname);
+        setIsLoggingOut(false);
+        setIsUserMenuOpen(false);
     }, [pathname]);
 
     // Navigation items
     const navItems = [
-        { href: '/', icon: 'grid_view', label: 'Inicio' },
+        { href: '/dashboard', icon: 'grid_view', label: 'Inicio' },
         { href: '/historial', icon: 'history', label: 'Historial' },
         { href: '/agenda', icon: 'calendar_month', label: 'Agenda' },
         { href: '/nueva-consulta', icon: 'add', label: 'Nueva Consulta' },
@@ -47,6 +79,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                 opacity: 1,
                 duration: 1,
                 ease: 'power3.out',
+                clearProps: 'transform'
             });
         });
 
@@ -55,7 +88,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
 
     // Animar sidebar derecho cuando estamos en home o agenda
     useEffect(() => {
-        if ((pathname === '/' || pathname === '/agenda') && sidebarRef.current) {
+        if ((pathname === '/dashboard' || pathname === '/agenda') && sidebarRef.current) {
             const ctx = gsap.context(() => {
                 gsap.fromTo(sidebarRef.current,
                     {
@@ -95,15 +128,21 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         }
     }, [activePath, navItems]);
 
+    // Rutas públicas que no deben tener el dashboard (sidebar, padding de la app, etc.)
+    const publicRoutes = ['/', '/login', '/leer'];
+    if (publicRoutes.includes(pathname)) {
+        return <>{children}</>;
+    }
+
     return (
         <div className="flex h-screen overflow-hidden">
             {/* Left Sidebar - Navigation */}
-            <aside ref={leftSidebarRef} className="w-20 border-r border-slate-100 flex flex-col items-center py-8 bg-white hidden lg:flex relative">
+            <aside ref={leftSidebarRef} className="w-20 border-r border-slate-100 flex flex-col items-center py-8 bg-white hidden lg:flex relative z-50">
                 <nav className="flex flex-col gap-8 relative">
                     {/* Animated Indicator */}
                     <div
                         ref={indicatorRef}
-                        className="absolute left-0 w-full h-12 bg-black-accent rounded-2xl -z-10"
+                        className="absolute left-0 w-full h-12 bg-black-accent rounded-2xl z-0"
                         style={{ top: 0 }}
                     />
 
@@ -123,10 +162,45 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                     })}
                 </nav>
 
-                <div className="mt-auto">
-                    <div className="w-10 h-10 rounded-full bg-black-accent flex items-center justify-center border border-white shadow-sm">
+                <div className="mt-auto relative w-full flex justify-center user-menu-container">
+                    <button 
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        className="w-10 h-10 rounded-full bg-black-accent flex items-center justify-center border border-white shadow-sm hover:scale-105 transition-transform"
+                    >
                         <span className="text-white text-xs font-bold">FL</span>
-                    </div>
+                    </button>
+
+                    {/* User Dropdown */}
+                    {(isUserMenuOpen || isLoggingOut) && (
+                        <div className="absolute bottom-12 left-6 w-48 bg-white rounded-2xl shadow-[0_10px_40px_-5px_rgba(0,0,0,0.3)] border border-slate-100 overflow-hidden z-[9999] animate-in fade-in slide-in-from-bottom-2 duration-200">
+                            {isLoggingOut ? (
+                                <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#e6f4f1] via-[#f0eafc] to-[#fff1e6] animate-in fade-in zoom-in duration-500">
+                                    <span className="material-symbols-outlined text-[2.5rem] text-on-secondary-container mb-3 animate-bounce">waving_hand</span>
+                                    <h2 className="text-base font-bold text-center text-slate-800 mb-1">¡Hasta Pronto!</h2>
+                                    <p className="text-xs text-center text-slate-500 leading-tight">Cerrando sesión...</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col w-full opacity-100 transition-opacity duration-300">
+                                    <div className="p-3 border-b border-slate-50">
+                                        <p className="text-xs font-bold text-black-accent">Mi Cuenta</p>
+                                    </div>
+                                    <div className="p-2 space-y-1">
+                                    <Link href="/configuracion" onClick={() => setIsUserMenuOpen(false)} className="w-full text-left px-3 py-2 text-sm text-slate-600 hover:text-black-accent hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">settings</span>
+                                            Configuración
+                                        </Link>
+                                        <button 
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-2 font-medium"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                                            Cerrar sesión
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </aside>
 
