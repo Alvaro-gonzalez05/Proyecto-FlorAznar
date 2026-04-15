@@ -111,6 +111,16 @@ export default function LandingPage() {
       { y: 0, opacity: 1, scale: 1, duration: 1, delay: 1.1, ease: 'power3.out' }
     );
 
+    // About Flor section
+    gsap.from('.about-flor-image', {
+      x: -80, opacity: 0, duration: 0.9, ease: 'power2.out',
+      scrollTrigger: { trigger: '.about-flor-section', start: 'top 75%', toggleActions: 'play none none reverse' }
+    });
+    gsap.from('.about-flor-text', {
+      x: 80, opacity: 0, duration: 0.9, ease: 'power2.out',
+      scrollTrigger: { trigger: '.about-flor-section', start: 'top 75%', toggleActions: 'play none none reverse' }
+    });
+
     // RAP Method section title
     gsap.from('.rap-title', {
       y: 60, opacity: 0, duration: 0.8, ease: 'power2.out',
@@ -253,7 +263,7 @@ export default function LandingPage() {
                           Habita tu <span className="font-extrabold italic">máximo</span> potencial.
                       </h1>
       <p className="hero-subtitle text-lg md:text-xl text-on-surface-variant max-w-lg font-light leading-relaxed">
-                          Un espacio diseñado para quienes buscan trascender lo cotidiano a través del coaching de alto rendimiento y una profunda visión humana.
+                          Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
                       </p>
       <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4">
       <button className="bg-primary text-on-primary rounded-full px-8 py-4 text-sm md:text-base font-bold flex items-center justify-center gap-3 hover:scale-[0.98] transition-transform">
@@ -281,26 +291,50 @@ export default function LandingPage() {
       </div>
       </div>
       </section>
+
+      {/* About Flor Section */}
+      <section className="about-flor-section py-20 lg:py-28 px-6 md:px-12 bg-surface" id="about-flor">
+      <div className="max-w-screen-2xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="about-flor-image relative flex justify-center">
+      <div className="aspect-[4/5] max-w-[400px] w-full rounded-[3rem] overflow-hidden soft-shadow border-[8px] border-surface-bright/30">
+      <img alt="Flor Aznar - Coach profesional" className="w-full h-full object-cover" src="/herosection.JPG" />
+      </div>
+      </div>
+      <div className="about-flor-text space-y-6">
+      <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block">¿Quién es Flor?</span>
+      <h2 className="text-3xl md:text-4xl lg:text-5xl font-light leading-tight">Conocé a <span className="font-extrabold italic">Flor Aznar</span></h2>
+      <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed">
+      <p>Mi camino comenzó en el mundo del marketing. Soy Licenciada en Marketing y durante los años en los que ejercí mi profesión descubrí que lo que realmente me apasionaba era acompañar a las personas y ayudarlas a potenciarse para atravesar cualquier desafío.</p>
+      <p>Ese descubrimiento me llevó a adentrarme en el mundo del coaching. Me formé en EDPyN Barcelona (España), institución avalada por la ICF – Level 2, realicé un Máster en Recursos Humanos y actualmente continúo mi formación estudiando Counseling (Consultoría Psicológica).</p>
+      <p>A lo largo de este camino entendí algo fundamental: muchas veces las personas no avanzan en su vida no por falta de capacidad, sino porque no se conocen lo suficiente y terminan repitiendo patrones o creencias que las mantienen en el mismo lugar.</p>
+      <p className="font-medium text-on-surface italic">Hoy mi trabajo está enfocado en ayudar a las personas a conocerse más profundamente, comprender qué les está pasando y encontrar claridad para avanzar en su vida.</p>
+      </div>
+      </div>
+      </div>
+      </div>
+      </section>
+
       {/* RAP Method Section */}
       <section className="py-16 lg:py-24 xl:py-32 px-6 md:px-12 bg-surface" id="rap">
       <div className="max-w-screen-2xl mx-auto">
       <div className="rap-title flex flex-col md:flex-row justify-between items-end mb-12 lg:mb-24 gap-8">
       <div className="max-w-2xl">
       <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-6 block">El Mapa</span>
-      <h2 className="text-3xl md:text-5xl lg:text-6xl font-light">El Método RAP: <span className="font-extrabold text-on-surface">Una Evolución Radical</span></h2>
+      <h2 className="text-3xl md:text-5xl lg:text-6xl font-light">El Método RAP: <span className="font-extrabold text-on-surface">La evolución de tu dirección personal</span></h2>
       </div>
-      <p className="text-on-surface-variant max-w-sm pb-2">Un viaje estructurado desde la claridad interna hacia la manifestación externa, diseñado para líderes de alto impacto.</p>
+      <p className="text-on-surface-variant max-w-sm pb-2">Un método para revelar lo que hoy no estás viendo, entender qué te frena y avanzar con claridad hacia la vida que querés.</p>
       </div>
       <div className="rap-cards grid md:grid-cols-3 gap-12 relative">
       {/* Reconocimiento */}
       <div className="rap-card group relative pt-12">
-      <div className="rap-letter absolute -top-6 left-0 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-secondary-container transition-colors duration-500">R</div>
+      <div className="rap-letter absolute -top-20 lg:-top-28 -left-2 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-60 select-none group-hover:text-secondary-container group-hover:-translate-y-8 transition-all duration-500">R</div>
       <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
       <div className="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-8">
       <span className="material-symbols-outlined text-on-secondary-container text-3xl">visibility</span>
       </div>
-      <h3 className="text-2xl font-bold mb-4">Reconocimiento</h3>
-      <p className="text-on-surface-variant leading-relaxed mb-8">Identifica las narrativas silenciosas y los techos de cristal invisibles que te alejan de tu frecuencia auténtica.</p>
+      <h3 className="text-2xl font-bold mb-4">Revelar</h3>
+      <p className="text-on-surface-variant leading-relaxed mb-8">Descubrir quién sos y qué está pasando en tu vida.</p>
       <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase">
       <span>Fase 01</span>
       <div className="h-px flex-grow bg-outline-variant"></div>
@@ -309,13 +343,13 @@ export default function LandingPage() {
       </div>
       {/* Acción */}
       <div className="rap-card group relative pt-24 md:pt-32">
-      <div className="rap-letter absolute top-0 md:top-12 left-0 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-surface-container-high transition-colors duration-500">A</div>
+      <div className="rap-letter absolute -top-16 md:-top-8 -left-2 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-60 select-none group-hover:text-surface-container-high group-hover:-translate-y-8 transition-all duration-500">A</div>
       <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500 border border-surface-container-high">
       <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center mb-8">
       <span className="material-symbols-outlined text-primary text-3xl">bolt</span>
       </div>
-      <h3 className="text-2xl font-bold mb-4">Acción</h3>
-      <p className="text-on-surface-variant leading-relaxed mb-8">Implementación estratégica de nuevos comportamientos. Traducimos la visión en hábitos de alto rendimiento.</p>
+      <h3 className="text-2xl font-bold mb-4">Avanzar</h3>
+      <p className="text-on-surface-variant leading-relaxed mb-8">Analizar qué es lo que no estás viendo para avanzar.</p>
       <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase">
       <span>Fase 02</span>
       <div className="h-px flex-grow bg-outline-variant"></div>
@@ -324,13 +358,13 @@ export default function LandingPage() {
       </div>
       {/* Potencial */}
       <div className="rap-card group relative pt-12 md:pt-4">
-      <div className="rap-letter absolute -top-10 md:-top-16 left-0 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-tertiary-container transition-colors duration-500">P</div>
+      <div className="rap-letter absolute -top-28 md:-top-32 -left-2 text-[6rem] lg:text-[8rem] xl:text-[10rem] font-extrabold text-surface-dim opacity-60 select-none group-hover:text-tertiary-container group-hover:-translate-y-8 transition-all duration-500">P</div>
       <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
       <div className="w-16 h-16 rounded-2xl bg-tertiary-container flex items-center justify-center mb-8">
       <span className="material-symbols-outlined text-on-tertiary-container text-3xl">auto_awesome</span>
       </div>
-      <h3 className="text-2xl font-bold mb-4">Potencial</h3>
-      <p className="text-on-surface-variant leading-relaxed mb-8">Encarnar tu versión más elevada. Crecimiento sostenible y la realización de tu visión en cada esfera de la vida.</p>
+      <h3 className="text-2xl font-bold mb-4">Potenciar</h3>
+      <p className="text-on-surface-variant leading-relaxed mb-8">Encontrar claridad para avanzar hacia lo que querés.</p>
       <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase">
       <span>Fase 03</span>
       <div className="h-px flex-grow bg-outline-variant"></div>
@@ -383,7 +417,7 @@ export default function LandingPage() {
       )}
       </div>
       <Link href="/leer" className="border-2 border-[#7c2d12] text-[#7c2d12] rounded-full px-10 py-5 text-base font-bold hover:bg-[#7c2d12]/10 transition-all text-center">
-                                  Pegar un vistazo
+                                  Leer un fragmento
       </Link>
       </div>
       </div>
@@ -502,15 +536,14 @@ export default function LandingPage() {
       <div className="testimonial-quote space-y-10">
       <span className="material-symbols-outlined text-6xl text-secondary-container">format_quote</span>
       <h2 className="text-3xl md:text-4xl font-light leading-relaxed">
-                          "Trabajar con Flor fue el catalizador que no sabía que necesitaba. El <span className="font-bold">Método RAP</span> me dio una estructura para entender mi propia ambición sin perder mi esencia."
+                          &ldquo;Flor te agradezco por haber abierto una puerta que no sabía que necesitaba que se abra. Me encantó el espacio que me brindaste hoy, me diste las herramientas necesarias para seguir potenciando mi crecimiento en todo aspecto. Sin duda alguna voy a estar presente para el próximo taller que hagas, sos excelente en lo que hacés sin duda alguna, hoy lo demostraste de la mejor forma. Gracias, gracias, gracias de corazón.&rdquo;
                       </h2>
       <div className="flex items-center gap-4">
-      <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
-      <img alt="portrait of Elena Rodríguez" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRFY1w4fIiXzBQCzE3d7tUwGMpdCPN8c6msG0yZv3oBKlw1gsqhMudgmvaZQfAFNmE1DfmFSahrcovtr_i6xFiy-EbDboIYsbG-VMY4b4OTDZdQOKHcNcJMD8zPEz36RrCNs46FXWYuRBOMZFzFMjCU-T-nSIfekKGn2MHQokjSUAP3wIuWandsOVQTEVtUgOJLUVv431QMThDKQmvbPlPEcJBIio7bhnfz5kVKBN6gzA4zeOB9DgtebYq_mbpWiICghW121QCy3I" />
+      <div className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+      <span className="text-on-secondary-container font-bold text-lg">CA</span>
       </div>
       <div>
-      <div className="font-bold text-sm uppercase tracking-wider">Elena Rodríguez</div>
-      <div className="text-xs text-on-surface-variant">CEO &amp; Directora Creativa</div>
+      <div className="font-bold text-sm uppercase tracking-wider">Cande</div>
       </div>
       </div>
       </div>
