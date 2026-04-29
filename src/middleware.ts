@@ -42,7 +42,9 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isPublicRoute = ['/', '/login', '/leer'].includes(request.nextUrl.pathname)
+  const isPublicRoute =
+    ['/', '/login', '/leer'].includes(request.nextUrl.pathname) ||
+    request.nextUrl.pathname.startsWith('/coaching/sesion/')
 
   // Si el usuario no está validado y no es ruta pública, expulsarlo al login
   if (!user && !isPublicRoute) {

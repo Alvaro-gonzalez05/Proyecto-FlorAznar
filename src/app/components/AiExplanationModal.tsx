@@ -11,6 +11,8 @@ interface ExplanationModalProps {
     precalculatedText?: string;
     isLoading?: boolean;
     onRegenerate?: () => void;
+    onCoaching?: () => void;
+    coachingLoading?: boolean;
 }
 
 /** Build rich section data from the full numerology result for detailed AI analysis */
@@ -247,7 +249,7 @@ function buildSectionData(title: string, storedResult: any): any {
     return null;
 }
 
-export default function AiExplanationModal({ isOpen, onClose, title, num, precalculatedText, isLoading, onRegenerate }: ExplanationModalProps) {
+export default function AiExplanationModal({ isOpen, onClose, title, num, precalculatedText, isLoading, onRegenerate, onCoaching, coachingLoading }: ExplanationModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -356,18 +358,110 @@ export default function AiExplanationModal({ isOpen, onClose, title, num, precal
                             <p>No se pudo generar la explicación para este concepto.</p>
                         </div>
                     ) : (
-                        <div className="text-slate-600 space-y-4 text-[15px] leading-relaxed font-medium">
-                            {displayText.split('\n').map((paragraph, index) => {
-                                if (!paragraph.trim()) return <br key={index} />;
+                        <div className="text-slate-600 space-y-3 text-[15px] leading-relaxed font-medium">
+                            {(() => {
+                                // Inline renderer for **bold** segments
+                                const renderInline = (text: string, keyPrefix: string) => {
+                                    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                                    return parts.map((part, i) => {
+                                        if (part.startsWith('**') && part.endsWith('**')) {
+                                            return <strong key={`${keyPrefix}-b-${i}`} className="font-bold text-slate-800">{part.slice(2, -2)}</strong>;
+                                        }
+                                        return <span key={`${keyPrefix}-t-${i}`}>{part}</span>;
+                                    });
+                                };
 
-                                // Make capitalized headers bold
-                                const isHeader = paragraph === paragraph.toUpperCase() && paragraph.length < 50;
-                                if (isHeader) {
-                                    return <h4 key={index} className="text-xs font-black uppercase tracking-widest text-slate-800 mt-6 mb-2">{paragraph}</h4>;
-                                }
+                                const lines = displayText.split('\n');
+                                const elements: React.ReactNode[] = [];
+                                let bulletBuffer: string[] = [];
 
-                                return <p key={index}>{paragraph}</p>;
-                            })}
+                                const flushBullets = (idx: number) => {
+                                    if (bulletBuffer.length === 0) return;
+                                    elements.push(
+                                        <ul key={`ul-${idx}`} className="list-disc list-outside pl-5 space-y-2 my-3 marker:text-indigo-400">
+                                            {bulletBuffer.map((b, i) => (
+                                                <li key={`li-${idx}-${i}`} className="text-slate-600">{renderInline(b, `li-${idx}-${i}`)}</li>
+                                            ))}
+                                        </ul>
+                                    );
+                                    bulletBuffer = [];
+                                };
+
+                                lines.forEach((rawLine, idx) => {
+                                    const line = rawLine.trimEnd();
+                                    const trimmed = line.trim();
+
+                                    // Bullet item
+                                    if (/^[-*]\s+/.test(trimmed)) {
+                                        bulletBuffer.push(trimmed.replace(/^[-*]\s+/, ''));
+                                        return;
+                                    }
+                                    flushBullets(idx);
+
+                                    if (!trimmed) return;
+
+                                    // ### subheader
+                                    if (trimmed.startsWith('### ')) {
+                                        elements.push(
+                                            <h5 key={idx} className="text-sm font-bold text-slate-700 mt-5 mb-1">
+                                                {renderInline(trimmed.slice(4), `h5-${idx}`)}
+                                            </h5>
+                                        );
+                                        return;
+                                    }
+                                    // ## header
+                                    if (trimmed.startsWith('## ')) {
+                                        elements.push(
+                                            <h4 key={idx} className="text-[11px] font-black uppercase tracking-[0.18em] text-indigo-600 mt-7 mb-2">
+                                                {renderInline(trimmed.slice(3), `h4-${idx}`)}
+                                            </h4>
+                                        );
+                                        return;
+                                    }
+                                    // # header
+                                    if (trimmed.startsWith('# ')) {
+                                        elements.push(
+                                            <h3 key={idx} className="text-base font-black text-slate-800 mt-6 mb-2">
+                                                {renderInline(trimmed.slice(2), `h3-${idx}`)}
+                                            </h3>
+                                        );
+                                        return;
+                                    }
+                                    // ALL CAPS short line treated as header (legacy)
+                                    if (trimmed === trimmed.toUpperCase() && trimmed.length < 50 && /[A-ZÁÉÍÓÚÑ]/.test(trimmed)) {
+                                        elements.push(
+                                            <h4 key={idx} className="text-[11px] font-black uppercase tracking-[0.18em] text-indigo-600 mt-6 mb-2">
+                                                {trimmed}
+                                            </h4>
+                                        );
+                                        return;
+                                    }
+
+                                    elements.push(
+                                        <p key={idx}>{renderInline(trimmed, `p-${idx}`)}</p>
+                                    );
+                                });
+
+                                flushBullets(lines.length);
+                                return elements;
+                            })()}
+
+                            {onCoaching && (
+                                <div className="mt-8 pt-6 border-t border-slate-200">
+                                    <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-3">Siguiente paso</p>
+                                    <button
+                                        onClick={() => { onCoaching(); }}
+                                        disabled={coachingLoading}
+                                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
+                                    >
+                                        {coachingLoading ? (
+                                            <><span className="material-symbols-outlined text-base animate-spin">sync</span> Generando sesión de coaching...</>
+                                        ) : (
+                                            <><span className="material-symbols-outlined text-base">self_improvement</span> Iniciar Sesión de Coaching Numerológico</>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

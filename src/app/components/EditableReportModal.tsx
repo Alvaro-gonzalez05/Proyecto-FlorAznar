@@ -9,9 +9,10 @@ interface EditableReportModalProps {
     initialText: string;
     onRegenerate?: () => void;
     isLoading?: boolean;
+    onChange?: (text: string) => void;
 }
 
-export default function EditableReportModal({ isOpen, onClose, initialText, onRegenerate, isLoading }: EditableReportModalProps) {
+export default function EditableReportModal({ isOpen, onClose, initialText, onRegenerate, isLoading, onChange }: EditableReportModalProps) {
     const [text, setText] = useState(initialText);
 
     useEffect(() => {
@@ -22,6 +23,8 @@ export default function EditableReportModal({ isOpen, onClose, initialText, onRe
         if (typeof window !== 'undefined') {
             sessionStorage.setItem('clientReportEdited', text);
         }
+        if (onChange) onChange(text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text]);
 
     useEffect(() => {

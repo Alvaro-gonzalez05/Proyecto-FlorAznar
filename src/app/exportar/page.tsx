@@ -3,6 +3,13 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
+interface CoachingExportData {
+    nombreCliente: string;
+    sintesis: string;
+    acciones: { titulo: string; descripcion: string }[];
+    fecha?: string;
+}
+
 function displayNum(n: any): { value: string, label?: string } {
     if (typeof n === 'number') return { value: String(n) };
     if (!n) return { value: '-' };
@@ -100,6 +107,8 @@ export default function ExportPage() {
     const [showEmailInput, setShowEmailInput] = useState(false);
     const [emailAddr, setEmailAddr] = useState('');
     const [mounted, setMounted] = useState(false);
+    const [coachingData, setCoachingData] = useState<CoachingExportData | null>(null);
+    const [activeTab, setActiveTab] = useState<'carta' | 'coaching'>('carta');
 
     useEffect(() => {
         setMounted(true);
@@ -107,11 +116,25 @@ export default function ExportPage() {
         if (stored) setResultData(JSON.parse(stored));
         const storedClientText = sessionStorage.getItem('clientReportEdited');
         if (storedClientText) setClientText(storedClientText);
+        const storedCoaching = sessionStorage.getItem('coachingExport');
+        if (storedCoaching) {
+            try {
+                const parsed = JSON.parse(storedCoaching);
+                setCoachingData(parsed);
+                const tabParam = new URLSearchParams(window.location.search).get('tab');
+                if (tabParam === 'coaching') {
+                    setActiveTab('coaching');
+                }
+            } catch { /* ignore */ }
+        }
     }, []);
 
     const handleDownloadPDF = () => {
         const originalTitle = document.title;
-        document.title = `Carta Numerológica - ${clientName}`;
+        const docTitle = activeTab === 'coaching'
+            ? `Resumen de Coaching - ${coachingData?.nombreCliente || 'Cliente'}`
+            : `Carta Numerológica - ${clientName}`;
+        document.title = docTitle;
         window.print();
         setTimeout(() => { document.title = originalTitle; }, 1000);
     };
@@ -216,16 +239,135 @@ export default function ExportPage() {
         </div>
     );
 
+    // ═══ CONTENIDO COACHING ═══
+    const coachingClientName = coachingData?.nombreCliente || 'Cliente';
+    const coachingFecha = coachingData?.fecha
+        ? new Date(coachingData.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })
+        : new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const CoachingPrintContent = () => (
+        <div style={{ background: 'white', color: 'black', fontFamily: "'Manrope', sans-serif" }}>
+            {/* ── PORTADA ── */}
+            <div className="pdf-page-break" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '3rem' }}>
+                <div style={{ position: 'absolute', top: '2.5rem', left: '2.5rem', right: '2.5rem', bottom: '2.5rem', border: '2px solid rgba(212, 175, 55, 0.1)' }}></div>
+                <div style={{ position: 'absolute', top: '4rem', right: '4rem', width: '6rem', height: '6rem', borderTop: '3px solid rgba(212, 175, 55, 0.5)', borderRight: '3px solid rgba(212, 175, 55, 0.5)', borderTopRightRadius: '3rem' }}></div>
+                <div style={{ position: 'absolute', bottom: '4rem', left: '4rem', width: '6rem', height: '6rem', borderBottom: '3px solid rgba(212, 175, 55, 0.5)', borderLeft: '3px solid rgba(212, 175, 55, 0.5)', borderBottomLeftRadius: '3rem' }}></div>
+                <div style={{ textAlign: 'center', position: 'relative', zIndex: 10, width: '100%', maxWidth: '80%' }}>
+                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.4em', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Resumen de Sesión &bull; Coaching Numerológico</p>
+                    <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '3rem', fontStyle: 'italic', color: '#1e293b', textTransform: 'capitalize', marginBottom: '1.5rem', lineHeight: '1.3' }}>{coachingClientName.toLowerCase()}</h1>
+                    <div style={{ width: '5rem', height: '2px', background: '#d4af37', margin: '0 auto 3.5rem' }}></div>
+                    <p style={{ fontSize: '0.65rem', letterSpacing: '0.35em', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.6rem' }}>Fecha</p>
+                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.4rem', color: '#d97706', fontStyle: 'italic', marginBottom: '4rem' }}>{coachingFecha}</p>
+                    <p style={{ fontSize: '0.6rem', color: '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Acompañamiento de</p>
+                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, letterSpacing: '0.3em', color: '#475569', marginTop: '0.3rem' }}>FLORENCIA AZNAR</p>
+                </div>
+            </div>
+
+            {/* ── SÍNTESIS ── */}
+            {coachingData?.sintesis ? (
+                <div className="pdf-no-break" style={{ padding: '2.5rem 2rem 1.5rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Síntesis del Proceso</p>
+                        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', color: '#1e293b', fontStyle: 'italic' }}>Tu Camino en Esta Etapa</h2>
+                        <div style={{ width: '3rem', height: '2px', background: '#d4af37', margin: '0.8rem auto 0' }}></div>
+                    </div>
+                    <div style={{ padding: '0 1rem' }}>
+                        {formatAIReport(coachingData.sintesis)}
+                    </div>
+                </div>
+            ) : (
+                <div className="pdf-no-break" style={{ padding: '2.5rem 2rem', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.85rem', lineHeight: 1.9, color: '#ef4444', fontStyle: 'italic' }}>
+                        No se ha detectado una síntesis publicada para esta sesión.
+                    </p>
+                </div>
+            )}
+
+            {/* ── PLAN DE ACCIÓN ── */}
+            {coachingData?.acciones && coachingData.acciones.length > 0 && (
+                <div className="pdf-no-break" style={{ padding: '1.5rem 2rem 2.5rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <p style={{ fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Próximos Pasos</p>
+                        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.8rem', color: '#1e293b', fontStyle: 'italic' }}>Plan de Acción</h2>
+                        <div style={{ width: '3rem', height: '2px', background: '#d4af37', margin: '0.8rem auto 0' }}></div>
+                    </div>
+                    <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {coachingData.acciones.map((a, i) => (
+                            <div key={i} className="pdf-no-break" style={{ borderLeft: '2px solid #d4af37', paddingLeft: '1rem' }}>
+                                <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Acción {String(i + 1).padStart(2, '0')}</p>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.05rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.4rem' }}>{a.titulo}</h3>
+                                <p style={{ fontSize: '0.85rem', lineHeight: 1.8, color: '#475569', textAlign: 'justify' }}>{a.descripcion}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ── PIE FINAL ── */}
+            <div style={{ textAlign: 'center', padding: '2rem', borderTop: '1px solid #f1f5f9' }}>
+                <p style={{ fontSize: '0.5rem', letterSpacing: '0.3em', color: '#cbd5e1', fontWeight: 700, textTransform: 'uppercase' }}>Resumen de Coaching — {coachingClientName} — Florencia Aznar</p>
+            </div>
+        </div>
+    );
+
     return (
         <>
             {/* ═══ PANTALLA WEB ═══ */}
             <div className="screen-only" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#f8fafc' }}>
-                <header style={{ padding: '1.2rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', flexShrink: 0 }}>
+                <header style={{ padding: '1.2rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', flexShrink: 0, gap: '1.5rem', flexWrap: 'wrap' }}>
                     <div>
                         <h1 style={{ fontSize: '0.65rem', letterSpacing: '0.3em', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Paso Final</h1>
-                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700 }}>Exportar Carta Numerológica</h2>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700 }}>
+                            {activeTab === 'coaching' ? 'Exportar Resumen de Coaching' : 'Exportar Carta Numerológica'}
+                        </h2>
                     </div>
-                    <Link href="/resultados" className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-black-accent transition-colors">
+
+                    {/* Tabs */}
+                    <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '0.3rem', borderRadius: '999px', gap: '0.2rem' }}>
+                        <button
+                            onClick={() => setActiveTab('carta')}
+                            style={{
+                                padding: '0.55rem 1.2rem',
+                                borderRadius: '999px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.08em',
+                                textTransform: 'uppercase',
+                                background: activeTab === 'carta' ? 'white' : 'transparent',
+                                color: activeTab === 'carta' ? '#1e293b' : '#64748b',
+                                boxShadow: activeTab === 'carta' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            Carta Numerológica
+                        </button>
+                        <button
+                            onClick={() => coachingData && setActiveTab('coaching')}
+                            disabled={!coachingData}
+                            title={!coachingData ? 'Aún no se exportó un análisis de coaching' : ''}
+                            style={{
+                                padding: '0.55rem 1.2rem',
+                                borderRadius: '999px',
+                                border: 'none',
+                                cursor: coachingData ? 'pointer' : 'not-allowed',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.08em',
+                                textTransform: 'uppercase',
+                                background: activeTab === 'coaching' ? 'white' : 'transparent',
+                                color: activeTab === 'coaching' ? '#1e293b' : '#64748b',
+                                opacity: coachingData ? 1 : 0.45,
+                                boxShadow: activeTab === 'coaching' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            Resumen de Coaching
+                        </button>
+                    </div>
+
+                    <Link href={activeTab === 'coaching' ? '/historial' : '/resultados'} className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-black-accent transition-colors">
                         <span className="material-symbols-outlined text-lg">arrow_back</span>
                         Volver
                     </Link>
@@ -236,7 +378,7 @@ export default function ExportPage() {
                     <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', background: '#e2e8f0' }}>
                         <div style={{ maxWidth: '650px', margin: '0 auto' }}>
                             <div className="pdf-preview-shadow" style={{ background: 'white', borderRadius: '2px', overflow: 'hidden' }}>
-                                <PrintContent />
+                                {activeTab === 'coaching' ? <CoachingPrintContent /> : <PrintContent />}
                             </div>
                         </div>
                     </div>
@@ -303,7 +445,7 @@ export default function ExportPage() {
 
             {/* ═══ CONTENIDO DE IMPRESIÓN (oculto en web, visible al imprimir) ═══ */}
             <div className="print-only" style={{ display: 'none' }}>
-                <PrintContent />
+                {activeTab === 'coaching' ? <CoachingPrintContent /> : <PrintContent />}
             </div>
         </>
     );

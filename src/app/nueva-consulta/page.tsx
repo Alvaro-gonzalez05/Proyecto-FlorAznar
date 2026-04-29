@@ -232,16 +232,18 @@ export default function NuevaConsultaPage() {
 
             // --- SUPABASE STORAGE ---
             // Guardar silenciosamente el registro en la base de datos PostgreSQL
+            sessionStorage.removeItem('consultaId');
             try {
-                const { error: sbError } = await supabase.from('consultas').insert([{
+                const { data: sbData, error: sbError } = await supabase.from('consultas').insert([{
                     nombre_completo: nombre, // Save just the given name to DB
                     fecha_nacimiento: fechaNacimiento,
                     apellidos_completos: apellido, // Save just the given apellidos piece to DB
                     numerologia_data: result,
                     explicaciones_ia: aiDataResult
-                }]);
+                }]).select('id').single();
 
                 if (sbError) console.error("Error saving to Supabase:", sbError);
+                else if (sbData?.id) sessionStorage.setItem('consultaId', sbData.id);
             } catch (err) {
                 console.error("Network error saving to Supabase", err);
             }

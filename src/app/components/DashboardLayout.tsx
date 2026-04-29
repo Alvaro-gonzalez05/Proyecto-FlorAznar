@@ -130,7 +130,8 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
 
     // Rutas públicas que no deben tener el dashboard (sidebar, padding de la app, etc.)
     const publicRoutes = ['/', '/login', '/leer'];
-    if (publicRoutes.includes(pathname)) {
+    const isClientCoachingForm = pathname?.startsWith('/coaching/sesion/');
+    if (publicRoutes.includes(pathname) || isClientCoachingForm) {
         return <>{children}</>;
     }
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import AiExplanationModal from '../components/AiExplanationModal';
 import { buildDatosEstructurados } from '../../lib/buildDatosEstructurados';
@@ -9,6 +10,7 @@ import { buildAiMetricsPayload } from '@/lib/buildAiMetricsPayload';
 import DiamanteCiclos from './DiamanteCiclos';
 import EditableReportModal from '../components/EditableReportModal';
 import { reducirANumeros } from '../../lib/numerology';
+import { supabase } from '@/lib/supabase';
 
 type NumerologyResult = any;
 
@@ -73,6 +75,7 @@ function digitOnly(n: any): string | number {
 }
 
 export default function ResultadosPage() {
+    const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLElement>(null);
     const sidebarRef = useRef<HTMLElement>(null);
@@ -91,6 +94,81 @@ export default function ResultadosPage() {
     const [clienteLoading, setClienteLoading] = useState(false);
     const [clienteModalOpen, setClienteModalOpen] = useState(false);
     const [clienteReportText, setClienteReportText] = useState('');
+    const [coachingLoading, setCoachingLoading] = useState(false);
+    const consultaIdRef = useRef<string | null>(null);
+    const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    /** Asegura que exista una fila en `consultas` para esta sesión y devuelve su id. */
+    const ensureConsultaId = async (): Promise<string | null> => {
+        const existing = sessionStorage.getItem('consultaId');
+        if (existing) {
+            consultaIdRef.current = existing;
+            return existing;
+        }
+        if (consultaIdRef.current) return consultaIdRef.current;
+        try {
+            const stored = sessionStorage.getItem('numerologyResult');
+            if (!stored) return null;
+            const parsed = JSON.parse(stored);
+            const { data: row, error } = await supabase
+                .from('consultas')
+                .insert([{
+                    nombre_completo: parsed?.nombreCompleto || 'Sin nombre',
+                    fecha_nacimiento: parsed?.fechaNacimiento || null,
+                    apellidos_completos: parsed?.apellidos || '',
+                    numerologia_data: parsed,
+                    explicaciones_ia: {},
+                }])
+                .select('id')
+                .single();
+            if (error || !row?.id) {
+                console.warn('No se pudo crear consulta:', error?.message);
+                return null;
+            }
+            sessionStorage.setItem('consultaId', row.id);
+            consultaIdRef.current = row.id;
+            return row.id;
+        } catch (e) {
+            console.warn('Error creando consulta:', e);
+            return null;
+        }
+    };
+
+    /** Persiste un parche dentro de `explicaciones_ia` (merge con lo existente). */
+    const persistToConsulta = async (patch: Record<string, string>) => {
+        const id = await ensureConsultaId();
+        if (!id) return;
+        try {
+            const { data: row } = await supabase
+                .from('consultas')
+                .select('explicaciones_ia')
+                .eq('id', id)
+                .single();
+            const merged = { ...(row?.explicaciones_ia || {}), ...patch };
+            await supabase.from('consultas').update({ explicaciones_ia: merged }).eq('id', id);
+        } catch (e) {
+            console.warn('No se pudo persistir en consultas:', e);
+        }
+    };
+
+    // Auto-persistir el Reporte Cliente cuando se edita (debounced 1.2s).
+    useEffect(() => {
+        if (!clienteReportText) return;
+        if (persistTimer.current) clearTimeout(persistTimer.current);
+        persistTimer.current = setTimeout(() => {
+            persistToConsulta({ resumen_cliente: clienteReportText });
+            setExplanations(prev => {
+                const newExps = { ...prev, resumen_cliente: clienteReportText };
+                sessionStorage.setItem('geminiExplanations', JSON.stringify(newExps));
+                return newExps;
+            });
+        }, 1200);
+        return () => {
+            if (persistTimer.current) clearTimeout(persistTimer.current);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clienteReportText]);
+
     const [explanationState, setExplanationState] = useState<{ isOpen: boolean, title: string, num: string | number, text?: string, metricKey?: string, isLoading?: boolean }>({
         isOpen: false,
         title: '',
@@ -137,7 +215,10 @@ export default function ResultadosPage() {
             'Expresión Profesional': 'expresion_profesional',
             'Potencial Evolutivo': 'potencial_evolutivo',
             'Año Personal': 'anio_personal',
-            'Mes Personal': 'mes_personal'
+            'Mes Personal': 'mes_personal',
+            'Resumen Analista IA': 'resumen_analista',
+            'Resumen Analista': 'resumen_analista',
+            'Resumen Cliente': 'resumen_cliente'
         };
         for (const [k, v] of Object.entries(map)) {
             if (title.includes(k)) return v;
@@ -186,6 +267,14 @@ export default function ResultadosPage() {
                 if (res.ok) {
                     const data = await res.json();
                     sessionStorage.setItem('resumenAnalista', data.summary);
+                    // Also persist into the explanations cache so reopening the modal does NOT regenerate.
+                    setExplanations(prev => {
+                        const newExps = { ...prev, [metricKey]: data.summary };
+                        sessionStorage.setItem('geminiExplanations', JSON.stringify(newExps));
+                        return newExps;
+                    });
+                    // Persist to DB (merge into explicaciones_ia). Auto-creates consulta if needed.
+                    persistToConsulta({ [metricKey]: data.summary });
                     setExplanationState({ isOpen: true, title, num, text: data.summary, metricKey });
                 } else {
                     setExplanationState({ isOpen: true, title, num, text: 'Error al generar la explicación.', metricKey });
@@ -286,6 +375,52 @@ export default function ResultadosPage() {
 
     // Total de cartas estático, mostramos Sistema Familiar aunque caiga en fallback
     const totalCards = 15;
+
+    const handleIniciarCoaching = async () => {
+        if (!data) return;
+        setCoachingLoading(true);
+        try {
+            const numerologyData = JSON.parse(sessionStorage.getItem('numerologyResult') || '{}');
+            const consultaId = sessionStorage.getItem('consultaId') || null;
+            const nombreCliente = data.nombreCompleto || '';
+
+            // Get the Resumen Analista text — it must already be generated
+            let resumenAnalista = sessionStorage.getItem('resumenAnalista') || '';
+            if (!resumenAnalista) {
+                const storedGlobal = sessionStorage.getItem('geminiExplanations');
+                if (storedGlobal) {
+                    try { resumenAnalista = JSON.parse(storedGlobal).resumen_analista || ''; } catch {}
+                }
+            }
+            // Also check the currently open modal text
+            if (!resumenAnalista && explanationState.text && explanationState.metricKey === 'resumen_analista') {
+                resumenAnalista = explanationState.text;
+            }
+
+            if (!resumenAnalista) {
+                alert('Primero generá el Resumen Analista IA. El coaching se construye en base a ese análisis.');
+                return;
+            }
+
+            const res = await fetch('/api/coaching/generate-plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numerologyData, resumenAnalista, consultaId, nombreCliente }),
+            });
+
+            if (res.ok) {
+                const { sessionId } = await res.json();
+                router.push(`/coaching/${sessionId}`);
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                alert(errData.error || 'Error al generar el plan de coaching. Intenta de nuevo.');
+            }
+        } catch {
+            alert('No se pudo conectar para generar el coaching.');
+        } finally {
+            setCoachingLoading(false);
+        }
+    };
 
     // Agregar estilos para las partículas flotantes
     useEffect(() => {
@@ -1576,6 +1711,8 @@ export default function ResultadosPage() {
                 precalculatedText={explanationState.text}
                 isLoading={explanationState.isLoading}
                 onRegenerate={explanationState.metricKey ? () => openExplanation(explanationState.title, explanationState.num, undefined, true) : undefined}
+                onCoaching={(explanationState.metricKey === 'resumen_analista' || explanationState.title === 'Resumen Analista IA') ? handleIniciarCoaching : undefined}
+                coachingLoading={coachingLoading}
             />
 
             <EditableReportModal
@@ -1584,6 +1721,7 @@ export default function ResultadosPage() {
                 initialText={clienteReportText}
                 isLoading={clienteLoading}
                 onRegenerate={handleRegenerateCliente}
+                onChange={setClienteReportText}
             />
         </div>
     );
