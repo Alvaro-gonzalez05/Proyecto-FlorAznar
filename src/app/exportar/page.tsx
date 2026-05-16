@@ -191,24 +191,9 @@ export default function ExportPage() {
                 <div style={{ position: 'absolute', top: '4rem', right: '4rem', width: '6rem', height: '6rem', borderTop: '3px solid rgba(212, 175, 55, 0.5)', borderRight: '3px solid rgba(212, 175, 55, 0.5)', borderTopRightRadius: '3rem' }}></div>
                 <div style={{ position: 'absolute', bottom: '4rem', left: '4rem', width: '6rem', height: '6rem', borderBottom: '3px solid rgba(212, 175, 55, 0.5)', borderLeft: '3px solid rgba(212, 175, 55, 0.5)', borderBottomLeftRadius: '3rem' }}></div>
                 <div style={{ textAlign: 'center', position: 'relative', zIndex: 10, width: '100%', maxWidth: '80%' }}>
-                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.4em', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Estudio Analítico &bull; Carta Numerológica</p>
                     <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '3rem', fontStyle: 'italic', color: '#1e293b', textTransform: 'capitalize', marginBottom: '1.5rem', lineHeight: '1.3' }}>{clientName.toLowerCase()}</h1>
                     <div style={{ width: '5rem', height: '2px', background: '#d4af37', margin: '0 auto 3.5rem' }}></div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', marginBottom: '4rem', alignItems: 'flex-start' }}>
-                        {[
-                            { lbl: 'Vibración', num: vibracionDisplay },
-                            { lbl: 'Camino', num: destinoDisplay },
-                            { lbl: 'Misión', num: misionDisplay },
-                        ].map((d, i) => (
-                            <div key={i} style={{ textAlign: 'center', flex: 1 }}>
-                                <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.8rem' }}>{d.lbl}</p>
-                                <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: '#d97706', lineHeight: 1 }}>{d.num.value}</p>
-                                {d.num.label && <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', letterSpacing: '0.2em', marginTop: '0.4rem' }}>{d.num.label}</p>}
-                            </div>
-                        ))}
-                    </div>
-                    <p style={{ fontSize: '0.6rem', color: '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Generado Exclusivamente Por</p>
-                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, letterSpacing: '0.3em', color: '#475569', marginTop: '0.3rem' }}>FLORENCIA AZNAR</p>
+                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, letterSpacing: '0.3em', color: '#475569', marginTop: '0.3rem' }}>Método RAP - Florencia Aznar</p>
                 </div>
             </div>
 
