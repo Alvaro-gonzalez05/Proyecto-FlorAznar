@@ -186,7 +186,7 @@ export default function ExportPage() {
     const PrintContent = () => (
         <div style={{ background: 'white', color: 'black', fontFamily: "'Manrope', sans-serif" }}>
             {/* ── PORTADA ── */}
-            <div className={`pdf-page-break`} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '3rem' }}>
+            <div className="pdf-page-break pdf-no-break" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '3rem' }}>
                 <div style={{ position: 'absolute', top: '2.5rem', left: '2.5rem', right: '2.5rem', bottom: '2.5rem', border: '2px solid rgba(212, 175, 55, 0.1)' }}></div>
                 <div style={{ position: 'absolute', top: '4rem', right: '4rem', width: '6rem', height: '6rem', borderTop: '3px solid rgba(212, 175, 55, 0.5)', borderRight: '3px solid rgba(212, 175, 55, 0.5)', borderTopRightRadius: '3rem' }}></div>
                 <div style={{ position: 'absolute', bottom: '4rem', left: '4rem', width: '6rem', height: '6rem', borderBottom: '3px solid rgba(212, 175, 55, 0.5)', borderLeft: '3px solid rgba(212, 175, 55, 0.5)', borderBottomLeftRadius: '3rem' }}></div>

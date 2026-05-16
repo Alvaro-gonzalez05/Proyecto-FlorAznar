@@ -138,7 +138,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     return (
         <div className="flex h-screen overflow-hidden">
             {/* Left Sidebar - Navigation */}
-            <aside ref={leftSidebarRef} className="w-20 border-r border-slate-100 flex flex-col items-center py-8 bg-white hidden lg:flex relative z-50">
+            <aside ref={leftSidebarRef} className="screen-only w-20 border-r border-slate-100 flex flex-col items-center py-8 bg-white hidden lg:flex relative z-50">
                 <nav className="flex flex-col gap-8 relative">
                     {/* Animated Indicator */}
                     <div
