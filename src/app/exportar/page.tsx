@@ -219,7 +219,7 @@ export default function ExportPage() {
 
             {/* ── PIE FINAL ── */}
             <div style={{ textAlign: 'center', padding: '2rem', borderTop: '1px solid #f1f5f9' }}>
-                <p style={{ fontSize: '0.5rem', letterSpacing: '0.3em', color: '#cbd5e1', fontWeight: 700, textTransform: 'uppercase' }}>Carta Numerológica — {clientName} — Florencia Aznar</p>
+                <p style={{ fontSize: '0.5rem', letterSpacing: '0.3em', color: '#cbd5e1', fontWeight: 700, textTransform: 'uppercase' }}>Método RAP — Florencia Aznar</p>
             </div>
         </div>
     );
