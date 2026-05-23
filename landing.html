@@ -80,7 +80,17 @@
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
         }
         .book-shadow {
-            box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.2), -5px -5px 20px rgba(255, 255, 255, 0.5);
+            box-shadow: 8px 8px 40px rgba(0, 0, 0, 0.35), 3px 3px 0px rgba(0,0,0,0.15), 1px 0px 0px rgba(0,0,0,0.1);
+        }
+        .book-pages {
+            position: absolute;
+            right: -6px;
+            top: 4px;
+            bottom: 4px;
+            width: 6px;
+            background: linear-gradient(to right, #d0c9b8, #e8e0cc, #d0c9b8);
+            border-radius: 0 2px 2px 0;
+            z-index: -1;
         }
     </style>
 </head>
@@ -99,9 +109,6 @@
 <a class="font-manrope tracking-tight text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#1a1a1a] dark:hover:text-white transition-colors" href="#testimonials" style="">Testimonios</a>
 <a class="font-manrope tracking-tight text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-[#1a1a1a] dark:hover:text-white transition-colors" href="#contact" style="">Contacto</a>
 </div>
-<button class="bg-primary text-on-primary rounded-full px-8 py-3 text-sm font-bold hover:opacity-80 transition-all duration-300" style="">
-            Reservar Sesión
-        </button>
 </div>
 </nav>
 <main class="pt-24 overflow-x-hidden">
@@ -134,7 +141,7 @@
 </div>
 <div class="relative">
 <div class="aspect-[4/5] rounded-[3rem] overflow-hidden soft-shadow relative z-10 border-[12px] border-surface-bright/30">
-<img alt="portrait of a serene professional woman in a bright architectural setting with soft natural morning light and minimal decor" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHn2v1alYe01bNZuDQ0OvJowr-Fkcr_zT1L55wwgirzPHGbLQbZRUkW8H_8s329AN9HLnIomQMKZNXBCZwKwZwwEtqWBM4hQRGb6bwkDMz65Ia_7OlooZGxmugPjUUschA_uJha496IQqosfR9rp3444BMAvYvGKHfQVXIeO4qqP8dEEZ6AUGLykGE7Q_dBGtoc_Kw1FIHeBurNfmna7friK4H-G8yKcQRB2fd5rAlPWz4JWVBrnyAmX0SWUolX4fOphNcMixy65E" style="">
+<img alt="Flor Aznar" class="w-full h-full object-cover object-top" src="fotoflo.jpeg" style="">
 </div>
 <!-- Decorative Floating Element -->
 <div class="absolute -bottom-10 -left-10 bg-surface-bright p-8 rounded-xl soft-shadow z-20 max-w-[240px]">
@@ -148,13 +155,65 @@
 </div>
 </div>
 </section>
+<!-- El Problema Section -->
+<section class="py-28 px-6 md:px-12 bg-surface" id="problema">
+<div class="max-w-screen-xl mx-auto">
+<div class="grid md:grid-cols-2 gap-16 items-start">
+<div class="space-y-6">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block" style="">El problema</span>
+<h2 class="text-4xl md:text-5xl font-light leading-tight" style="">Muchas veces el problema <span class="font-extrabold" style="">no es la falta de capacidad.</span></h2>
+<p class="text-lg text-on-surface-variant font-light leading-relaxed" style="">Es estar funcionando desde patrones mentales y emocionales que te hacen frenarte automáticamente cuando querés avanzar.</p>
+<p class="text-base text-on-surface-variant font-light leading-relaxed" style="">Todos tenemos una manera de pensar, reaccionar y actuar. Y cuando no entendemos cómo funcionamos internamente, terminamos:</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-on-surface-variant" style=""><span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>procrastinando</li>
+<li class="flex items-center gap-3 text-on-surface-variant" style=""><span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>dudando constantemente de nosotros mismos</li>
+<li class="flex items-center gap-3 text-on-surface-variant" style=""><span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>perdiendo claridad</li>
+<li class="flex items-center gap-3 text-on-surface-variant" style=""><span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>dispersándonos</li>
+<li class="flex items-center gap-3 text-on-surface-variant" style=""><span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>o repitiendo las mismas situaciones una y otra vez</li>
+</ul>
+<div class="pt-4 border-l-4 border-secondary-container pl-6" style="">
+<p class="text-lg font-medium text-on-surface" style="">No se trata de hacer más.<br>Se trata de entender qué necesitás cambiar para empezar a avanzar de verdad.</p>
+</div>
+</div>
+<div class="bg-surface-dim/40 rounded-[3rem] p-10 space-y-6" style="">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant block" style="">¿Esto te pasa a vos?</span>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-on-secondary-container text-sm" style="">psychology</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Sobrepensás tanto las decisiones que terminás paralizándote.</p>
+</div>
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-primary text-sm" style="">trending_down</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Empezás motivado/a, pero después te cuesta sostener.</p>
+</div>
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-on-tertiary-container text-sm" style="">hub</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Tenés muchas ideas, pero te dispersás fácilmente.</p>
+</div>
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-on-secondary-container text-sm" style="">loop</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Sentís que repetís siempre los mismos patrones.</p>
+</div>
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-primary text-sm" style="">block</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Probaste distintas formas de avanzar, pero seguís sintiéndote trabado/a.</p>
+</div>
+<div class="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 mt-0.5"><span class="material-symbols-outlined text-on-tertiary-container text-sm" style="">trending_flat</span></div>
+<p class="text-sm font-medium text-on-surface leading-relaxed" style="">Hacés mucho, pero sentís que no avanzás realmente.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <!-- About Flor Section -->
 <section class="py-28 px-6 md:px-12 bg-surface" id="about-flor">
 <div class="max-w-screen-2xl mx-auto">
 <div class="grid md:grid-cols-2 gap-16 items-center">
 <div class="relative flex justify-center">
 <div class="aspect-[4/5] max-w-[400px] w-full rounded-[3rem] overflow-hidden soft-shadow border-[8px] border-surface-bright/30">
-<img alt="Flor Aznar - Coach profesional" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHn2v1alYe01bNZuDQ0OvJowr-Fkcr_zT1L55wwgirzPHGbLQbZRUkW8H_8s329AN9HLnIomQMKZNXBCZwKwZwwEtqWBM4hQRGb6bwkDMz65Ia_7OlooZGxmugPjUUschA_uJha496IQqosfR9rp3444BMAvYvGKHfQVXIeO4qqP8dEEZ6AUGLykGE7Q_dBGtoc_Kw1FIHeBurNfmna7friK4H-G8yKcQRB2fd5rAlPWz4JWVBrnyAmX0SWUolX4fOphNcMixy65E" style="">
+<img alt="Flor Aznar" class="w-full h-full object-cover object-top" src="fotoflo.jpeg" style="">
 </div>
 </div>
 <div class="space-y-6">
@@ -229,6 +288,120 @@
 </div>
 </div>
 </section>
+<!-- Video Proceso Section -->
+<section class="py-20 px-6 md:px-12 bg-surface-dim/20" id="como-es">
+<div class="max-w-screen-xl mx-auto">
+<div class="grid md:grid-cols-2 gap-12 items-center">
+<div class="aspect-video rounded-[2.5rem] bg-[#1a1a1a] flex items-center justify-center soft-shadow relative overflow-hidden cursor-pointer group">
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+<div class="relative z-10 w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-white text-5xl" style="">play_arrow</span>
+</div>
+<div class="absolute bottom-8 left-8 right-8">
+<p class="text-white/70 text-xs uppercase tracking-widest" style="">Flor Aznar explica el proceso</p>
+</div>
+</div>
+<div class="space-y-6">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant block" style="">¿Cómo es el proceso?</span>
+<p class="text-2xl font-light text-on-surface-variant leading-relaxed" style="">Un proceso de <span class="font-semibold text-on-surface" style="">tres etapas</span> diseñado para ayudarte a entender qué te frena y empezar a avanzar de verdad.</p>
+<p class="text-base text-on-surface-variant font-light leading-relaxed" style="">No es un curso ni una lista de consejos. Es un acompañamiento personalizado donde trabajás directamente con lo que está pasando en tu vida hoy.</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-secondary-container" style="">calendar_month</span></div>
+<div><p class="font-bold text-on-surface text-sm" style="">30 días de proceso</p><p class="text-on-surface-variant text-sm font-light" style="">Con acompañamiento personalizado en cada etapa</p></div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary" style="">person</span></div>
+<div><p class="font-bold text-on-surface text-sm" style="">100% personalizado</p><p class="text-on-surface-variant text-sm font-light" style="">Adaptado a lo que hoy te está pasando a vos</p></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Qué Incluye Section -->
+<section class="py-32 px-6 md:px-12 bg-surface" id="incluye">
+<div class="max-w-screen-2xl mx-auto">
+<div class="text-center mb-20">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block" style="">Lo que recibís</span>
+<h2 class="text-4xl md:text-5xl font-light" style="">Qué <span class="font-extrabold italic" style="">incluye</span> el proceso</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+
+<!-- Card 1 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute top-0 right-0 w-32 h-32 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%); transform:translate(30%,-30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">chat</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">3 sesiones 1:1 personalizadas</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Cada sesión está enfocada en una etapa específica del proceso y adaptada a lo que hoy te está pasando.</p>
+</div>
+</div>
+
+<!-- Card 2 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute bottom-0 left-0 w-36 h-36 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%); transform:translate(-30%,30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">edit_note</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Ejercicios entre sesiones</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Después de cada encuentro recibís ejercicios concretos para integrar lo trabajado. Porque el cambio pasa en lo que hacés después.</p>
+</div>
+</div>
+
+<!-- Card 3 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute top-0 left-0 w-32 h-32 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.16) 0%, transparent 70%); transform:translate(-30%,-30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">support_agent</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Acompañamiento directo</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Canal de consultas personalizado de lunes a viernes de 9 a 17hs. Si algo surge o necesitás orientación, estoy disponible.</p>
+</div>
+</div>
+
+<!-- Card 4 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute bottom-0 right-0 w-36 h-36 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%); transform:translate(30%,30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">analytics</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Guía práctica con acciones concretas</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Al finalizar recibís un análisis personalizado con anclajes para reconocer tus patrones y actuar diferente cuando aparezcan.</p>
+</div>
+</div>
+
+<!-- Card 5 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute top-0 right-0 w-32 h-32 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.17) 0%, transparent 70%); transform:translate(30%,-30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">menu_book</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Libro de acompañamiento</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Un recurso con herramientas y ejercicios para que puedas seguir integrando el proceso de manera autónoma.</p>
+</div>
+</div>
+
+<!-- Card 6 -->
+<div class="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style="background:#fff; box-shadow:0 2px 24px rgba(139,92,246,0.06);">
+<div class="absolute bottom-0 left-0 w-36 h-36 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgba(167,139,250,0.16) 0%, transparent 70%); transform:translate(-30%,30%);"></div>
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style="background:#ede9fb;">
+<span class="material-symbols-outlined text-2xl" style="color:#7c3aed;">manage_search</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Análisis previo a la primera sesión</h3>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.</p>
+</div>
+<div class="mt-auto pt-2 relative z-10"><span class="text-[0.65rem] uppercase tracking-widest font-bold" style="color:#9b7fd4;">Incluido sin costo adicional</span></div>
+</div>
+
+</div>
+</div>
+</section>
 <!-- Book Section -->
 <section class="py-32 px-6 md:px-12 bg-surface overflow-hidden" id="book">
 <div class="max-w-screen-2xl mx-auto">
@@ -237,28 +410,64 @@
 <span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#7c2d12] mb-4 block" style="">Publicación Reciente</span>
 <h2 class="text-5xl md:text-7xl font-light leading-tight" style="">Volver al <span class="font-extrabold italic" style="">Origen</span></h2>
 <p class="text-lg md:text-xl text-on-surface-variant max-w-lg font-light leading-relaxed" style="">
-                        Una obra que invita a los líderes contemporáneos a despojarse de las etiquetas impuestas y reencontrarse con su propósito primordial. Una guía práctica y reflexiva para liderar desde la autenticidad.
+                        Una guía práctica de autoconocimiento y transformación personal. Un libro para quienes quieren entenderse mejor, desbloquearse y empezar a construir una vida más alineada con quienes realmente son.
                     </p>
 <div class="pt-6">
-<button class="bg-[#7c2d12] text-white rounded-full px-12 py-5 text-base font-bold hover:opacity-90 transition-all soft-shadow" style="">
+<button class="bg-primary text-on-primary rounded-full px-12 py-5 text-base font-bold hover:opacity-90 transition-all soft-shadow" style="">
                             Adquirir el libro
                         </button>
 </div>
 </div>
 <div class="order-1 md:order-2 relative flex justify-center items-center">
 <!-- Glow effect -->
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-secondary-container/30 blur-[100px] -z-10 rounded-full"></div>
-<!-- Book Mockup Wrapper -->
-<div class="relative w-full max-w-[400px] transition-transform duration-700 hover:rotate-2">
-<div class="aspect-[3/4] bg-[#1a1a1a] rounded-lg book-shadow flex flex-col p-12 text-white relative overflow-hidden">
-<!-- Minimalist Book Design -->
-<div class="text-[0.65rem] uppercase tracking-[0.3em] font-medium mb-12 opacity-80" style="">Flor Aznar</div>
-<div class="mt-auto">
-<h3 class="text-4xl md:text-5xl font-bold leading-tight uppercase tracking-tighter" style="">Volver al<br>Origen</h3>
-</div>
-<div class="mt-auto text-[0.6rem] uppercase tracking-[0.2em] opacity-60" style="">Metodología RAP © 2024</div>
-<!-- Page edges effect -->
-<div class="absolute right-0 top-0 h-full w-2 bg-gradient-to-l from-white/10 to-transparent"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-[100px] -z-10 rounded-full" style="background: rgba(13, 80, 80, 0.18);"></div>
+<!-- Book 3D -->
+<div style="perspective: 1400px; display: flex; justify-content: center; padding: 20px 90px 60px 20px;">
+<div style="transform: rotateY(-20deg); transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94); position: relative; cursor: pointer;"
+     onmouseover="this.style.transform='rotateY(-6deg)'"
+     onmouseout="this.style.transform='rotateY(-20deg)'">
+<!-- Portada -->
+<img src="librofoto2.jpg" alt="Volver al Origen - Florencia Aznar"
+     style="width: 310px; display: block; border-radius: 0 4px 4px 0;
+            box-shadow: 18px 18px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.08);
+            image-rendering: -webkit-optimize-contrast;">
+<!-- Brillo sutil sobre portada (luz desde arriba-izquierda) -->
+<div style="
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 50%, rgba(0,0,0,0.06) 100%);
+  border-radius: 0 4px 4px 0;
+  pointer-events: none;
+"></div>
+<!-- Lomo -->
+<div style="
+  position: absolute; left: 0; top: 0;
+  width: 38px; height: 100%;
+  background: linear-gradient(to right, #031818, #083535, #0c5050, #0e5a5a, #0c5050, #083535, #031818);
+  transform: rotateY(90deg);
+  transform-origin: 0% 50%;
+  border-radius: 4px 0 0 4px;
+  box-shadow: inset -2px 0 6px rgba(0,0,0,0.4);
+"></div>
+<!-- Grosor páginas derecha -->
+<div style="
+  position: absolute; right: -8px; top: 1px;
+  width: 8px; height: calc(100% - 2px);
+  background: repeating-linear-gradient(
+    to bottom,
+    #f2ece0, #f2ece0 1.5px,
+    #ddd5c5 1.5px, #ddd5c5 3px
+  );
+  border-radius: 0 3px 3px 0;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.12);
+"></div>
+<!-- Sombra suelo -->
+<div style="
+  position: absolute; bottom: -35px; left: 0; right: -25%;
+  height: 35px;
+  background: radial-gradient(ellipse at 38% 30%, rgba(0,0,0,0.32) 0%, transparent 65%);
+  filter: blur(8px);
+"></div>
 </div>
 </div>
 </div>
@@ -313,39 +522,256 @@
 </div>
 </div>
 </section>
+<!-- Para Quién Section -->
+<section class="py-32 px-6 md:px-12 bg-surface" id="para-quien">
+<div class="max-w-screen-xl mx-auto">
+<div class="text-center mb-20">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block" style="">¿Es para mí?</span>
+<h2 class="text-4xl md:text-5xl font-light" style="">Para quién <span class="font-extrabold italic" style="">es este proceso</span></h2>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-surface-bright rounded-[2.5rem] p-10 soft-shadow">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center"><span class="material-symbols-outlined text-primary text-2xl" style="">check_circle</span></div>
+<h3 class="text-2xl font-bold" style="">Este proceso es para vos si…</h3>
+</div>
+<ul class="space-y-5">
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-secondary-container text-xl mt-0.5 shrink-0" style="">check</span><p class="text-on-surface font-light leading-relaxed" style="">Sentís que algo interno te frena aunque sabés que podrías avanzar más.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-secondary-container text-xl mt-0.5 shrink-0" style="">check</span><p class="text-on-surface font-light leading-relaxed" style="">Querés dejar de sobrepensar y empezar a actuar con más claridad.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-secondary-container text-xl mt-0.5 shrink-0" style="">check</span><p class="text-on-surface font-light leading-relaxed" style="">Estás cansado/a de repetir los mismos bloqueos.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-secondary-container text-xl mt-0.5 shrink-0" style="">check</span><p class="text-on-surface font-light leading-relaxed" style="">Querés entenderte mejor para tomar decisiones distintas.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-secondary-container text-xl mt-0.5 shrink-0" style="">check</span><p class="text-on-surface font-light leading-relaxed" style="">Buscás avanzar de una forma más alineada con vos.</p></li>
+</ul>
+</div>
+<div class="bg-surface-dim/60 rounded-[2.5rem] p-10 border border-outline-variant">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center"><span class="material-symbols-outlined text-on-error-container text-2xl" style="">cancel</span></div>
+<h3 class="text-2xl font-bold" style="">Este proceso no es para vos si…</h3>
+</div>
+<ul class="space-y-5">
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-error-container text-xl mt-0.5 shrink-0" style="">close</span><p class="text-on-surface-variant font-light leading-relaxed" style="">Buscás soluciones mágicas sin hacer un trabajo interno.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-error-container text-xl mt-0.5 shrink-0" style="">close</span><p class="text-on-surface-variant font-light leading-relaxed" style="">Querés resultados inmediatos sin involucrarte en el proceso.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-error-container text-xl mt-0.5 shrink-0" style="">close</span><p class="text-on-surface-variant font-light leading-relaxed" style="">Preferís seguir evitando las decisiones que sabés que tenés que tomar.</p></li>
+<li class="flex items-start gap-4"><span class="material-symbols-outlined text-on-error-container text-xl mt-0.5 shrink-0" style="">close</span><p class="text-on-surface-variant font-light leading-relaxed" style="">No estás dispuesto/a a observar tus propios patrones.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
 <!-- Social Proof / Stats -->
 <section class="py-32 px-6 md:px-12 bg-surface" id="testimonials">
 <div class="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+
+<!-- IZQUIERDA: stat card estática -->
 <div class="relative">
 <div class="grid grid-cols-2 gap-4">
-<div class="aspect-square rounded-2xl overflow-hidden mt-12">
-<img alt="abstract close-up of flowing water ripples" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ3Ab09lHVxv8u8ojZBJGMzLVRKi5E6nE4GLW6a7dadQnto1K_WJugRFq_s1kjUYu1Xn0Sr9PM5HLLfG5JSmcsJVo42RtNkdn0fhDDBmC54nI1DhhOmG3TRCD9HW6-OyGhto2vEyK6aGyQzeCYTwPepsASaGTN03ImP7HTRcta_f8IuCaSSG_hmrTghuZplSyhfhiohY6Ti-dJzuxOOzqX8FC5hN81exBxIsODUKylDwdeN9SQtePwRgecAzPExmDXywgfbMBCYpM" style="">
+<div class="aspect-square rounded-2xl mt-12 overflow-hidden">
+  <img src="marfoto.jpg" alt="Testimonio" style="width:100%; height:100%; object-fit:cover; object-position:center top; image-rendering:-webkit-optimize-contrast; display:block;">
 </div>
 <div class="aspect-square rounded-2xl overflow-hidden">
-<img alt="soft focus close-up of delicate white petals" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA_apO8wPdM-fsZPoKOVo_UuQvAulJD8Ha-TaIRuvOiwWOJ1mwt2y6OaIRMoGNPKAU4VMGuwD2KceA7BIpQjxPh8bVEumNe3ojzMKDov94FYDpWgr_8FY7cuu1s4tMAxdR6rowRykjxk9X9TM8i3wmsjE8WdWHq2oTBkV0776nR7-fPGeoCN8u-pwve_XCgHSaJN4pEYliLctmrRriDMnE3ZrTm5wMo1LvVp8jZnGeaIeUpRPh3DCt8p_yEUoLz3j4JgN3KFkZDeQ" style="">
+  <img src="fotoflores.jpg" alt="Testimonio" style="width:100%; height:100%; object-fit:cover; object-position:center top; image-rendering:-webkit-optimize-contrast; display:block;">
 </div>
 </div>
-<!-- Stats Card -->
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-bright p-12 rounded-[3rem] soft-shadow text-center min-w-[300px]">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-bright p-12 rounded-[3rem] soft-shadow text-center min-w-[280px]">
 <div class="text-7xl font-extrabold tracking-tighter text-on-surface" style="">150+</div>
-<div class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mt-4" style="">Historias Reescritas</div>
+<div class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mt-4" style="">Historias transformadas</div>
 </div>
 </div>
-<div class="space-y-10">
-<span class="material-symbols-outlined text-6xl text-secondary-container" style="">format_quote</span>
-<h2 class="text-3xl md:text-4xl font-light leading-relaxed" style="">
-                    "Trabajar con Flor fue el catalizador que no sabía que necesitaba. El <span class="font-bold" style="">Método RAP</span> me dio una estructura para entender mi propia ambición sin perder mi esencia."
-                </h2>
+
+<!-- DERECHA: testimonios rotando solos -->
+<div class="space-y-8">
+<div class="relative" style="min-height: 320px;">
+
+<!-- ITEM 1: TEXTO - Elena -->
+<div class="t-item absolute inset-0" style="opacity:1; transition: opacity 0.7s ease, transform 0.7s ease; transform: translateY(0);">
+<div class="space-y-6">
+<span class="material-symbols-outlined text-secondary-container" style="font-size:3.5rem;">format_quote</span>
+<h2 class="text-xl md:text-2xl font-light leading-relaxed text-on-surface">"Trabajar con Flor fue el catalizador que no sabía que necesitaba. El <strong>Método RAP</strong> me dio una estructura para entender mi propia ambición sin perder mi esencia."</h2>
 <div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
-<img alt="portrait of Elena Rodríguez" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRFY1w4fIiXzBQCzE3d7tUwGMpdCPN8c6msG0yZv3oBKlw1gsqhMudgmvaZQfAFNmE1DfmFSahrcovtr_i6xFiy-EbDboIYsbG-VMY4b4OTDZdQOKHcNcJMD8zPEz36RrCNs46FXWYuRBOMZFzFMjCU-T-nSIfekKGn2MHQokjSUAP3wIuWandsOVQTEVtUgOJLUVv431QMThDKQmvbPlPEcJBIio7bhnfz5kVKBN6gzA4zeOB9DgtebYq_mbpWiICghW121QCy3I" style="">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden"><span class="material-symbols-outlined text-on-secondary-container">person</span></div>
+<div><p class="font-bold text-sm uppercase tracking-wider">Elena Rodríguez</p><p class="text-xs text-on-surface-variant">CEO &amp; Directora Creativa</p></div>
 </div>
+</div>
+</div>
+
+<!-- ITEM 2: VIDEO -->
+<div class="t-item absolute inset-0" style="opacity:0; transition: opacity 0.7s ease, transform 0.7s ease; transform: translateY(16px);">
+<div class="bg-[#1a1a1a] rounded-[2rem] overflow-hidden group cursor-pointer flex flex-col" style="height:100%; min-height:300px; background: linear-gradient(160deg,#111 0%,#222 100%);">
+<!-- PEGAR AQUÍ el <video> o <iframe> cuando tengas el video -->
+<div class="flex-grow flex items-center justify-center relative">
+<div class="w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300" style="background:rgba(255,255,255,0.12);">
+<span class="material-symbols-outlined text-white" style="font-size:2.5rem;">play_arrow</span>
+</div>
+<div class="absolute top-5 left-5 flex items-center gap-2 rounded-full px-3 py-1" style="background:rgba(255,255,255,0.1);">
+<span class="w-2 h-2 rounded-full" style="background:#f87171;"></span>
+<span class="text-white text-xs font-semibold tracking-widest">VIDEO</span>
+</div>
+</div>
+<div class="p-6 border-t" style="border-color:rgba(255,255,255,0.08);">
+<p class="font-bold text-white text-sm">Nombre Apellido</p>
+<p class="text-xs mt-1" style="color:rgba(255,255,255,0.4);">Descripción breve</p>
+</div>
+</div>
+</div>
+
+<!-- ITEM 3: VIDEO -->
+<div class="t-item absolute inset-0" style="opacity:0; transition: opacity 0.7s ease, transform 0.7s ease; transform: translateY(16px);">
+<div class="bg-[#1a1a1a] rounded-[2rem] overflow-hidden group cursor-pointer flex flex-col" style="height:100%; min-height:300px; background: linear-gradient(160deg,#111 0%,#222 100%);">
+<!-- PEGAR AQUÍ el <video> o <iframe> cuando tengas el video -->
+<div class="flex-grow flex items-center justify-center relative">
+<div class="w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300" style="background:rgba(255,255,255,0.12);">
+<span class="material-symbols-outlined text-white" style="font-size:2.5rem;">play_arrow</span>
+</div>
+<div class="absolute top-5 left-5 flex items-center gap-2 rounded-full px-3 py-1" style="background:rgba(255,255,255,0.1);">
+<span class="w-2 h-2 rounded-full" style="background:#f87171;"></span>
+<span class="text-white text-xs font-semibold tracking-widest">VIDEO</span>
+</div>
+</div>
+<div class="p-6 border-t" style="border-color:rgba(255,255,255,0.08);">
+<p class="font-bold text-white text-sm">Nombre Apellido</p>
+<p class="text-xs mt-1" style="color:rgba(255,255,255,0.4);">Descripción breve</p>
+</div>
+</div>
+</div>
+
+<!-- ITEM 4: TEXTO -->
+<div class="t-item absolute inset-0" style="opacity:0; transition: opacity 0.7s ease, transform 0.7s ease; transform: translateY(16px);">
+<div class="space-y-8">
+<span class="material-symbols-outlined text-secondary-container" style="font-size:3.5rem;">format_quote</span>
+<h2 class="text-2xl md:text-3xl font-light leading-relaxed text-on-surface" style="">"[Testimonio escrito — agregá el texto real de esta persona]"</h2>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center"><span class="material-symbols-outlined text-primary" style="">person</span></div>
+<div><p class="font-bold text-sm uppercase tracking-wider" style="">Nombre Apellido</p><p class="text-xs text-on-surface-variant" style="">Descripción breve</p></div>
+</div>
+</div>
+</div>
+
+<!-- ITEM 5: TEXTO -->
+<div class="t-item absolute inset-0" style="opacity:0; transition: opacity 0.7s ease, transform 0.7s ease; transform: translateY(16px);">
+<div class="space-y-8">
+<span class="material-symbols-outlined text-secondary-container" style="font-size:3.5rem;">format_quote</span>
+<h2 class="text-2xl md:text-3xl font-light leading-relaxed text-on-surface" style="">"[Testimonio escrito — agregá el texto real de esta persona]"</h2>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-tertiary-container" style="">person</span></div>
+<div><p class="font-bold text-sm uppercase tracking-wider" style="">Nombre Apellido</p><p class="text-xs text-on-surface-variant" style="">Descripción breve</p></div>
+</div>
+</div>
+</div>
+
+</div><!-- /relative -->
+
+<!-- Dots + Flechas -->
+<div class="flex items-center justify-between mt-2">
+  <div class="flex items-center gap-3" id="t-dots"></div>
+  <div class="flex items-center gap-2">
+    <button id="t-prev" aria-label="Anterior" style="width:44px;height:44px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;box-shadow:0 1px 4px rgba(0,0,0,0.07);" onmouseover="this.style.background='#1a1a1a';this.querySelector('span').style.color='#fff'" onmouseout="this.style.background='#fff';this.querySelector('span').style.color='#1a1a1a'">
+      <span class="material-symbols-outlined" style="font-size:1.3rem;color:#1a1a1a;transition:color 0.25s;">arrow_back</span>
+    </button>
+    <button id="t-next" aria-label="Siguiente" style="width:44px;height:44px;border-radius:50%;border:1.5px solid #e2e8f0;background:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;box-shadow:0 1px 4px rgba(0,0,0,0.12);" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#1a1a1a'">
+      <span class="material-symbols-outlined" style="font-size:1.3rem;color:#fff;">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+</div><!-- /right -->
+</div><!-- /grid -->
+</section>
+
+
+<!-- Garantía Section -->
+<section class="py-24 px-6 md:px-12 bg-surface" id="garantia">
+<div class="max-w-screen-lg mx-auto">
+<div class="bg-surface-bright rounded-[3rem] p-12 md:p-16 soft-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-secondary-container/30 rounded-full blur-[80px]"></div>
+<div class="relative z-10">
+<div class="flex flex-col md:flex-row items-start gap-8 mb-8">
+<div class="w-20 h-20 rounded-[1.5rem] bg-secondary-container flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-secondary-container text-4xl" style="">verified_user</span></div>
 <div>
-<div class="font-bold text-sm uppercase tracking-wider" style="">Elena Rodríguez</div>
-<div class="text-xs text-on-surface-variant" style="">CEO &amp; Directora Creativa</div>
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block" style="">Garantía</span>
+<h2 class="text-3xl md:text-4xl font-light leading-tight" style="">Tu inversión <span class="font-extrabold italic" style="">está protegida.</span></h2>
+</div>
+</div>
+<div class="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed max-w-2xl">
+<p style="">Si al terminar el proceso sentís que seguís exactamente en el mismo punto y no lograste identificar con claridad qué patrones te estaban frenando, vas a tener <span class="font-semibold text-on-surface" style="">15 días extra de acompañamiento sin costo adicional.</span></p>
+<p class="font-medium text-on-surface italic" style="">Porque si vos estás dispuesto/a a hacer el proceso, yo también estoy dispuesta a acompañarte hasta que algo real cambie.</p>
 </div>
 </div>
 </div>
+</div>
+</section>
+<!-- Precio Section -->
+<section class="py-24 px-6 md:px-12" id="precio" style="background: linear-gradient(160deg, #f5f0ff 0%, #fdf8f3 50%, #e8f4f1 100%);">
+<div class="max-w-screen-md mx-auto">
+<div class="text-center mb-12">
+<span class="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block">Inversión</span>
+<h2 class="text-4xl md:text-5xl font-light">Tu <span class="font-extrabold italic">inversión</span></h2>
+</div>
+<div class="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style="background: linear-gradient(135deg, #ffffff 0%, #f8f4ff 60%, #edf7f5 100%);">
+<!-- Blobs decorativos -->
+<div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style="background: radial-gradient(circle, #e9d5ff 0%, transparent 70%); opacity: 0.7;"></div>
+<div class="absolute bottom-0 left-0 w-56 h-56 rounded-full blur-[70px] pointer-events-none" style="background: radial-gradient(circle, #b8e0d8 0%, transparent 70%); opacity: 0.6;"></div>
+<div class="relative z-10">
+<div class="text-center space-y-3 pb-10 border-b border-outline-variant">
+<p class="text-sm uppercase tracking-widest text-on-surface-variant font-bold">Método R.A.P. completo</p>
+<p class="text-on-surface-variant text-sm font-light">Consultá sobre planes de pago</p>
+</div>
+<ul class="flex flex-col gap-5 py-10">
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">3 sesiones 1:1 personalizadas</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Encuentros individuales diseñados en función de tu proceso, tu ritmo y lo que necesitás trabajar.</p>
+</div>
+</li>
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">Ejercicios entre sesiones</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Después de cada encuentro recibís ejercicios concretos para integrar lo trabajado. Porque el cambio no pasa solo en la sesión, pasa en lo que hacés después.</p>
+</div>
+</li>
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">Acompañamiento directo entre sesiones</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Tenés un canal de consultas personalizado de lunes a viernes de 9 a 17hs. Si algo surge, si tenés una duda o necesitás orientación en el proceso, estoy disponible.</p>
+</div>
+</li>
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">Guía práctica con acciones concretas</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Al finalizar el proceso recibís un análisis personalizado con anclajes para reconocer tus patrones en el futuro y actuar diferente cuando aparezcan.</p>
+</div>
+</li>
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">Libro de acompañamiento</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Un recurso con herramientas y ejercicios para que puedas seguir integrando el proceso de manera autónoma, sin depender de un acompañamiento constante.</p>
+</div>
+</li>
+
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style="font-size:1.3rem;">check_circle</span>
+<div>
+<p class="font-semibold text-sm text-on-surface">Análisis previo a la primera sesión</p>
+<p class="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.</p>
+</div>
+</li>
+
+</ul>
+<div class="space-y-4">
+<button class="w-full bg-primary text-on-primary rounded-full py-5 text-base font-bold hover:opacity-90 transition-all" style="">Reservar mi lugar</button>
+<p class="text-center text-xs text-on-surface-variant font-light">Garantía de 15 días adicionales incluida</p>
+</div>
+</div><!-- /z-10 -->
+</div><!-- /card -->
 </div>
 </section>
 <!-- Final CTA -->
@@ -389,4 +815,59 @@
 </div>
 </div>
 </footer>
+<script>
+window.addEventListener('load', function() {
+  var items = document.querySelectorAll('.t-item');
+  var dotsEl = document.getElementById('t-dots');
+  var prevBtn = document.getElementById('t-prev');
+  var nextBtn = document.getElementById('t-next');
+
+  if (!items.length || !dotsEl || !prevBtn || !nextBtn) return;
+
+  var current = 0;
+  var total = items.length;
+  var timer = null;
+
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('button');
+    d.setAttribute('type', 'button');
+    d.style.cssText = 'height:10px;width:10px;border-radius:999px;border:none;padding:0;cursor:pointer;transition:all 0.4s ease;background:#e2e8f0;';
+    d.onclick = (function(idx){ return function(){ show(idx); resetTimer(); }; })(i);
+    dotsEl.appendChild(d);
+  }
+
+  function show(idx) {
+    items.forEach(function(item, i) {
+      item.style.opacity        = (i === idx) ? '1' : '0';
+      item.style.transform      = (i === idx) ? 'translateY(0px)' : 'translateY(16px)';
+      item.style.pointerEvents  = (i === idx) ? 'auto' : 'none';
+    });
+    dotsEl.querySelectorAll('button').forEach(function(d, i) {
+      d.style.width      = (i === idx) ? '2rem' : '10px';
+      d.style.background = (i === idx) ? '#1a1a1a' : '#e2e8f0';
+    });
+    current = idx;
+  }
+
+  function next() { show((current + 1) % total); }
+  function prev() { show((current - 1 + total) % total); }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(next, 4500);
+  }
+
+  prevBtn.addEventListener('click', function() { prev(); resetTimer(); });
+  nextBtn.addEventListener('click', function() { next(); resetTimer(); });
+
+  var section = document.getElementById('testimonials');
+  if (section) {
+    section.addEventListener('mouseenter', function() { clearInterval(timer); });
+    section.addEventListener('mouseleave', function() { resetTimer(); });
+  }
+
+  show(0);
+  resetTimer();
+});
+</script>
 </body></html>
