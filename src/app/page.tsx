@@ -175,13 +175,13 @@ export default function LandingPage() {
                 Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
               </p>
               <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4">
-                <button className="bg-primary text-on-primary rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:scale-[0.98] transition-transform">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="bg-primary text-on-primary rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:scale-[0.98] transition-transform">
                   Comenzar Ahora
                   <span className="material-symbols-outlined">arrow_forward</span>
-                </button>
-                <button className="bg-surface-bright/50 backdrop-blur rounded-full px-10 py-5 text-base font-medium border border-outline-variant hover:bg-surface-bright transition-all">
+                </a>
+                <a href="#rap" className="bg-surface-bright/50 backdrop-blur rounded-full px-10 py-5 text-base font-medium border border-outline-variant hover:bg-surface-bright transition-all flex items-center justify-center">
                   Explorar Método
-                </button>
+                </a>
               </div>
             </div>
             <div className="hero-image relative">
