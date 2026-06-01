@@ -115,7 +115,7 @@ body {
 
 /* Custom Utilities from index.html */
 .pastel-gradient {
-  background: linear-gradient(135deg, #e6f4f1 0%, #f0eafc 50%, #fff1e6 100%);
+  background: linear-gradient(135deg, #e6f4f1 0%, #fde8dc 50%, #fff1e6 100%);
 }
 
 .soft-shadow {
@@ -165,7 +165,7 @@ main {
 }
 
 .pastel-gradient-lavender {
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  background: linear-gradient(135deg, #fdeee8 0%, #fdddd2 100%);
 }
 
 .pastel-gradient-peach {
@@ -332,7 +332,7 @@ section[data-sileo-viewport="true"] {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 .ethereal-gradient {
-    background: linear-gradient(135deg, #e6f4f1 0%, #f0eafc 50%, #fff1e6 100%);
+    background: linear-gradient(135deg, #e6f4f1 0%, #fde8dc 50%, #fff1e6 100%);
 }
 .soft-shadow {
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);

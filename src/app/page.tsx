@@ -348,41 +348,41 @@ export default function LandingPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {/* Card 1 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>chat</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.10) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>chat</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">3 sesiones 1:1 personalizadas</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Cada sesión está enfocada en una etapa específica del proceso y adaptada a lo que hoy te está pasando.</p></div>
               </div>
               {/* Card 2 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>edit_note</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>edit_note</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Ejercicios entre sesiones</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Después de cada encuentro recibís ejercicios concretos para integrar lo trabajado. Porque el cambio pasa en lo que hacés después.</p></div>
               </div>
               {/* Card 3 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.16) 0%, transparent 70%)',top:0,left:0,transform:'translate(-30%,-30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>support_agent</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',top:0,left:0,transform:'translate(-30%,-30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>support_agent</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Acompañamiento directo</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Canal de consultas personalizado de lunes a viernes de 9 a 17hs. Si algo surge o necesitás orientación, estoy disponible.</p></div>
               </div>
               {/* Card 4 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%)',bottom:0,right:0,transform:'translate(30%,30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>analytics</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,right:0,transform:'translate(30%,30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>analytics</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Guía práctica con acciones concretas</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Al finalizar recibís un análisis personalizado con anclajes para reconocer tus patrones y actuar diferente cuando aparezcan.</p></div>
               </div>
               {/* Card 5 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.17) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>menu_book</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>menu_book</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Libro de acompañamiento</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Un recurso con herramientas y ejercicios para que puedas seguir integrando el proceso de manera autónoma.</p></div>
               </div>
               {/* Card 6 */}
-              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(139,92,246,0.06)'}}>
-                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(167,139,250,0.16) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#ede9fb'}}><span className="material-symbols-outlined text-2xl" style={{color:'#7c3aed'}}>manage_search</span></div>
+              <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
+                <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>manage_search</span></div>
                 <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Análisis previo a la primera sesión</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.</p></div>
-                <div className="mt-auto pt-2 relative z-10"><span className="text-[0.65rem] uppercase tracking-widest font-bold" style={{color:'#9b7fd4'}}>Incluido sin costo adicional</span></div>
+                <div className="mt-auto pt-2 relative z-10"><span className="text-[0.65rem] uppercase tracking-widest font-bold" style={{color:'#9a3412'}}>Incluido sin costo adicional</span></div>
               </div>
             </div>
           </div>
@@ -681,14 +681,14 @@ export default function LandingPage() {
         </section>
 
         {/* ── PRECIO ── */}
-        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #f5f0ff 0%, #fdf8f3 50%, #e8f4f1 100%)'}}>
+        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #fde8dc 0%, #fdf8f3 50%, #e8f4f1 100%)'}}>
           <div className="max-w-screen-md mx-auto">
             <div className="text-center mb-12">
               <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block">Inversión</span>
               <h2 className="text-4xl md:text-5xl font-light">Tu <span className="font-extrabold italic">inversión</span></h2>
             </div>
-            <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'linear-gradient(135deg, #ffffff 0%, #f8f4ff 60%, #edf7f5 100%)'}}>
-              <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style={{background:'radial-gradient(circle, #e9d5ff 0%, transparent 70%)',opacity:0.7}}></div>
+            <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'linear-gradient(135deg, #ffffff 0%, #fdf3ef 60%, #edf7f5 100%)'}}>
+              <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style={{background:'radial-gradient(circle, #fdddd2 0%, transparent 70%)',opacity:0.7}}></div>
               <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full blur-[70px] pointer-events-none" style={{background:'radial-gradient(circle, #b8e0d8 0%, transparent 70%)',opacity:0.6}}></div>
               <div className="relative z-10">
                 <div className="text-center space-y-3 pb-10 border-b border-outline-variant">
