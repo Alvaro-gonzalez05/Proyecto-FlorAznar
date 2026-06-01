@@ -163,18 +163,18 @@ export default function LandingPage() {
           <div className="absolute inset-0 ethereal-gradient opacity-60 -z-10"></div>
           <div className="hero-blob-1 absolute top-1/4 -right-20 w-96 h-96 bg-secondary rounded-full blur-[120px] opacity-40"></div>
           <div className="hero-blob-2 absolute bottom-1/4 -left-20 w-80 h-80 bg-surface-container-high rounded-full blur-[100px] opacity-50"></div>
-          <div className="max-w-screen-2xl mx-auto w-full grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <div className="space-y-6">
+          <div className="max-w-screen-xl mx-auto w-full flex flex-col items-center text-center">
+            <div className="space-y-6 max-w-3xl">
               <div className="hero-badge inline-block px-4 py-1.5 rounded-full bg-[#9a3412]/5 backdrop-blur border border-[#9a3412]/25">
                 <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant">Evolución Consciente</span>
               </div>
               <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight leading-[1.1]">
                 Habita tu <span className="font-extrabold italic">máximo</span> potencial.
               </h1>
-              <p className="hero-subtitle text-lg md:text-xl text-on-surface-variant max-w-lg font-light leading-relaxed">
+              <p className="hero-subtitle text-lg md:text-xl text-on-surface-variant max-w-xl mx-auto font-light leading-relaxed">
                 Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
               </p>
-              <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4">
+              <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4 justify-center">
                 <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="bg-primary text-on-primary rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:scale-[0.98] transition-transform">
                   Comenzar Ahora
                   <span className="material-symbols-outlined">arrow_forward</span>
@@ -182,19 +182,6 @@ export default function LandingPage() {
                 <a href="#rap" className="bg-surface-bright/50 backdrop-blur rounded-full px-10 py-5 text-base font-medium border border-outline-variant hover:bg-surface-bright transition-all flex items-center justify-center">
                   Explorar Método
                 </a>
-              </div>
-            </div>
-            <div className="hero-image relative">
-              <div className="aspect-[4/5] rounded-[3rem] overflow-hidden soft-shadow relative z-10 border-[12px] border-surface-bright/30">
-                <img alt="Flor Aznar" className="w-full h-full object-cover object-top" src="/fotoflo.jpeg" />
-              </div>
-              <div className="hero-quote absolute -bottom-10 -left-10 bg-surface-bright p-8 rounded-xl soft-shadow z-20 max-w-[240px]">
-                <p className="text-sm font-medium italic text-on-surface">&ldquo;El cambio no ocurre en la mente, ocurre en el ser.&rdquo;</p>
-                <div className="mt-4 flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#9a3412]"></span>
-                  <span className="w-2 h-2 rounded-full bg-surface-container-high"></span>
-                  <span className="w-2 h-2 rounded-full bg-tertiary-container"></span>
-                </div>
               </div>
             </div>
           </div>
