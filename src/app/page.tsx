@@ -231,29 +231,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── ABOUT FLOR ── */}
-        <section className="py-28 px-6 md:px-12 bg-surface" id="about-flor">
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="relative flex justify-center">
-                <div className="aspect-[4/5] max-w-[400px] w-full rounded-[3rem] overflow-hidden soft-shadow border-[8px] border-surface-bright/30">
-                  <img alt="Flor Aznar" className="w-full h-full object-cover object-top" src="/fotoflo.jpeg" />
-                </div>
-              </div>
-              <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">¿Quién es Flor?</span>
-                <h2 className="text-4xl md:text-5xl font-light leading-tight">Conocé a <span className="font-extrabold italic">Flor Aznar</span></h2>
-                <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed">
-                  <p>Mi camino comenzó en el mundo del marketing. Soy Licenciada en Marketing y durante los años en los que ejercí mi profesión descubrí que lo que realmente me apasionaba era acompañar a las personas y ayudarlas a potenciarse para atravesar cualquier desafío.</p>
-                  <p>Ese descubrimiento me llevó a adentrarme en el mundo del coaching. Me formé en EDPyN Barcelona (España), institución avalada por la ICF – Level 2, realicé un Máster en Recursos Humanos y actualmente continúo mi formación estudiando Counseling (Consultoría Psicológica).</p>
-                  <p>A lo largo de este camino entendí algo fundamental: muchas veces las personas no avanzan en su vida no por falta de capacidad, sino porque no se conocen lo suficiente y terminan repitiendo patrones o creencias que las mantienen en el mismo lugar.</p>
-                  <p className="font-medium text-on-surface italic">Hoy mi trabajo está enfocado en ayudar a las personas a conocerse más profundamente, comprender qué les está pasando y encontrar claridad para avanzar en su vida.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* ── MÉTODO RAP ── */}
         <section className="py-16 lg:py-24 xl:py-32 px-6 md:px-12 bg-surface" id="rap">
           <div className="max-w-screen-2xl mx-auto">
@@ -661,6 +638,29 @@ export default function LandingPage() {
                 <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed max-w-2xl">
                   <p>Si al terminar el proceso sentís que seguís exactamente en el mismo punto y no lograste identificar con claridad qué patrones te estaban frenando, vas a tener <span className="font-semibold text-on-surface">15 días extra de acompañamiento sin costo adicional.</span></p>
                   <p className="font-medium text-on-surface italic">Porque si vos estás dispuesto/a a hacer el proceso, yo también estoy dispuesta a acompañarte hasta que algo real cambie.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── ABOUT FLOR ── */}
+        <section className="py-28 px-6 md:px-12 bg-surface" id="about-flor">
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="relative flex justify-center">
+                <div className="aspect-[4/5] max-w-[400px] w-full rounded-[3rem] overflow-hidden soft-shadow border-[8px] border-surface-bright/30">
+                  <img alt="Flor Aznar" className="w-full h-full object-cover object-top" src="/fotoflo.jpeg" />
+                </div>
+              </div>
+              <div className="space-y-6">
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">¿Quién es Flor?</span>
+                <h2 className="text-4xl md:text-5xl font-light leading-tight">Conocé a <span className="font-extrabold italic">Flor Aznar</span></h2>
+                <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed">
+                  <p>Mi camino comenzó en el mundo del marketing. Soy Licenciada en Marketing y durante los años en los que ejercí mi profesión descubrí que lo que realmente me apasionaba era acompañar a las personas y ayudarlas a potenciarse para atravesar cualquier desafío.</p>
+                  <p>Ese descubrimiento me llevó a adentrarme en el mundo del coaching. Me formé en EDPyN Barcelona (España), institución avalada por la ICF – Level 2, realicé un Máster en Recursos Humanos y actualmente continúo mi formación estudiando Counseling (Consultoría Psicológica).</p>
+                  <p>A lo largo de este camino entendí algo fundamental: muchas veces las personas no avanzan en su vida no por falta de capacidad, sino porque no se conocen lo suficiente y terminan repitiendo patrones o creencias que las mantienen en el mismo lugar.</p>
+                  <p className="font-medium text-on-surface italic">Hoy mi trabajo está enfocado en ayudar a las personas a conocerse más profundamente, comprender qué les está pasando y encontrar claridad para avanzar en su vida.</p>
                 </div>
               </div>
             </div>
