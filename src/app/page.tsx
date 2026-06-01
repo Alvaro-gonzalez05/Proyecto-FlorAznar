@@ -165,7 +165,7 @@ export default function LandingPage() {
           <div className="hero-blob-2 absolute bottom-1/4 -left-20 w-80 h-80 bg-surface-container-high rounded-full blur-[100px] opacity-50"></div>
           <div className="max-w-screen-2xl mx-auto w-full grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="space-y-6">
-              <div className="hero-badge inline-block px-4 py-1.5 rounded-full bg-surface-bright/80 backdrop-blur border border-outline-variant">
+              <div className="hero-badge inline-block px-4 py-1.5 rounded-full bg-[#9a3412]/5 backdrop-blur border border-[#9a3412]/25">
                 <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant">Evolución Consciente</span>
               </div>
               <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight leading-[1.1]">
@@ -191,7 +191,7 @@ export default function LandingPage() {
               <div className="hero-quote absolute -bottom-10 -left-10 bg-surface-bright p-8 rounded-xl soft-shadow z-20 max-w-[240px]">
                 <p className="text-sm font-medium italic text-on-surface">&ldquo;El cambio no ocurre en la mente, ocurre en el ser.&rdquo;</p>
                 <div className="mt-4 flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
+                  <span className="w-2 h-2 rounded-full bg-[#9a3412]"></span>
                   <span className="w-2 h-2 rounded-full bg-surface-container-high"></span>
                   <span className="w-2 h-2 rounded-full bg-tertiary-container"></span>
                 </div>
@@ -205,7 +205,7 @@ export default function LandingPage() {
           <div className="max-w-screen-xl mx-auto">
             <div className="grid md:grid-cols-2 gap-16 items-start">
               <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block">El problema</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">El problema</span>
                 <h2 className="text-4xl md:text-5xl font-light leading-tight">Muchas veces el problema <span className="font-extrabold">no es la falta de capacidad.</span></h2>
                 <p className="text-lg text-on-surface-variant font-light leading-relaxed">Es estar funcionando desde patrones mentales y emocionales que te hacen frenarte automáticamente cuando querés avanzar.</p>
                 <p className="text-base text-on-surface-variant font-light leading-relaxed">Todos tenemos una manera de pensar, reaccionar y actuar. Y cuando no entendemos cómo funcionamos internamente, terminamos:</p>
@@ -216,12 +216,12 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="pt-4 border-l-4 border-secondary-container pl-6">
+                <div className="pt-4 border-l-4 border-[#9a3412]/50 pl-6">
                   <p className="text-lg font-medium text-on-surface">No se trata de hacer más.<br />Se trata de entender qué necesitás cambiar para empezar a avanzar de verdad.</p>
                 </div>
               </div>
               <div className="bg-surface-dim/40 rounded-[3rem] p-10 space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant block">¿Esto te pasa a vos?</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">¿Esto te pasa a vos?</span>
                 <div className="space-y-4">
                   {[
                     { icon: 'psychology', bg: 'bg-secondary-container', color: 'text-on-secondary-container', text: 'Sobrepensás tanto las decisiones que terminás paralizándote.' },
@@ -254,7 +254,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block">¿Quién es Flor?</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">¿Quién es Flor?</span>
                 <h2 className="text-4xl md:text-5xl font-light leading-tight">Conocé a <span className="font-extrabold italic">Flor Aznar</span></h2>
                 <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed">
                   <p>Mi camino comenzó en el mundo del marketing. Soy Licenciada en Marketing y durante los años en los que ejercí mi profesión descubrí que lo que realmente me apasionaba era acompañar a las personas y ayudarlas a potenciarse para atravesar cualquier desafío.</p>
@@ -272,7 +272,7 @@ export default function LandingPage() {
           <div className="max-w-screen-2xl mx-auto">
             <div className="rap-title flex flex-col md:flex-row justify-between items-end mb-12 lg:mb-24 gap-8">
               <div className="max-w-2xl">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-6 block">El Mapa</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-6 block">El Mapa</span>
                 <h2 className="text-3xl md:text-5xl lg:text-6xl font-light">El Método RAP: <span className="font-extrabold text-on-surface">Una Evolución Radical</span></h2>
               </div>
               <p className="text-on-surface-variant max-w-sm pb-2">Un viaje estructurado desde la claridad interna hacia la manifestación externa, diseñado para líderes de alto impacto.</p>
@@ -284,7 +284,7 @@ export default function LandingPage() {
                   <div className="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-secondary-container text-3xl">visibility</span></div>
                   <h3 className="text-2xl font-bold mb-4">Reconocimiento</h3>
                   <p className="text-on-surface-variant leading-relaxed mb-8">Identifica las narrativas silenciosas y los techos de cristal invisibles que te alejan de tu frecuencia auténtica.</p>
-                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 01</span><div className="h-px flex-grow bg-outline-variant"></div></div>
+                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 01</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
               <div className="rap-card group relative pt-24 md:pt-32">
@@ -293,7 +293,7 @@ export default function LandingPage() {
                   <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center mb-8"><span className="material-symbols-outlined text-primary text-3xl">bolt</span></div>
                   <h3 className="text-2xl font-bold mb-4">Acción</h3>
                   <p className="text-on-surface-variant leading-relaxed mb-8">Implementación estratégica de nuevos comportamientos. Traducimos la visión en hábitos de alto rendimiento.</p>
-                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 02</span><div className="h-px flex-grow bg-outline-variant"></div></div>
+                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 02</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
               <div className="rap-card group relative pt-12 md:pt-4">
@@ -302,7 +302,7 @@ export default function LandingPage() {
                   <div className="w-16 h-16 rounded-2xl bg-tertiary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-tertiary-container text-3xl">auto_awesome</span></div>
                   <h3 className="text-2xl font-bold mb-4">Potencial</h3>
                   <p className="text-on-surface-variant leading-relaxed mb-8">Encarnar tu versión más elevada. Crecimiento sostenible y la realización de tu visión en cada esfera de la vida.</p>
-                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 03</span><div className="h-px flex-grow bg-outline-variant"></div></div>
+                  <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 03</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
             </div>
@@ -323,7 +323,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant block">¿Cómo es el proceso?</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">¿Cómo es el proceso?</span>
                 <p className="text-2xl font-light text-on-surface-variant leading-relaxed">Un proceso de <span className="font-semibold text-on-surface">tres etapas</span> diseñado para ayudarte a entender qué te frena y empezar a avanzar de verdad.</p>
                 <p className="text-base text-on-surface-variant font-light leading-relaxed">No es un curso ni una lista de consejos. Es un acompañamiento personalizado donde trabajás directamente con lo que está pasando en tu vida hoy.</p>
                 <div className="flex items-center gap-4">
@@ -343,7 +343,7 @@ export default function LandingPage() {
         <section className="py-32 px-6 md:px-12 bg-surface" id="incluye">
           <div className="max-w-screen-2xl mx-auto">
             <div className="text-center mb-20">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block">Lo que recibís</span>
+              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Lo que recibís</span>
               <h2 className="text-4xl md:text-5xl font-light">Qué <span className="font-extrabold italic">incluye</span> el proceso</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -471,7 +471,7 @@ export default function LandingPage() {
         <section className="py-16 lg:py-24 xl:py-32 px-6 md:px-12 bg-surface-dim/30" id="services">
           <div className="max-w-screen-2xl mx-auto">
             <div className="services-title text-center mb-12 lg:mb-24">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block">Caminos</span>
+              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Caminos</span>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light">Nuestros <span className="font-extrabold italic">Servicios</span></h2>
             </div>
             <div className="services-grid grid md:grid-cols-12 gap-8">
@@ -490,7 +490,7 @@ export default function LandingPage() {
                     ))}
                   </ul>
                   {servicios[currentService].extra && <p className="text-sm font-medium text-on-secondary-container mb-6 italic">{servicios[currentService].extra}</p>}
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(servicios[currentService].whatsappMsg)}`} target="_blank" rel="noopener noreferrer" className="mt-auto border-b border-primary w-fit pb-1 font-bold tracking-wider uppercase text-xs hover:text-on-secondary-container transition-colors">
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(servicios[currentService].whatsappMsg)}`} target="_blank" rel="noopener noreferrer" className="mt-auto border-b border-[#9a3412] text-[#9a3412] w-fit pb-1 font-bold tracking-wider uppercase text-xs hover:opacity-70 transition-opacity">
                     Consultar Disponibilidad
                   </a>
                   <div className="flex items-center gap-3 mt-6">
@@ -549,7 +549,7 @@ export default function LandingPage() {
               </div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-bright p-12 rounded-[3rem] soft-shadow text-center min-w-[280px]">
                 <div className="text-7xl font-extrabold tracking-tighter text-on-surface">150+</div>
-                <div className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mt-4">Historias transformadas</div>
+                <div className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mt-4">Historias transformadas</div>
               </div>
             </div>
 
@@ -667,7 +667,7 @@ export default function LandingPage() {
                     <span className="material-symbols-outlined text-on-secondary-container text-4xl">verified_user</span>
                   </div>
                   <div>
-                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-2 block">Garantía</span>
+                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">Garantía</span>
                     <h2 className="text-3xl md:text-4xl font-light leading-tight">Tu inversión <span className="font-extrabold italic">está protegida.</span></h2>
                   </div>
                 </div>
@@ -684,7 +684,7 @@ export default function LandingPage() {
         <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #fde8dc 0%, #fdf8f3 50%, #e8f4f1 100%)'}}>
           <div className="max-w-screen-md mx-auto">
             <div className="text-center mb-12">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant mb-4 block">Inversión</span>
+              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Inversión</span>
               <h2 className="text-4xl md:text-5xl font-light">Tu <span className="font-extrabold italic">inversión</span></h2>
             </div>
             <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'linear-gradient(135deg, #ffffff 0%, #fdf3ef 60%, #edf7f5 100%)'}}>
