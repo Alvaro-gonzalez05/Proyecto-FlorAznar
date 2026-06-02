@@ -601,9 +601,12 @@ useEffect(() => {
                   ))}
                 </ul>
                 <div className="space-y-4">
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="w-full bg-primary text-on-primary rounded-full py-5 text-base font-bold hover:opacity-90 transition-all text-center block">
-                    Reservar mi lugar
-                  </a>
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full blur-xl opacity-60 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(154,52,18,0.28) 0%, transparent 70%)', transform:'scale(1.25) translateY(4px)'}}></div>
+                    <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="relative w-full rounded-full py-5 text-base font-bold text-center block border border-[#9a3412]/30 hover:border-[#9a3412]/60 transition-all" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fdddd2 100%)', color:'#7c2d12'}}>
+                      Reservar mi lugar
+                    </a>
+                  </div>
                   <p className="text-center text-xs text-on-surface-variant font-light">Garantía de 15 días adicionales incluida</p>
                 </div>
               </div>
@@ -614,14 +617,19 @@ useEffect(() => {
         {/* ── CTA ── */}
         <section className="px-6 md:px-12 py-16 lg:py-24 xl:py-32" id="contact">
           <div className="max-w-screen-2xl mx-auto">
-            <div className="cta-section relative bg-primary text-on-primary rounded-[2rem] lg:rounded-[4rem] p-8 md:p-16 lg:p-24 overflow-hidden text-center">
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary-container opacity-10 rounded-full blur-[100px]"></div>
-              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-surface-container-high opacity-10 rounded-full blur-[80px]"></div>
+            <div className="cta-section relative bg-[#1a1a1a] text-white rounded-[2rem] lg:rounded-[4rem] p-8 md:p-16 lg:p-24 overflow-hidden text-center">
+              {/* Detalles decorativos negros */}
+              <div className="absolute top-0 left-0 w-full h-px bg-white/10"></div>
+              <div className="absolute bottom-0 left-0 w-full h-px bg-white/10"></div>
+              <div className="absolute top-8 left-8 w-8 h-8 border-l-2 border-t-2 border-white/20 rounded-tl-xl"></div>
+              <div className="absolute top-8 right-8 w-8 h-8 border-r-2 border-t-2 border-white/20 rounded-tr-xl"></div>
+              <div className="absolute bottom-8 left-8 w-8 h-8 border-l-2 border-b-2 border-white/20 rounded-bl-xl"></div>
+              <div className="absolute bottom-8 right-8 w-8 h-8 border-r-2 border-b-2 border-white/20 rounded-br-xl"></div>
               <div className="relative z-10 max-w-3xl mx-auto space-y-12">
                 <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight">¿Iniciamos la <span className="italic font-extrabold">conversación?</span></h2>
-                <p className="text-on-primary/60 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
+                <p className="text-white/50 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
                 <div className="flex flex-col sm:flex-row justify-center gap-6">
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="bg-surface-bright text-primary rounded-full px-12 py-6 text-lg font-bold hover:scale-105 transition-transform flex items-center justify-center gap-3">
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="bg-white text-[#1a1a1a] rounded-full px-12 py-6 text-lg font-bold hover:scale-105 transition-transform flex items-center justify-center gap-3">
                     Agendar llamada de introducción
                     <span className="material-symbols-outlined">call</span>
                   </a>
