@@ -568,15 +568,15 @@ useEffect(() => {
         </section>
 
         {/* ── PRECIO ── */}
-        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #fde8dc 0%, #fdf8f3 50%, #e8f4f1 100%)'}}>
+        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #fdeee8 0%, #fdf8f3 100%)'}}>
           <div className="max-w-screen-md mx-auto">
             <div className="text-center mb-12">
               <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Inversión</span>
               <h2 className="text-4xl md:text-5xl font-light">Tu <span className="font-extrabold italic">inversión</span></h2>
             </div>
-            <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'linear-gradient(135deg, #ffffff 0%, #fdf3ef 60%, #edf7f5 100%)'}}>
-              <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style={{background:'radial-gradient(circle, #fdddd2 0%, transparent 70%)',opacity:0.7}}></div>
-              <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full blur-[70px] pointer-events-none" style={{background:'radial-gradient(circle, #b8e0d8 0%, transparent 70%)',opacity:0.6}}></div>
+            <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'#ffffff'}}>
+              <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style={{background:'radial-gradient(circle, #fdddd2 0%, transparent 70%)',opacity:0.6}}></div>
+              <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full blur-[70px] pointer-events-none" style={{background:'radial-gradient(circle, #fdeee8 0%, transparent 70%)',opacity:0.7}}></div>
               <div className="relative z-10">
                 <div className="text-center space-y-3 pb-10 border-b border-outline-variant">
                   <p className="text-sm uppercase tracking-widest text-on-surface-variant font-bold">Método R.A.P. completo</p>
@@ -626,13 +626,16 @@ useEffect(() => {
               <div className="absolute bottom-8 left-8 w-8 h-8 border-l-2 border-b-2 border-white/20 rounded-bl-xl"></div>
               <div className="absolute bottom-8 right-8 w-8 h-8 border-r-2 border-b-2 border-white/20 rounded-br-xl"></div>
               <div className="relative z-10 max-w-3xl mx-auto space-y-12">
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight">¿Iniciamos la <span className="italic font-extrabold">conversación?</span></h2>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight">¿Iniciamos la <span className="italic font-extrabold" style={{color:'#e8956d'}}>conversación?</span></h2>
                 <p className="text-white/50 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
                 <div className="flex flex-col sm:flex-row justify-center gap-6">
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="bg-white text-[#1a1a1a] rounded-full px-12 py-6 text-lg font-bold hover:scale-105 transition-transform flex items-center justify-center gap-3">
-                    Agendar llamada de introducción
-                    <span className="material-symbols-outlined">call</span>
-                  </a>
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full blur-2xl opacity-50 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(232,149,109,0.5) 0%, transparent 70%)', transform:'scale(1.4) translateY(6px)'}}></div>
+                    <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="relative rounded-full px-12 py-6 text-lg font-bold hover:scale-105 transition-transform flex items-center justify-center gap-3 border border-[#9a3412]/40" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fdddd2 100%)', color:'#7c2d12'}}>
+                      Agendar llamada de introducción
+                      <span className="material-symbols-outlined">call</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
