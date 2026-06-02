@@ -382,7 +382,7 @@ useEffect(() => {
         </section>
 
         {/* ── LIBRO ── */}
-        <section className="book-section py-16 lg:py-24 xl:py-32 px-6 md:px-12 overflow-hidden" id="book" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
+        <section className="book-section py-16 lg:py-24 xl:py-32 px-6 md:px-12 overflow-hidden" id="book" style={{background:'#0D1F17'}}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="book-text order-2 md:order-1 space-y-6">
@@ -631,23 +631,25 @@ useEffect(() => {
         </section>
 
         {/* ── GARANTÍA ── */}
-        <section className="py-24 px-6 md:px-12 bg-surface" id="garantia">
+        <section className="py-24 px-6 md:px-12" id="garantia" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
           <div className="max-w-screen-lg mx-auto">
-            <div className="bg-surface-bright rounded-[3rem] p-12 md:p-16 soft-shadow relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-secondary-container/30 rounded-full blur-[80px]"></div>
+            <div className="rounded-[2.5rem] p-10 md:p-14 relative overflow-hidden" style={{background:'rgba(0,0,0,0.25)', backdropFilter:'blur(2px)'}}>
+
+
+              <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[80px]" style={{background:'rgba(255,255,255,0.1)'}}></div>
               <div className="relative z-10">
                 <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
-                  <div className="w-20 h-20 rounded-[1.5rem] bg-secondary-container flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-on-secondary-container text-4xl">verified_user</span>
+                  <div className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center shrink-0" style={{background:'rgba(255,255,255,0.2)'}}>
+                    <span className="material-symbols-outlined text-4xl" style={{color:'#fff'}}>verified_user</span>
                   </div>
                   <div>
-                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">Garantía</span>
-                    <h2 className="text-3xl md:text-4xl font-light leading-tight">Tu inversión <span className="font-extrabold italic">está protegida.</span></h2>
+                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-2 block" style={{color:'rgba(255,255,255,0.7)'}}>Garantía</span>
+                    <h2 className="text-3xl md:text-4xl font-light leading-tight" style={{color:'#fff'}}>Tu inversión <span className="font-extrabold italic">está protegida.</span></h2>
                   </div>
                 </div>
-                <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed max-w-2xl">
-                  <p>Si al terminar el proceso sentís que seguís exactamente en el mismo punto y no lograste identificar con claridad qué patrones te estaban frenando, vas a tener <span className="font-semibold text-on-surface">15 días extra de acompañamiento sin costo adicional.</span></p>
-                  <p className="font-medium text-on-surface italic">Porque si vos estás dispuesto/a a hacer el proceso, yo también estoy dispuesta a acompañarte hasta que algo real cambie.</p>
+                <div className="space-y-5 text-base md:text-lg font-light leading-relaxed max-w-2xl" style={{color:'rgba(255,255,255,0.85)'}}>
+                  <p>Si al terminar el proceso sentís que seguís exactamente en el mismo punto y no lograste identificar con claridad qué patrones te estaban frenando, vas a tener <span className="font-semibold" style={{color:'#fff'}}>15 días extra de acompañamiento sin costo adicional.</span></p>
+                  <p className="font-medium italic" style={{color:'#fff'}}>Porque si vos estás dispuesto/a a hacer el proceso, yo también estoy dispuesta a acompañarte hasta que algo real cambie.</p>
                 </div>
               </div>
             </div>

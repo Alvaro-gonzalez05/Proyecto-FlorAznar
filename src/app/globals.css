@@ -96,10 +96,15 @@
 /* Standard CSS resets to ensure CDN styles work as expected */
 html {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   scroll-behavior: smooth;
   width: 100%;
   height: 100%;
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 body {
