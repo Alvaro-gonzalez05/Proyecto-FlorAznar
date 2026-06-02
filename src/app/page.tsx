@@ -203,7 +203,7 @@ useEffect(() => {
             <div className="rap-cards grid md:grid-cols-3 gap-12 relative">
               <div className="rap-card group relative pt-12">
                 <div className="rap-letter absolute -top-6 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-secondary-container transition-colors duration-500">R</div>
-                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
+                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-secondary-container text-3xl">visibility</span></div>
                   <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Revelar</span>
                   <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos cómo estás funcionando hoy</h3>
@@ -213,7 +213,7 @@ useEffect(() => {
               </div>
               <div className="rap-card group relative pt-24 md:pt-32">
                 <div className="rap-letter absolute top-0 md:top-12 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-surface-container-high transition-colors duration-500">A</div>
-                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500 border border-surface-container-high">
+                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500 border border-surface-container-high" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center mb-8"><span className="material-symbols-outlined text-primary text-3xl">bolt</span></div>
                   <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Avanzar</span>
                   <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos por qué eso sigue pasando</h3>
@@ -223,7 +223,7 @@ useEffect(() => {
               </div>
               <div className="rap-card group relative pt-12 md:pt-4">
                 <div className="rap-letter absolute -top-10 md:-top-16 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-tertiary-container transition-colors duration-500">P</div>
-                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
+                <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-tertiary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-tertiary-container text-3xl">auto_awesome</span></div>
                   <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Potenciar</span>
                   <h3 className="text-xl font-bold mb-3 leading-snug">Trabajamos cómo salir de ese patrón</h3>
