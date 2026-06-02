@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { DEFAULT_LANDING_CONTENT, LandingContent } from '@/lib/landing-content';
+import { supabase } from '@/lib/supabase';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -34,12 +35,34 @@ const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   };
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [testimonialPaused, setTestimonialPaused] = useState(false);
+  const testimonioVideoRef1 = useRef<HTMLVideoElement>(null);
+  const testimonioVideoRef2 = useRef<HTMLVideoElement>(null);
+  const [testimonioVideo1Playing, setTestimonioVideo1Playing] = useState(false);
+  const [testimonioVideo2Playing, setTestimonioVideo2Playing] = useState(false);
 
   useEffect(() => {
+    // Carga inicial
     fetch('/api/landing-content')
       .then(r => r.json())
       .then(data => setC(prev => ({ ...prev, ...data })))
       .catch(() => {});
+
+    // Suscripción realtime — actualiza la landing sin recargar
+    const channel = supabase
+      .channel('landing-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'landing_content', filter: 'id=eq.1' },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (payload: any) => {
+          if (payload.new?.content) {
+            setC(prev => ({ ...prev, ...(payload.new.content as LandingContent) }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const handlePurchaseClick = (url: string) => {
