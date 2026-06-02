@@ -175,7 +175,7 @@ export default function LandingPage() {
                 Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
               </p>
               <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4 justify-center">
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="bg-primary text-on-primary rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:scale-[0.98] transition-transform">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="bg-[#9a3412] text-white rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:bg-[#7c2d12] transition-colors">
                   Comenzar Ahora
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </a>
@@ -365,7 +365,7 @@ export default function LandingPage() {
                 <div className="pt-6 flex flex-col sm:flex-row gap-4">
                   {/* Dropdown comprar */}
                   <div className="relative">
-                    <button onClick={() => setIsBookDropdownOpen(!isBookDropdownOpen)} className="bg-primary text-on-primary rounded-full px-12 py-5 text-base font-bold hover:opacity-90 transition-all soft-shadow flex items-center gap-2">
+                    <button onClick={() => setIsBookDropdownOpen(!isBookDropdownOpen)} className="bg-[#9a3412] text-white rounded-full px-12 py-5 text-base font-bold hover:bg-[#7c2d12] transition-colors soft-shadow flex items-center gap-2">
                       Adquirir el libro
                       <span className={`material-symbols-outlined text-lg transition-transform duration-300 ${isBookDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
@@ -396,7 +396,7 @@ export default function LandingPage() {
                     )}
                   </div>
                   {/* Pegar un vistazo */}
-                  <Link href="/leer" className="border-2 border-primary text-primary rounded-full px-10 py-5 text-base font-bold hover:bg-primary/10 transition-all text-center">
+                  <Link href="/leer" className="border-2 border-[#9a3412] text-[#9a3412] rounded-full px-10 py-5 text-base font-bold hover:bg-[#9a3412]/10 transition-all text-center">
                     Pegar un vistazo
                   </Link>
                 </div>
@@ -484,7 +484,7 @@ export default function LandingPage() {
                     <span className="material-symbols-outlined text-base">calendar_month</span> 28 de Marzo · Olga&apos;s Deli
                   </div>
                 </div>
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa consultar por los próximos talleres. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="mt-8 bg-primary text-on-primary rounded-full py-4 px-8 font-bold text-sm w-full hover:opacity-90 text-center block">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa consultar por los próximos talleres. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="mt-8 bg-[#9a3412] text-white rounded-full py-4 px-8 font-bold text-sm w-full hover:bg-[#7c2d12] transition-colors text-center block">
                   Consultar por Próximos Talleres
                 </a>
               </div>
@@ -650,7 +650,7 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div className="relative flex justify-center">
                 <div className="aspect-[4/5] max-w-[400px] w-full rounded-[3rem] overflow-hidden soft-shadow border-[8px] border-surface-bright/30">
-                  <img alt="Flor Aznar" className="w-full h-full object-cover object-top" src="/fotoflo.jpeg" />
+                  <img alt="Flor Aznar" className="w-full h-full object-cover object-top" src="/florperfil.jpeg" />
                 </div>
               </div>
               <div className="space-y-6">
