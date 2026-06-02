@@ -134,7 +134,7 @@ useEffect(() => {
                 Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
               </p>
               <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4 justify-center">
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90" style={{background:'#1a1a1a', color:'#fdf6f0'}}>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90" style={{background:'#fdf6f0', color:'#7c2d12'}}>
                   Comenzar Ahora
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </a>
@@ -566,19 +566,17 @@ useEffect(() => {
         </section>
 
         {/* ── PRECIO ── */}
-        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #fdeee8 0%, #fdf8f3 100%)'}}>
+        <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
           <div className="max-w-screen-md mx-auto">
             <div className="text-center mb-12">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Inversión</span>
-              <h2 className="text-4xl md:text-5xl font-light">Tu <span className="font-extrabold italic">inversión</span></h2>
+              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-4 block" style={{color:'rgba(253,246,240,0.6)'}}>Inversión</span>
+              <h2 className="text-4xl md:text-5xl font-light" style={{color:'#fdf6f0'}}>Tu <span className="font-extrabold italic">inversión</span></h2>
             </div>
-            <div className="rounded-[3rem] p-10 md:p-14 soft-shadow relative overflow-hidden" style={{background:'#ffffff'}}>
-              <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-[90px] pointer-events-none" style={{background:'radial-gradient(circle, #fdddd2 0%, transparent 70%)',opacity:0.6}}></div>
-              <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full blur-[70px] pointer-events-none" style={{background:'radial-gradient(circle, #fdeee8 0%, transparent 70%)',opacity:0.7}}></div>
+            <div className="rounded-[3rem] p-10 md:p-14 relative overflow-hidden" style={{background:'rgba(255,255,255,0.08)', border:'1px solid rgba(253,246,240,0.15)'}}>
               <div className="relative z-10">
-                <div className="text-center space-y-3 pb-10 border-b border-outline-variant">
-                  <p className="text-sm uppercase tracking-widest text-on-surface-variant font-bold">Método R.A.P. completo</p>
-                  <p className="text-on-surface-variant text-sm font-light">Consultá sobre planes de pago</p>
+                <div className="text-center space-y-3 pb-10" style={{borderBottom:'1px solid rgba(253,246,240,0.15)'}}>
+                  <p className="text-sm uppercase tracking-widest font-bold" style={{color:'rgba(253,246,240,0.7)'}}>Método R.A.P. completo</p>
+                  <p className="text-sm font-light" style={{color:'rgba(253,246,240,0.5)'}}>Consultá sobre planes de pago</p>
                 </div>
                 <ul className="flex flex-col gap-5 py-10">
                   {[
@@ -590,22 +588,19 @@ useEffect(() => {
                     { title: 'Análisis previo a la primera sesión', desc: 'Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.' },
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
-                      <span className="material-symbols-outlined text-on-secondary-container shrink-0 mt-0.5" style={{fontSize:'1.3rem'}}>check_circle</span>
+                      <span className="material-symbols-outlined shrink-0 mt-0.5" style={{fontSize:'1.3rem', color:'rgba(253,246,240,0.7)'}}>check_circle</span>
                       <div>
-                        <p className="font-semibold text-sm text-on-surface">{item.title}</p>
-                        <p className="text-xs text-on-surface-variant font-light mt-0.5 leading-relaxed">{item.desc}</p>
+                        <p className="font-semibold text-sm" style={{color:'#fdf6f0'}}>{item.title}</p>
+                        <p className="text-xs font-light mt-0.5 leading-relaxed" style={{color:'rgba(253,246,240,0.55)'}}>{item.desc}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
                 <div className="space-y-4">
-                  <div className="relative">
-                    <div className="absolute inset-0 rounded-full blur-xl opacity-60 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(154,52,18,0.28) 0%, transparent 70%)', transform:'scale(1.25) translateY(4px)'}}></div>
-                    <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="relative w-full rounded-full py-5 text-base font-bold text-center block border border-[#9a3412]/30 hover:border-[#9a3412]/60 transition-all" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fdddd2 100%)', color:'#7c2d12'}}>
-                      Reservar mi lugar
-                    </a>
-                  </div>
-                  <p className="text-center text-xs text-on-surface-variant font-light">Garantía de 15 días adicionales incluida</p>
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="w-full rounded-full py-5 text-base font-bold text-center block hover:opacity-90 transition-opacity" style={{background:'#fdf6f0', color:'#7c2d12'}}>
+                    Reservar mi lugar
+                  </a>
+                  <p className="text-center text-xs font-light" style={{color:'rgba(253,246,240,0.45)'}}>Garantía de 15 días adicionales incluida</p>
                 </div>
               </div>
             </div>
