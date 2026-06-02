@@ -1,4 +1,4 @@
-'use client';
+                                                                                                                                                                                'use client';
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -11,35 +11,11 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const WHATSAPP_NUMBER = '5491130704788';
 const TOTAL_TESTIMONIALS = 5;
 
-const servicios = [
-  {
-    title: 'Pack de 3 Sesiones de Coaching Profundo',
-    description: 'Un contenedor personalizado y de alta intensidad para cambios transformadores. Tres sesiones estratégicas adaptadas a tus metas únicas.',
-    features: ['3 sesiones de coaching uno a uno', 'Seguimiento personalizado entre sesiones'],
-    extra: '+ Opción de sumar el libro del Método RAP',
-    whatsappMsg: 'Hola! Me interesa consultar disponibilidad para el Pack de 3 sesiones de coaching profundo. ¿Podrías darme más información?',
-  },
-  {
-    title: 'Sesión Única de Autoconocimiento',
-    description: 'Un análisis profundo de tu personalidad. Una sesión intensa donde vas a descubrir patrones, fortalezas y puntos ciegos que no sabías que tenías.',
-    features: ['Análisis profundo de personalidad', 'Informe detallado con insights clave'],
-    extra: '+ Opción de sumar el libro del Método RAP',
-    whatsappMsg: 'Hola! Me interesa consultar disponibilidad para la Sesión única de autoconocimiento. ¿Podrías darme más información?',
-  },
-  {
-    title: 'Proceso de Claridad Personal',
-    description: 'El camino más completo. Incluye el análisis de personalidad, material exclusivo, 4 sesiones 1:1 conmigo y mi libro. Todo lo que necesitás para transformar tu vida de verdad.',
-    features: ['Análisis de personalidad completo', 'Material exclusivo + 4 sesiones 1:1', 'Libro del Método RAP incluido'],
-    extra: null,
-    whatsappMsg: 'Hola! Me interesa consultar disponibilidad para el Proceso de claridad personal. ¿Podrías darme más información?',
-  },
-];
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentService, setCurrentService] = useState(0);
-  const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
+const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [purchaseThank, setPurchaseThank] = useState(false);
   const [bookHovered, setBookHovered] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -51,15 +27,7 @@ export default function LandingPage() {
     setTimeout(() => { setPurchaseThank(false); setIsBookDropdownOpen(false); }, 2200);
   };
 
-  const nextService = useCallback(() => {
-    setCurrentService((prev) => (prev + 1) % servicios.length);
-  }, []);
-
-  const prevService = useCallback(() => {
-    setCurrentService((prev) => (prev - 1 + servicios.length) % servicios.length);
-  }, []);
-
-  const nextTestimonial = useCallback(() => {
+const nextTestimonial = useCallback(() => {
     setCurrentTestimonial((prev) => (prev + 1) % TOTAL_TESTIMONIALS);
   }, []);
 
@@ -67,12 +35,7 @@ export default function LandingPage() {
     setCurrentTestimonial((prev) => (prev - 1 + TOTAL_TESTIMONIALS) % TOTAL_TESTIMONIALS);
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(nextService, 5000);
-    return () => clearInterval(interval);
-  }, [nextService]);
-
-  useEffect(() => {
+useEffect(() => {
     if (testimonialPaused) return;
     const timer = setInterval(nextTestimonial, 4500);
     return () => clearInterval(timer);
@@ -128,7 +91,6 @@ export default function LandingPage() {
             <a className="font-manrope tracking-tight text-sm font-bold border-b-2 border-[#1a1a1a] pb-1 text-[#1a1a1a]" href="#">Inicio</a>
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#rap">Método RAP</a>
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#book">Libro</a>
-            <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#services">Servicios</a>
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#testimonials">Testimonios</a>
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#contact">Contacto</a>
           </div>
@@ -146,7 +108,6 @@ export default function LandingPage() {
             <a className="font-manrope text-sm font-bold text-[#1a1a1a]" href="#" onClick={() => setIsMobileMenuOpen(false)}>Inicio</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#rap" onClick={() => setIsMobileMenuOpen(false)}>Método RAP</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#book" onClick={() => setIsMobileMenuOpen(false)}>Libro</a>
-            <a className="font-manrope text-sm font-medium text-slate-500" href="#services" onClick={() => setIsMobileMenuOpen(false)}>Servicios</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#testimonials" onClick={() => setIsMobileMenuOpen(false)}>Testimonios</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contacto</a>
             <Link href="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
@@ -426,67 +387,6 @@ export default function LandingPage() {
                     <div style={{position:'absolute',bottom:'-35px',left:0,right:'-25%',height:'35px',background:'radial-gradient(ellipse at 38% 30%, rgba(0,0,0,0.32) 0%, transparent 65%)',filter:'blur(8px)'}} />
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── SERVICIOS ── */}
-        <section className="py-16 lg:py-24 xl:py-32 px-6 md:px-12 bg-surface-dim/30" id="services">
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="services-title text-center mb-12 lg:mb-24">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Caminos</span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light">Nuestros <span className="font-extrabold italic">Servicios</span></h2>
-            </div>
-            <div className="services-grid grid md:grid-cols-12 gap-8">
-              <div className="service-card md:col-span-7 bg-surface-bright rounded-[2.5rem] overflow-hidden flex flex-col md:flex-row soft-shadow group relative">
-                <div className="md:w-1/2 overflow-hidden">
-                  <img alt="office interior" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCECIt-1Q_bK-afDeiw3emAlG-Y98qsYBHNSpy2dlGwWmZtgy0-PBmTKRSOXZBsPss6r18q4tUytlSoj_A6y1nxGfCICfgJ8mr24mMm5037vgTpXPtrMpcJB-FIkkWF4-gxmSTvf8aNQ0Cgb7Ss9taOVIfOpGuosUE1Y3EieSRgFtGiXh8oSjMsRUGzdN5lRiecgFsmqRJ7qSfU8qyM-TtSzzmSsYhsFf4yXnETqp0z9XfPLU17zW-LBtoWHSboVliaPyzMIFTl0fI" />
-                </div>
-                <div className="md:w-1/2 p-8 lg:p-12 flex flex-col">
-                  <h3 className="text-2xl lg:text-3xl font-bold leading-tight mb-4 transition-all duration-500">{servicios[currentService].title}</h3>
-                  <p className="text-on-surface-variant mb-6 font-light transition-all duration-500">{servicios[currentService].description}</p>
-                  <ul className="space-y-3 mb-6">
-                    {servicios[currentService].features.map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm font-medium">
-                        <span className="material-symbols-outlined text-on-secondary-container text-lg">check_circle</span>{f}
-                      </li>
-                    ))}
-                  </ul>
-                  {servicios[currentService].extra && <p className="text-sm font-medium text-on-secondary-container mb-6 italic">{servicios[currentService].extra}</p>}
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(servicios[currentService].whatsappMsg)}`} target="_blank" rel="noopener noreferrer" className="mt-auto border-b border-[#9a3412] text-[#9a3412] w-fit pb-1 font-bold tracking-wider uppercase text-xs hover:opacity-70 transition-opacity">
-                    Consultar Disponibilidad
-                  </a>
-                  <div className="flex items-center gap-3 mt-6">
-                    <button onClick={prevService} className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 transition-colors" aria-label="Anterior">
-                      <span className="material-symbols-outlined text-base">chevron_left</span>
-                    </button>
-                    {servicios.map((_, i) => (
-                      <button key={i} onClick={() => setCurrentService(i)} className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === currentService ? 'bg-primary scale-125' : 'bg-slate-300 hover:bg-slate-400'}`} aria-label={`Servicio ${i + 1}`} />
-                    ))}
-                    <button onClick={nextService} className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center hover:bg-slate-100 transition-colors" aria-label="Siguiente">
-                      <span className="material-symbols-outlined text-base">chevron_right</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="service-card md:col-span-5 bg-surface-container-high/40 backdrop-blur rounded-[2.5rem] p-8 lg:p-12 flex flex-col justify-between soft-shadow border border-white/50">
-                <div>
-                  <div className="w-14 h-14 rounded-full bg-surface-bright flex items-center justify-center mb-8 soft-shadow"><span className="material-symbols-outlined">groups</span></div>
-                  <h3 className="text-3xl font-bold mb-4">Talleres Presenciales</h3>
-                  <p className="text-on-surface-variant font-light mb-6">Experiencias grupales diseñadas para facilitar avances colectivos y aprendizaje entre pares.</p>
-                </div>
-                <div className="bg-surface-bright/80 p-6 rounded-2xl">
-                  <div className="text-[0.65rem] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-2">Último Taller</div>
-                  <div className="text-lg font-bold leading-snug">Workshop de Objetivos</div>
-                  <div className="text-sm text-on-surface-variant mt-1 italic">Un método práctico para dejar de postergar(te)</div>
-                  <div className="text-sm text-on-surface-variant mt-2 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-base">calendar_month</span> 28 de Marzo · Olga&apos;s Deli
-                  </div>
-                </div>
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa consultar por los próximos talleres. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="mt-8 bg-[#9a3412] text-white rounded-full py-4 px-8 font-bold text-sm w-full hover:bg-[#7c2d12] transition-colors text-center block">
-                  Consultar por Próximos Talleres
-                </a>
               </div>
             </div>
           </div>
