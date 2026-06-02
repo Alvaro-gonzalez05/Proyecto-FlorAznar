@@ -205,8 +205,9 @@ useEffect(() => {
                 <div className="rap-letter absolute -top-6 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-secondary-container transition-colors duration-500">R</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
                   <div className="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-secondary-container text-3xl">visibility</span></div>
-                  <h3 className="text-2xl font-bold mb-4">Reconocimiento</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8">Identifica las narrativas silenciosas y los techos de cristal invisibles que te alejan de tu frecuencia auténtica.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Revelar</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos cómo estás funcionando hoy</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Miramos juntas qué patrones se repiten en tu vida, qué señales estás ignorando y qué te está frenando realmente. No la versión que contás — la que te pasa de verdad.</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 01</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
@@ -214,8 +215,9 @@ useEffect(() => {
                 <div className="rap-letter absolute top-0 md:top-12 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-surface-container-high transition-colors duration-500">A</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500 border border-surface-container-high">
                   <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center mb-8"><span className="material-symbols-outlined text-primary text-3xl">bolt</span></div>
-                  <h3 className="text-2xl font-bold mb-4">Acción</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8">Implementación estratégica de nuevos comportamientos. Traducimos la visión en hábitos de alto rendimiento.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Avanzar</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos por qué eso sigue pasando</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Profundizamos en el origen de esos bloqueos. Entendemos por qué se sostienen, qué función cumplen y cómo impactan en tu manera de decidir, relacionarte y moverte.</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 02</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
@@ -223,8 +225,9 @@ useEffect(() => {
                 <div className="rap-letter absolute -top-10 md:-top-16 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-tertiary-container transition-colors duration-500">P</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl soft-shadow h-full flex flex-col hover:-translate-y-2 transition-transform duration-500">
                   <div className="w-16 h-16 rounded-2xl bg-tertiary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-tertiary-container text-3xl">auto_awesome</span></div>
-                  <h3 className="text-2xl font-bold mb-4">Potencial</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8">Encarnar tu versión más elevada. Crecimiento sostenible y la realización de tu visión en cada esfera de la vida.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Potenciar</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">Trabajamos cómo salir de ese patrón</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Traducimos todo lo que entendiste en decisiones concretas y acciones reales. La idea es que no te quedes solo con el insight — sino que realmente puedas generar cambios.</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 03</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
