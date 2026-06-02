@@ -18,6 +18,18 @@ export default function LandingPage() {
 const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [purchaseThank, setPurchaseThank] = useState(false);
   const [bookHovered, setBookHovered] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleVideo = () => {
+    if (!videoRef.current) return;
+    if (videoPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
+    }
+    setVideoPlaying(!videoPlaying);
+  };
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [testimonialPaused, setTestimonialPaused] = useState(false);
 
@@ -239,14 +251,26 @@ useEffect(() => {
         <section className="py-20 px-6 md:px-12 bg-surface-dim/20" id="como-es">
           <div className="max-w-screen-xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="aspect-video rounded-[2.5rem] bg-[#1a1a1a] flex items-center justify-center soft-shadow relative overflow-hidden cursor-pointer group">
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                <div className="relative z-10 w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-white text-5xl">play_arrow</span>
+              <div className="relative rounded-[2.5rem] overflow-hidden soft-shadow bg-[#1a1a1a] cursor-pointer group flex items-center justify-center" style={{minHeight:'520px', maxHeight:'75vh'}} onClick={toggleVideo}>
+                <video
+                  ref={videoRef}
+                  src="/florexplicativo.mp4"
+                  className="w-full h-full object-contain"
+                  playsInline
+                  onEnded={() => setVideoPlaying(false)}
+                />
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${videoPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`} style={{background: videoPlaying ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.25)'}}>
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-300 group-hover:scale-110" style={{background:'rgba(253,246,240,0.2)', border:'2px solid rgba(253,246,240,0.5)'}}>
+                    <span className="material-symbols-outlined text-white" style={{fontSize:'2.8rem'}}>
+                      {videoPlaying ? 'pause' : 'play_arrow'}
+                    </span>
+                  </div>
                 </div>
-                <div className="absolute bottom-8 left-8 right-8">
-                  <p className="text-white/70 text-xs uppercase tracking-widest">Flor Aznar explica el proceso</p>
-                </div>
+                {!videoPlaying && (
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <p className="text-white/70 text-xs uppercase tracking-widest">Flor Aznar · Método RAP</p>
+                  </div>
+                )}
               </div>
               <div className="space-y-6">
                 <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">¿Cómo es el proceso?</span>
