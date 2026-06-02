@@ -8,8 +8,8 @@ const GREEN_SURFACE = '#152A1F';
 const GREEN_CARD = '#1A3326';
 const CREAM = '#F5EFE6';
 const CREAM_MUTED = '#A8C4B4';
-const TERRACOTTA = '#9a3412';
-const TERRACOTTA_LIGHT = '#fdeee8';
+const TERRACOTTA = '#FFFFFF';
+const TERRACOTTA_LIGHT = '#FFFFFF';
 
 export default function LeerPage() {
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
@@ -78,7 +78,7 @@ export default function LeerPage() {
                 <button
                   onClick={handleDownload}
                   className="rounded-full px-4 sm:px-8 py-2 sm:py-3 text-[0.65rem] sm:text-sm font-bold hover:opacity-90 transition-all flex items-center gap-2 sm:gap-3 duration-300"
-                  style={{ background: downloadCheck ? '#4A8C6A' : TERRACOTTA, color: CREAM }}
+                  style={{ background: downloadCheck ? '#4A8C6A' : TERRACOTTA, color: downloadCheck ? '#fff' : '#1a1a1a' }}
                 >
                   <span className={`material-symbols-outlined text-base sm:text-lg transition-transform duration-300 ${downloadCheck ? 'scale-125' : ''}`}>
                     {downloadCheck ? 'check_circle' : 'menu_book'}
