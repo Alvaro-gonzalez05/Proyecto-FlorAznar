@@ -88,10 +88,12 @@ useEffect(() => {
   useEffect(() => {
     if (currentTestimonial !== 1 && testimonioVideoRef1.current) {
       testimonioVideoRef1.current.pause();
+      testimonioVideoRef1.current.currentTime = 0;
       setTestimonioVideo1Playing(false);
     }
     if (currentTestimonial !== 2 && testimonioVideoRef2.current) {
       testimonioVideoRef2.current.pause();
+      testimonioVideoRef2.current.currentTime = 0;
       setTestimonioVideo2Playing(false);
     }
   }, [currentTestimonial]);
@@ -507,8 +509,7 @@ useEffect(() => {
                         testimonioVideoRef1.current.pause();
                         setTestimonioVideo1Playing(false);
                       } else {
-                        testimonioVideoRef1.current.play();
-                        setTestimonioVideo1Playing(true);
+                        testimonioVideoRef1.current.play().then(() => setTestimonioVideo1Playing(true)).catch(() => setTestimonioVideo1Playing(false));
                       }
                     }}
                   >
@@ -548,8 +549,7 @@ useEffect(() => {
                         testimonioVideoRef2.current.pause();
                         setTestimonioVideo2Playing(false);
                       } else {
-                        testimonioVideoRef2.current.play();
-                        setTestimonioVideo2Playing(true);
+                        testimonioVideoRef2.current.play().then(() => setTestimonioVideo2Playing(true)).catch(() => setTestimonioVideo2Playing(false));
                       }
                     }}
                   >
