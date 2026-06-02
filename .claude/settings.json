@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git lfs *)",
+      "Bash(Start-Sleep -Seconds 15)",
+      "Bash(Get-Content \"C:\\\\Users\\\\COMPUT~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Computadora-de-Luci-OneDrive-Documentos-codea-Proyecto-FlorAznar\\\\819a118e-2dcb-440a-887e-a364a3c42d64\\\\tasks\\\\bc9khhky8.output\")"
+    ]
+  }
+}

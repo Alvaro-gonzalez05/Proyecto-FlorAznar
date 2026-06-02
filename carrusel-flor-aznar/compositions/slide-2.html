@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1080px; overflow: hidden; background: #fcfaf8; }
+  </style>
+</head>
+<body>
+<div id="root"
+     data-composition-id="slide-2"
+     data-width="1080"
+     data-height="1080"
+     style="width:1080px;height:1080px;position:relative;overflow:hidden;
+            background:#fcfaf8;font-family:'Manrope',sans-serif;">
+
+  <!-- Letra RAP gigante de fondo -->
+  <div style="position:absolute;bottom:-40px;right:-30px;
+              font-family:'Manrope',sans-serif;font-weight:800;
+              font-size:420px;line-height:1;color:#f2ece6;
+              pointer-events:none;user-select:none;letter-spacing:-0.04em;">
+    RAP
+  </div>
+
+  <!-- Header: logo + label -->
+  <div id="header" class="clip"
+       data-start="0" data-duration="4" data-track-index="0"
+       style="position:absolute;top:64px;left:72px;right:72px;
+              display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Manrope',sans-serif;font-weight:300;
+                 letter-spacing:0.22em;text-transform:uppercase;
+                 font-size:18px;color:#1a1a1a;opacity:0.6;">
+      Flor Aznar
+    </span>
+    <span style="font-family:'Manrope',sans-serif;font-size:10px;
+                 letter-spacing:0.38em;text-transform:uppercase;
+                 font-weight:700;color:#9a3412;">
+      El Método
+    </span>
+  </div>
+
+  <!-- Titulo -->
+  <div id="title" class="clip"
+       data-start="0" data-duration="4" data-track-index="1"
+       style="position:absolute;top:155px;left:72px;right:72px;">
+    <h2 style="font-family:'Playfair Display',serif;font-weight:400;
+               font-size:72px;line-height:1.1;color:#1a1a1a;letter-spacing:-0.01em;">
+      El Método<br><em>RAP</em>
+    </h2>
+  </div>
+
+  <!-- Cards R, A, P -->
+  <!-- Fase R -->
+  <div id="card-r" class="clip"
+       data-start="0" data-duration="4" data-track-index="2"
+       style="position:absolute;top:330px;left:72px;right:72px;
+              background:#fff;border-radius:24px;padding:32px 36px;
+              box-shadow:0 4px 32px rgba(154,52,18,0.07);
+              display:flex;gap:28px;align-items:flex-start;">
+    <div style="min-width:52px;height:52px;border-radius:16px;
+                background:#fdeee8;display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Manrope',sans-serif;font-weight:800;
+                   font-size:26px;color:#9a3412;">R</span>
+    </div>
+    <div>
+      <div style="font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+                  font-weight:700;color:#9a3412;margin-bottom:6px;">Revelar</div>
+      <div style="font-family:'Manrope',sans-serif;font-weight:600;
+                  font-size:17px;color:#1a1a1a;margin-bottom:6px;line-height:1.3;">
+        Entendemos cómo estás funcionando hoy
+      </div>
+      <div style="font-family:'Manrope',sans-serif;font-size:14px;
+                  font-weight:300;color:#64748b;line-height:1.6;">
+        Miramos juntas qué patrones se repiten y qué te está frenando realmente.
+      </div>
+    </div>
+  </div>
+
+  <!-- Fase A -->
+  <div id="card-a" class="clip"
+       data-start="0" data-duration="4" data-track-index="3"
+       style="position:absolute;top:490px;left:72px;right:72px;
+              background:#fff;border-radius:24px;padding:32px 36px;
+              box-shadow:0 4px 32px rgba(154,52,18,0.07);
+              display:flex;gap:28px;align-items:flex-start;">
+    <div style="min-width:52px;height:52px;border-radius:16px;
+                background:#e6f4f1;display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Manrope',sans-serif;font-weight:800;
+                   font-size:26px;color:#1a1a1a;">A</span>
+    </div>
+    <div>
+      <div style="font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+                  font-weight:700;color:#9a3412;margin-bottom:6px;">Avanzar</div>
+      <div style="font-family:'Manrope',sans-serif;font-weight:600;
+                  font-size:17px;color:#1a1a1a;margin-bottom:6px;line-height:1.3;">
+        Entendemos por qué eso sigue pasando
+      </div>
+      <div style="font-family:'Manrope',sans-serif;font-size:14px;
+                  font-weight:300;color:#64748b;line-height:1.6;">
+        Profundizamos en el origen de los bloqueos y cómo impactan en tus decisiones.
+      </div>
+    </div>
+  </div>
+
+  <!-- Fase P -->
+  <div id="card-p" class="clip"
+       data-start="0" data-duration="4" data-track-index="4"
+       style="position:absolute;top:650px;left:72px;right:72px;
+              background:#fff;border-radius:24px;padding:32px 36px;
+              box-shadow:0 4px 32px rgba(154,52,18,0.07);
+              display:flex;gap:28px;align-items:flex-start;">
+    <div style="min-width:52px;height:52px;border-radius:16px;
+                background:#ffedd5;display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Manrope',sans-serif;font-weight:800;
+                   font-size:26px;color:#9a3412;">P</span>
+    </div>
+    <div>
+      <div style="font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+                  font-weight:700;color:#9a3412;margin-bottom:6px;">Potenciar</div>
+      <div style="font-family:'Manrope',sans-serif;font-weight:600;
+                  font-size:17px;color:#1a1a1a;margin-bottom:6px;line-height:1.3;">
+        Trabajamos cómo salir de ese patrón
+      </div>
+      <div style="font-family:'Manrope',sans-serif;font-size:14px;
+                  font-weight:300;color:#64748b;line-height:1.6;">
+        Traducimos lo aprendido en decisiones concretas y acciones reales.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.from("#header", { y: -20, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.1)
+      .from("#title",  { x: -40, opacity: 0, duration: 0.9, ease: "power3.out" }, 0.3)
+      .from("#card-r", { y: 40,  opacity: 0, duration: 0.7, ease: "power2.out" }, 0.7)
+      .from("#card-a", { y: 40,  opacity: 0, duration: 0.7, ease: "power2.out" }, 0.9)
+      .from("#card-p", { y: 40,  opacity: 0, duration: 0.7, ease: "power2.out" }, 1.1);
+    window.__timelines = window.__timelines || {};
+    window.__timelines["slide-2"] = tl;
+  </script>
+</div>
+</body>
+</html>

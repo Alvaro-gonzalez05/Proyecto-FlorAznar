@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1080px; overflow: hidden; background: #7c2d12; }
+  </style>
+</head>
+<body>
+<div id="root"
+     data-composition-id="slide-1"
+     data-width="1080"
+     data-height="1080"
+     style="width:1080px;height:1080px;position:relative;overflow:hidden;
+            background:linear-gradient(160deg,#7c2d12 0%,#9a3412 60%,#b5541a 100%);
+            font-family:'Manrope',sans-serif;">
+
+  <!-- Glow radial sutil -->
+  <div style="position:absolute;inset:0;pointer-events:none;
+              background:radial-gradient(ellipse at 65% 35%,rgba(255,210,180,0.13) 0%,transparent 65%);"></div>
+
+  <!-- Borde decorativo esquina inferior derecha -->
+  <div style="position:absolute;bottom:0;right:0;width:320px;height:320px;pointer-events:none;
+              border-top-left-radius:100%;
+              border:1px solid rgba(253,246,240,0.08);"></div>
+  <div style="position:absolute;bottom:0;right:0;width:200px;height:200px;pointer-events:none;
+              border-top-left-radius:100%;
+              border:1px solid rgba(253,246,240,0.06);"></div>
+
+  <!-- Logo Flor Aznar -->
+  <div id="logo" class="clip"
+       data-start="0" data-duration="4" data-track-index="0"
+       style="position:absolute;top:64px;left:72px;
+              font-family:'Manrope',sans-serif;font-weight:300;
+              letter-spacing:0.22em;text-transform:uppercase;
+              font-size:20px;color:rgba(253,246,240,0.9);">
+    Flor Aznar
+  </div>
+
+  <!-- Badge Evolución Consciente -->
+  <div id="badge" class="clip"
+       data-start="0" data-duration="4" data-track-index="1"
+       style="position:absolute;top:64px;right:72px;
+              padding:9px 22px;border-radius:999px;
+              border:1px solid rgba(253,246,240,0.25);
+              background:rgba(253,246,240,0.08);">
+    <span style="font-family:'Manrope',sans-serif;font-size:10px;
+                 letter-spacing:0.38em;text-transform:uppercase;
+                 font-weight:700;color:rgba(253,246,240,0.75);">
+      Evolución Consciente
+    </span>
+  </div>
+
+  <!-- Titulo principal -->
+  <div id="title" class="clip"
+       data-start="0" data-duration="4" data-track-index="2"
+       style="position:absolute;top:50%;left:50%;
+              transform:translate(-50%,-50%);
+              text-align:center;width:920px;">
+    <h1 style="font-family:'Playfair Display',serif;font-weight:400;
+               font-size:100px;line-height:1.08;
+               color:#fdf6f0;letter-spacing:-0.01em;">
+      Habita tu<br>máximo<br>potencial.
+    </h1>
+  </div>
+
+  <!-- Subtitulo -->
+  <div id="subtitle" class="clip"
+       data-start="0" data-duration="4" data-track-index="3"
+       style="position:absolute;bottom:90px;left:72px;right:72px;text-align:center;">
+    <p style="font-family:'Manrope',sans-serif;font-size:20px;
+              font-weight:300;color:rgba(253,246,240,0.6);
+              line-height:1.65;max-width:620px;margin:0 auto;">
+      Autoconocimiento y dirección personal<br>
+      para quienes buscan avanzar con claridad.
+    </p>
+  </div>
+
+  <!-- Linea separadora decorativa -->
+  <div id="line" class="clip"
+       data-start="0" data-duration="4" data-track-index="4"
+       style="position:absolute;bottom:148px;left:50%;transform:translateX(-50%);
+              width:40px;height:2px;background:rgba(253,246,240,0.3);border-radius:999px;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.from("#logo",     { y: -24, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.1)
+      .from("#badge",    { y: -20, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.2)
+      .from("#title",    { y: 70,  opacity: 0, duration: 1.1, ease: "power3.out" }, 0.4)
+      .from("#line",     { scaleX: 0, opacity: 0, duration: 0.6, ease: "power2.out" }, 1.2)
+      .from("#subtitle", { y: 30,  opacity: 0, duration: 0.9, ease: "power2.out" }, 1.0);
+    window.__timelines = window.__timelines || {};
+    window.__timelines["slide-1"] = tl;
+  </script>
+</div>
+</body>
+</html>
