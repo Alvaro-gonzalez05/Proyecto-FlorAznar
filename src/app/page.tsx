@@ -570,42 +570,25 @@ useEffect(() => {
 
         {/* ── PRECIO ── */}
         <section className="py-24 px-6 md:px-12" id="precio" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
-          <div className="max-w-screen-md mx-auto">
-            <div className="text-center mb-12">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-4 block" style={{color:'rgba(253,246,240,0.6)'}}>Inversión</span>
-              <h2 className="text-4xl md:text-5xl font-light" style={{color:'#fdf6f0'}}>Tu <span className="font-extrabold italic">inversión</span></h2>
+          <div className="max-w-screen-sm mx-auto text-center space-y-10">
+            <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold block" style={{color:'rgba(253,246,240,0.6)'}}>Inversión</span>
+
+            <div className="space-y-2">
+              <p className="text-7xl md:text-8xl font-extrabold tracking-tight" style={{color:'#fdf6f0'}}>$100.000</p>
+              <p className="text-base font-light" style={{color:'rgba(253,246,240,0.6)'}}>Proceso completo · 3 sesiones</p>
             </div>
-            <div className="rounded-[3rem] p-10 md:p-14 relative overflow-hidden" style={{background:'rgba(255,255,255,0.08)', border:'1px solid rgba(253,246,240,0.15)'}}>
-              <div className="relative z-10">
-                <div className="text-center space-y-3 pb-10" style={{borderBottom:'1px solid rgba(253,246,240,0.15)'}}>
-                  <p className="text-sm uppercase tracking-widest font-bold" style={{color:'rgba(253,246,240,0.7)'}}>Método R.A.P. completo</p>
-                  <p className="text-sm font-light" style={{color:'rgba(253,246,240,0.5)'}}>Consultá sobre planes de pago</p>
-                </div>
-                <ul className="flex flex-col gap-5 py-10">
-                  {[
-                    { title: '3 sesiones 1:1 personalizadas', desc: 'Encuentros individuales diseñados en función de tu proceso, tu ritmo y lo que necesitás trabajar.' },
-                    { title: 'Ejercicios entre sesiones', desc: 'Después de cada encuentro recibís ejercicios concretos para integrar lo trabajado. Porque el cambio no pasa solo en la sesión, pasa en lo que hacés después.' },
-                    { title: 'Acompañamiento directo entre sesiones', desc: 'Tenés un canal de consultas personalizado de lunes a viernes de 9 a 17hs. Si algo surge, si tenés una duda o necesitás orientación en el proceso, estoy disponible.' },
-                    { title: 'Guía práctica con acciones concretas', desc: 'Al finalizar el proceso recibís un análisis personalizado con anclajes para reconocer tus patrones en el futuro y actuar diferente cuando aparezcan.' },
-                    { title: 'Libro de acompañamiento', desc: 'Un recurso con herramientas y ejercicios para que puedas seguir integrando el proceso de manera autónoma, sin depender de un acompañamiento constante.' },
-                    { title: 'Análisis previo a la primera sesión', desc: 'Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.' },
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-4">
-                      <span className="material-symbols-outlined shrink-0 mt-0.5" style={{fontSize:'1.3rem', color:'rgba(253,246,240,0.7)'}}>check_circle</span>
-                      <div>
-                        <p className="font-semibold text-sm" style={{color:'#fdf6f0'}}>{item.title}</p>
-                        <p className="text-xs font-light mt-0.5 leading-relaxed" style={{color:'rgba(253,246,240,0.55)'}}>{item.desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <div className="space-y-4">
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="w-full rounded-full py-5 text-base font-bold text-center block hover:opacity-90 transition-opacity" style={{background:'#fdf6f0', color:'#7c2d12'}}>
-                    Reservar mi lugar
-                  </a>
-                  <p className="text-center text-xs font-light" style={{color:'rgba(253,246,240,0.45)'}}>Garantía de 15 días adicionales incluida</p>
-                </div>
-              </div>
+
+            <div className="space-y-4">
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="w-full rounded-full py-5 text-base font-bold text-center block hover:opacity-90 transition-opacity" style={{background:'#fdf6f0', color:'#7c2d12'}}>
+                Reservar mi lugar
+              </a>
+              <p className="text-sm font-light" style={{color:'rgba(253,246,240,0.5)'}}>Una vez que reserves, te escribo con todos los detalles.</p>
+            </div>
+
+            <div className="pt-4" style={{borderTop:'1px solid rgba(253,246,240,0.15)'}}>
+              <p className="text-lg md:text-xl font-light italic leading-relaxed" style={{color:'rgba(253,246,240,0.75)'}}>
+                &ldquo;La idea no es solo hablar del problema.<br className="hidden sm:block" />Es entenderte — y empezar a moverte.&rdquo;
+              </p>
             </div>
           </div>
         </section>
