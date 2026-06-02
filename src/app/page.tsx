@@ -120,27 +120,25 @@ useEffect(() => {
       <main className="pt-20 lg:pt-24">
 
         {/* ── HERO ── */}
-        <section className="hero-section relative min-h-screen md:h-screen md:min-h-[600px] flex items-center px-6 md:px-12 py-24 md:py-10 lg:py-0 overflow-hidden">
-          <div className="absolute inset-0 ethereal-gradient opacity-60 -z-10"></div>
-          <div className="hero-blob-1 absolute top-1/4 -right-20 w-96 h-96 bg-secondary rounded-full blur-[120px] opacity-40"></div>
-          <div className="hero-blob-2 absolute bottom-1/4 -left-20 w-80 h-80 bg-surface-container-high rounded-full blur-[100px] opacity-50"></div>
+        <section className="hero-section relative min-h-screen md:h-screen md:min-h-[600px] flex items-center px-6 md:px-12 py-24 md:py-10 lg:py-0 overflow-hidden" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
+          <div className="absolute inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 60% 40%, rgba(255,220,190,0.08) 0%, transparent 60%)'}}></div>
           <div className="max-w-screen-xl mx-auto w-full flex flex-col items-center text-center">
             <div className="space-y-6 max-w-3xl">
-              <div className="hero-badge inline-block px-4 py-1.5 rounded-full bg-[#9a3412]/5 backdrop-blur border border-[#9a3412]/25">
-                <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-on-surface-variant">Evolución Consciente</span>
+              <div className="hero-badge inline-block px-4 py-1.5 rounded-full border border-[#1a1a1a]/30 bg-[#1a1a1a]/10">
+                <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-[#fdf6f0]/80">Evolución Consciente</span>
               </div>
-              <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight leading-[1.1]">
+              <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight leading-[1.1]" style={{color:'#fdf6f0'}}>
                 Habita tu <span className="font-extrabold italic">máximo</span> potencial.
               </h1>
-              <p className="hero-subtitle text-lg md:text-xl text-on-surface-variant max-w-xl mx-auto font-light leading-relaxed">
+              <p className="hero-subtitle text-lg md:text-xl max-w-xl mx-auto font-light leading-relaxed" style={{color:'rgba(253,246,240,0.65)'}}>
                 Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
               </p>
               <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4 justify-center">
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="bg-[#9a3412] text-white rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 hover:bg-[#7c2d12] transition-colors">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90" style={{background:'#1a1a1a', color:'#fdf6f0'}}>
                   Comenzar Ahora
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </a>
-                <a href="#rap" className="bg-surface-bright/50 backdrop-blur rounded-full px-10 py-5 text-base font-medium border border-outline-variant hover:bg-surface-bright transition-all flex items-center justify-center">
+                <a href="#rap" className="rounded-full px-10 py-5 text-base font-medium border-2 flex items-center justify-center transition-all hover:bg-white/10" style={{borderColor:'rgba(253,246,240,0.4)', color:'#fdf6f0'}}>
                   Explorar Método
                 </a>
               </div>
