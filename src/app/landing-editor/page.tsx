@@ -56,9 +56,9 @@ function EditableField({
 }
 
 // ── Section card ────────────────────────────────────────────────
-function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+function Section({ title, icon, id, children }: { title: string; icon: string; id?: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+    <div id={id} className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
       <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-slate-50/60">
         <span className="material-symbols-outlined text-[#9a3412]">{icon}</span>
         <h2 className="font-bold text-sm uppercase tracking-widest text-slate-600">{title}</h2>
@@ -182,10 +182,38 @@ export default function LandingEditorPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 py-7 space-y-5">
+      <div className="max-w-screen-xl mx-auto px-5 py-7 flex gap-8 items-start">
+
+        {/* ── Navegación lateral ── */}
+        <nav className="hidden lg:flex flex-col gap-1 w-52 shrink-0 sticky top-20">
+          <p className="text-[0.6rem] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Secciones</p>
+          {[
+            { href: '#sec-hero',     icon: 'home',         label: 'Hero' },
+            { href: '#sec-problema', icon: 'help_outline',  label: 'El Problema' },
+            { href: '#sec-mapa',     icon: 'map',           label: 'El Mapa' },
+            { href: '#sec-rap',      icon: 'psychology',    label: 'Método RAP' },
+            { href: '#sec-proceso',  icon: 'route',         label: 'El Proceso' },
+            { href: '#sec-incluye',  icon: 'checklist',     label: 'Qué incluye' },
+            { href: '#sec-libro',       icon: 'menu_book',      label: 'Libro' },
+            { href: '#sec-testimonios', icon: 'format_quote',   label: 'Testimonios' },
+            { href: '#sec-garantia',    icon: 'verified_user',  label: 'Garantía' },
+            { href: '#sec-precio',      icon: 'payments',       label: 'Inversión' },
+            { href: '#sec-cta',         icon: 'chat',           label: 'Cierre' },
+            { href: '#sec-about',       icon: 'person',         label: 'Sobre Flor' },
+          ].map(item => (
+            <a key={item.href} href={item.href}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-500 hover:text-[#9a3412] hover:bg-[#9a3412]/5 transition-colors">
+              <span className="material-symbols-outlined text-base" style={{fontSize:'1.1rem'}}>{item.icon}</span>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* ── Formulario ── */}
+        <div className="flex-1 max-w-2xl space-y-5">
 
         {/* HERO */}
-        <Section title="Hero — Inicio" icon="home">
+        <Section title="Hero — Inicio" icon="home" id="sec-hero">
           <Field label="Badge superior">
             <EditableField value={content.hero.badge} onChange={v => update('hero', 'badge', v)}
               className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
@@ -200,8 +228,65 @@ export default function LandingEditorPage() {
           </Field>
         </Section>
 
+        {/* PROBLEMA */}
+        <Section title="El Problema" icon="help_outline" id="sec-problema">
+          <Field label="Badge">
+            <EditableField value={content.problema.badge} onChange={v => update('problema', 'badge', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+          </Field>
+          <Field label="Título (parte normal)">
+            <EditableField value={content.problema.heading} onChange={v => update('problema', 'heading', v)} className="text-xl font-light" />
+          </Field>
+          <Field label="Título (parte negrita)">
+            <EditableField value={content.problema.heading_bold} onChange={v => update('problema', 'heading_bold', v)} className="text-xl font-extrabold" />
+          </Field>
+          <Field label="Párrafo 1">
+            <EditableField value={content.problema.p1} onChange={v => update('problema', 'p1', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          <Field label="Párrafo 2">
+            <EditableField value={content.problema.p2} onChange={v => update('problema', 'p2', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          <div className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+            <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">Lista de puntos</p>
+            {(['item1','item2','item3','item4','item5'] as const).map((k,i) => (
+              <Field key={k} label={`Item ${i+1}`}>
+                <EditableField value={content.problema[k]} onChange={v => update('problema', k, v)} className="text-sm text-slate-500" />
+              </Field>
+            ))}
+          </div>
+          <Field label="Cita destacada">
+            <EditableField value={content.problema.quote} onChange={v => update('problema', 'quote', v)} multiline className="text-sm italic text-slate-500 leading-relaxed" />
+          </Field>
+          <div className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+            <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">¿Esto te pasa a vos? (checklist)</p>
+            <Field label="Badge del bloque">
+              <EditableField value={content.problema.check_badge} onChange={v => update('problema', 'check_badge', v)} className="text-xs font-bold" />
+            </Field>
+            {(['check1','check2','check3','check4','check5','check6'] as const).map((k,i) => (
+              <Field key={k} label={`Check ${i+1}`}>
+                <EditableField value={content.problema[k]} onChange={v => update('problema', k, v)} className="text-sm text-slate-500" />
+              </Field>
+            ))}
+          </div>
+        </Section>
+
+        {/* MAPA */}
+        <Section title="El Mapa — Header RAP" icon="map" id="sec-mapa">
+          <Field label="Badge">
+            <EditableField value={content.mapa.badge} onChange={v => update('mapa', 'badge', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+          </Field>
+          <Field label="Título (parte normal)">
+            <EditableField value={content.mapa.title} onChange={v => update('mapa', 'title', v)} className="text-xl font-light" />
+          </Field>
+          <Field label="Título (parte negrita)">
+            <EditableField value={content.mapa.title_bold} onChange={v => update('mapa', 'title_bold', v)} className="text-xl font-extrabold" />
+          </Field>
+          <Field label="Subtítulo">
+            <EditableField value={content.mapa.subtitle} onChange={v => update('mapa', 'subtitle', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+        </Section>
+
         {/* RAP */}
-        <Section title="Método RAP — Las 3 Fases" icon="psychology">
+        <Section title="Método RAP — Las 3 Fases" icon="psychology" id="sec-rap">
           {([
             { key: 'r', label: 'R — Revelar' },
             { key: 'a', label: 'A — Avanzar' },
@@ -231,8 +316,73 @@ export default function LandingEditorPage() {
           ))}
         </Section>
 
+        {/* PROCESO */}
+        <Section title="Cómo es el Proceso" icon="route" id="sec-proceso">
+          <Field label="Badge">
+            <EditableField value={content.proceso.badge} onChange={v => update('proceso', 'badge', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+          </Field>
+          <Field label="Texto principal">
+            <EditableField value={content.proceso.intro} onChange={v => update('proceso', 'intro', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          <Field label="Párrafo secundario">
+            <EditableField value={content.proceso.p2} onChange={v => update('proceso', 'p2', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          <div className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+            <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">Estadísticas / Features</p>
+            <Field label="Feature 1 — Título">
+              <EditableField value={content.proceso.stat1_title} onChange={v => update('proceso', 'stat1_title', v)} className="text-sm font-bold" />
+            </Field>
+            <Field label="Feature 1 — Descripción">
+              <EditableField value={content.proceso.stat1_desc} onChange={v => update('proceso', 'stat1_desc', v)} className="text-sm text-slate-500" />
+            </Field>
+            <Field label="Feature 2 — Título">
+              <EditableField value={content.proceso.stat2_title} onChange={v => update('proceso', 'stat2_title', v)} className="text-sm font-bold" />
+            </Field>
+            <Field label="Feature 2 — Descripción">
+              <EditableField value={content.proceso.stat2_desc} onChange={v => update('proceso', 'stat2_desc', v)} className="text-sm text-slate-500" />
+            </Field>
+          </div>
+        </Section>
+
+        {/* INCLUYE */}
+        <Section title="Qué incluye el proceso" icon="checklist" id="sec-incluye">
+          <Field label="Badge">
+            <EditableField value={content.incluye.badge} onChange={v => update('incluye', 'badge', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+          </Field>
+          <Field label="Título (parte normal)">
+            <EditableField value={content.incluye.title} onChange={v => update('incluye', 'title', v)} className="text-xl font-light" />
+          </Field>
+          <Field label="Título (parte acento — naranja itálico)">
+            <EditableField value={content.incluye.title_accent} onChange={v => update('incluye', 'title_accent', v)} className="text-xl font-extrabold italic text-[#9a3412]" />
+          </Field>
+          <Field label="Subtítulo">
+            <EditableField value={content.incluye.subtitle} onChange={v => update('incluye', 'subtitle', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          {([
+            { t: 'c1_title', d: 'c1_desc', label: 'Card 1' },
+            { t: 'c2_title', d: 'c2_desc', label: 'Card 2' },
+            { t: 'c3_title', d: 'c3_desc', label: 'Card 3' },
+            { t: 'c4_title', d: 'c4_desc', label: 'Card 4' },
+            { t: 'c5_title', d: 'c5_desc', label: 'Card 5' },
+            { t: 'c6_title', d: 'c6_desc', label: 'Card 6' },
+          ] as const).map(({ t, d, label }) => (
+            <div key={t} className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+              <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">{label}</p>
+              <Field label="Título">
+                <EditableField value={content.incluye[t]} onChange={v => update('incluye', t, v)} className="text-sm font-bold" />
+              </Field>
+              <Field label="Descripción">
+                <EditableField value={content.incluye[d]} onChange={v => update('incluye', d, v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+              </Field>
+            </div>
+          ))}
+          <Field label="Badge card 6 (texto adicional)">
+            <EditableField value={content.incluye.c6_badge} onChange={v => update('incluye', 'c6_badge', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+          </Field>
+        </Section>
+
         {/* LIBRO */}
-        <Section title="Libro — Volver al Origen" icon="menu_book">
+        <Section title="Libro — Volver al Origen" icon="menu_book" id="sec-libro">
           <Field label="Título del libro">
             <EditableField value={content.libro.title} onChange={v => update('libro', 'title', v)}
               className="text-xl font-light" />
@@ -243,8 +393,58 @@ export default function LandingEditorPage() {
           </Field>
         </Section>
 
+        {/* TESTIMONIOS */}
+        <Section title="Testimonios" icon="format_quote" id="sec-testimonios">
+          <div className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+            <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">Estadística central</p>
+            <Field label="Número grande">
+              <EditableField value={content.testimonios.stat} onChange={v => update('testimonios', 'stat', v)} className="text-3xl font-extrabold" />
+            </Field>
+            <Field label="Etiqueta">
+              <EditableField value={content.testimonios.stat_label} onChange={v => update('testimonios', 'stat_label', v)} className="text-xs font-bold text-[#9a3412] uppercase tracking-widest" />
+            </Field>
+          </div>
+          {([
+            { t: 't1_text', n: 't1_name', r: 't1_role', label: 'Testimonio 1 (texto)' },
+            { t: 't4_text', n: 't4_name', r: 't4_role', label: 'Testimonio 4 (texto)' },
+            { t: 't5_text', n: 't5_name', r: 't5_role', label: 'Testimonio 5 (texto)' },
+          ] as const).map(({ t, n, r, label }) => (
+            <div key={t} className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/30">
+              <p className="text-[0.6rem] font-bold uppercase tracking-widest text-[#9a3412]">{label}</p>
+              <Field label="Cita">
+                <EditableField value={content.testimonios[t]} onChange={v => update('testimonios', t, v)} multiline className="text-sm italic text-slate-500 leading-relaxed" />
+              </Field>
+              <Field label="Nombre">
+                <EditableField value={content.testimonios[n]} onChange={v => update('testimonios', n, v)} className="text-sm font-bold uppercase tracking-wide" />
+              </Field>
+              <Field label="Rol / descripción">
+                <EditableField value={content.testimonios[r]} onChange={v => update('testimonios', r, v)} className="text-xs text-slate-400" />
+              </Field>
+            </div>
+          ))}
+        </Section>
+
+        {/* GARANTÍA */}
+        <Section title="Garantía" icon="verified_user" id="sec-garantia">
+          <Field label="Badge">
+            <EditableField value={content.garantia.badge} onChange={v => update('garantia', 'badge', v)} className="text-xs font-bold uppercase tracking-widest" />
+          </Field>
+          <Field label="Título (parte normal)">
+            <EditableField value={content.garantia.title} onChange={v => update('garantia', 'title', v)} className="text-xl font-light" />
+          </Field>
+          <Field label="Título (parte negrita italic)">
+            <EditableField value={content.garantia.title_accent} onChange={v => update('garantia', 'title_accent', v)} className="text-xl font-extrabold italic" />
+          </Field>
+          <Field label="Párrafo 1">
+            <EditableField value={content.garantia.p1} onChange={v => update('garantia', 'p1', v)} multiline className="text-sm text-slate-500 leading-relaxed" />
+          </Field>
+          <Field label="Párrafo 2 (italic)">
+            <EditableField value={content.garantia.p2} onChange={v => update('garantia', 'p2', v)} multiline className="text-sm italic text-slate-500 leading-relaxed" />
+          </Field>
+        </Section>
+
         {/* PRECIO */}
-        <Section title="Inversión — Precio" icon="payments">
+        <Section title="Inversión — Precio" icon="payments" id="sec-precio">
           <Field label="Precio">
             <EditableField value={content.precio.price} onChange={v => update('precio', 'price', v)}
               className="text-3xl font-extrabold" />
@@ -264,7 +464,7 @@ export default function LandingEditorPage() {
         </Section>
 
         {/* CTA */}
-        <Section title="Cierre — ¿Iniciamos la conversación?" icon="chat">
+        <Section title="Cierre — ¿Iniciamos la conversación?" icon="chat" id="sec-cta">
           <Field label="Título">
             <EditableField value={content.cta.title} onChange={v => update('cta', 'title', v)}
               className="text-xl font-light" />
@@ -276,7 +476,7 @@ export default function LandingEditorPage() {
         </Section>
 
         {/* ABOUT */}
-        <Section title="Sobre Flor" icon="person">
+        <Section title="Sobre Flor" icon="person" id="sec-about">
           {(['p1', 'p2', 'p3', 'p4'] as const).map((key, i) => (
             <Field key={key} label={`Párrafo ${i + 1}`}>
               <EditableField value={content.about[key]} onChange={v => update('about', key, v)}
@@ -290,6 +490,7 @@ export default function LandingEditorPage() {
           Los cambios se guardan solos y aparecen en la landing inmediatamente.
         </div>
 
+      </div>
       </div>
     </div>
   );

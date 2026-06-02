@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const WHATSAPP_NUMBER = '5491130704788';
-const TOTAL_TESTIMONIALS = 5;
+const TOTAL_TESTIMONIALS = 6;
 
 
 export default function LandingPage() {
@@ -200,31 +200,31 @@ useEffect(() => {
           <div className="max-w-screen-xl mx-auto">
             <div className="grid md:grid-cols-2 gap-16 items-start">
               <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">El problema</span>
-                <h2 className="text-4xl md:text-5xl font-light leading-tight">Muchas veces el problema <span className="font-extrabold">no es la falta de capacidad.</span></h2>
-                <p className="text-lg text-on-surface-variant font-light leading-relaxed">Es estar funcionando desde patrones mentales y emocionales que te hacen frenarte automáticamente cuando querés avanzar.</p>
-                <p className="text-base text-on-surface-variant font-light leading-relaxed">Todos tenemos una manera de pensar, reaccionar y actuar. Y cuando no entendemos cómo funcionamos internamente, terminamos:</p>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">{c.problema.badge}</span>
+                <h2 className="text-4xl md:text-5xl font-light leading-tight">{c.problema.heading} <span className="font-extrabold">{c.problema.heading_bold}</span></h2>
+                <p className="text-lg text-on-surface-variant font-light leading-relaxed">{c.problema.p1}</p>
+                <p className="text-base text-on-surface-variant font-light leading-relaxed">{c.problema.p2}</p>
                 <ul className="space-y-3">
-                  {['procrastinando', 'dudando constantemente de nosotros mismos', 'perdiendo claridad', 'dispersándonos', 'o repitiendo las mismas situaciones una y otra vez'].map((item) => (
+                  {[c.problema.item1, c.problema.item2, c.problema.item3, c.problema.item4, c.problema.item5].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-on-surface-variant">
                       <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant shrink-0"></span>{item}
                     </li>
                   ))}
                 </ul>
                 <div className="pt-4 border-l-4 border-[#9a3412]/50 pl-6">
-                  <p className="text-lg font-medium text-on-surface">No se trata de hacer más.<br />Se trata de entender qué necesitás cambiar para empezar a avanzar de verdad.</p>
+                  <p className="text-lg font-medium text-on-surface">{c.problema.quote}</p>
                 </div>
               </div>
               <div className="bg-surface-dim/40 rounded-[3rem] p-10 space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">¿Esto te pasa a vos?</span>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">{c.problema.check_badge}</span>
                 <div className="space-y-4">
                   {[
-                    { icon: 'psychology', bg: 'bg-secondary-container', color: 'text-on-secondary-container', text: 'Sobrepensás tanto las decisiones que terminás paralizándote.' },
-                    { icon: 'trending_down', bg: 'bg-surface-container-high', color: 'text-primary', text: 'Empezás motivado/a, pero después te cuesta sostener.' },
-                    { icon: 'hub', bg: 'bg-tertiary-container', color: 'text-on-tertiary-container', text: 'Tenés muchas ideas, pero te dispersás fácilmente.' },
-                    { icon: 'loop', bg: 'bg-secondary-container', color: 'text-on-secondary-container', text: 'Sentís que repetís siempre los mismos patrones.' },
-                    { icon: 'block', bg: 'bg-surface-container-high', color: 'text-primary', text: 'Probaste distintas formas de avanzar, pero seguís sintiéndote trabado/a.' },
-                    { icon: 'trending_flat', bg: 'bg-tertiary-container', color: 'text-on-tertiary-container', text: 'Hacés mucho, pero sentís que no avanzás realmente.' },
+                    { icon: 'psychology', bg: 'bg-secondary-container', color: 'text-on-secondary-container', text: c.problema.check1 },
+                    { icon: 'trending_down', bg: 'bg-surface-container-high', color: 'text-primary', text: c.problema.check2 },
+                    { icon: 'hub', bg: 'bg-tertiary-container', color: 'text-on-tertiary-container', text: c.problema.check3 },
+                    { icon: 'loop', bg: 'bg-secondary-container', color: 'text-on-secondary-container', text: c.problema.check4 },
+                    { icon: 'block', bg: 'bg-surface-container-high', color: 'text-primary', text: c.problema.check5 },
+                    { icon: 'trending_flat', bg: 'bg-tertiary-container', color: 'text-on-tertiary-container', text: c.problema.check6 },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-4 p-5 bg-surface-bright rounded-2xl soft-shadow">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${item.bg}`}>
@@ -244,10 +244,10 @@ useEffect(() => {
           <div className="max-w-screen-2xl mx-auto">
             <div className="rap-title flex flex-col md:flex-row justify-between items-end mb-12 lg:mb-24 gap-8">
               <div className="max-w-2xl">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-6 block">El Mapa</span>
-                <h2 className="text-3xl md:text-5xl lg:text-6xl font-light">El Método RAP: <span className="font-extrabold text-on-surface">Una Evolución Radical</span></h2>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-6 block">{c.mapa.badge}</span>
+                <h2 className="text-3xl md:text-5xl lg:text-6xl font-light">{c.mapa.title} <span className="font-extrabold text-on-surface">{c.mapa.title_bold}</span></h2>
               </div>
-              <p className="text-on-surface-variant max-w-sm pb-2">Un viaje estructurado desde la claridad interna hacia la manifestación externa, diseñado para líderes de alto impacto.</p>
+              <p className="text-on-surface-variant max-w-sm pb-2">{c.mapa.subtitle}</p>
             </div>
             <div className="rap-cards grid md:grid-cols-3 gap-12 relative">
               <div className="rap-card group relative pt-12">
@@ -294,6 +294,7 @@ useEffect(() => {
                   src="/florexplicativo.mp4"
                   className="w-full h-full object-contain"
                   playsInline
+                  preload="metadata"
                   onEnded={() => setVideoPlaying(false)}
                 />
                 <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${videoPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`} style={{background: videoPlaying ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.25)'}}>
@@ -310,16 +311,16 @@ useEffect(() => {
                 )}
               </div>
               <div className="space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">¿Cómo es el proceso?</span>
-                <p className="text-2xl font-light text-on-surface-variant leading-relaxed">Un proceso de <span className="font-semibold text-on-surface">tres etapas</span> diseñado para ayudarte a entender qué te frena y empezar a avanzar de verdad.</p>
-                <p className="text-base text-on-surface-variant font-light leading-relaxed">No es un curso ni una lista de consejos. Es un acompañamiento personalizado donde trabajás directamente con lo que está pasando en tu vida hoy.</p>
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] block">{c.proceso.badge}</span>
+                <p className="text-2xl font-light text-on-surface-variant leading-relaxed">{c.proceso.intro}</p>
+                <p className="text-base text-on-surface-variant font-light leading-relaxed">{c.proceso.p2}</p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-on-secondary-container">calendar_month</span></div>
-                  <div><p className="font-bold text-on-surface text-sm">30 días de proceso</p><p className="text-on-surface-variant text-sm font-light">Con acompañamiento personalizado en cada etapa</p></div>
+                  <div><p className="font-bold text-on-surface text-sm">{c.proceso.stat1_title}</p><p className="text-on-surface-variant text-sm font-light">{c.proceso.stat1_desc}</p></div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">person</span></div>
-                  <div><p className="font-bold text-on-surface text-sm">100% personalizado</p><p className="text-on-surface-variant text-sm font-light">Adaptado a lo que hoy te está pasando a vos</p></div>
+                  <div><p className="font-bold text-on-surface text-sm">{c.proceso.stat2_title}</p><p className="text-on-surface-variant text-sm font-light">{c.proceso.stat2_desc}</p></div>
                 </div>
               </div>
             </div>
@@ -330,46 +331,47 @@ useEffect(() => {
         <section className="py-32 px-6 md:px-12 bg-surface" id="incluye">
           <div className="max-w-screen-2xl mx-auto">
             <div className="text-center mb-20">
-              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">Lo que recibís</span>
-              <h2 className="text-4xl md:text-5xl font-light">Qué <span className="font-extrabold italic">incluye</span> el proceso</h2>
+              <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-4 block">{c.incluye.badge}</span>
+              <h2 className="text-4xl md:text-5xl font-light mb-6">{c.incluye.title}<br /><span className="font-extrabold italic" style={{color:'#9a3412'}}>{c.incluye.title_accent}</span></h2>
+              <p className="text-base md:text-lg font-light text-on-surface-variant max-w-2xl mx-auto">{c.incluye.subtitle}</p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {/* Card 1 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.10) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>chat</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">3 sesiones 1:1 personalizadas</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Cada sesión está enfocada en una etapa específica del proceso y adaptada a lo que hoy te está pasando.</p></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c1_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c1_desc}</p></div>
               </div>
               {/* Card 2 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>edit_note</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Ejercicios entre sesiones</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Después de cada encuentro recibís ejercicios concretos para integrar lo trabajado. Porque el cambio pasa en lo que hacés después.</p></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c2_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c2_desc}</p></div>
               </div>
               {/* Card 3 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',top:0,left:0,transform:'translate(-30%,-30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>support_agent</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Acompañamiento directo</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Canal de consultas personalizado de lunes a viernes de 9 a 17hs. Si algo surge o necesitás orientación, estoy disponible.</p></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c3_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c3_desc}</p></div>
               </div>
               {/* Card 4 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,right:0,transform:'translate(30%,30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>analytics</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Guía práctica con acciones concretas</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Al finalizar recibís un análisis personalizado con anclajes para reconocer tus patrones y actuar diferente cuando aparezcan.</p></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c4_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c4_desc}</p></div>
               </div>
               {/* Card 5 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-32 h-32 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',top:0,right:0,transform:'translate(30%,-30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>menu_book</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Libro de acompañamiento</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Un recurso con herramientas y ejercicios para que puedas seguir integrando el proceso de manera autónoma.</p></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c5_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c5_desc}</p></div>
               </div>
               {/* Card 6 */}
               <div className="p-8 rounded-[2rem] flex flex-col gap-5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden" style={{background:'#fff',boxShadow:'0 2px 24px rgba(185,83,26,0.06)'}}>
                 <div className="absolute w-36 h-36 rounded-full pointer-events-none" style={{background:'radial-gradient(circle, rgba(185,83,26,0.09) 0%, transparent 70%)',bottom:0,left:0,transform:'translate(-30%,30%)'}}></div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10" style={{background:'#fdeee8'}}><span className="material-symbols-outlined text-2xl" style={{color:'#9a3412'}}>manage_search</span></div>
-                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">Análisis previo a la primera sesión</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">Antes de arrancar hacemos un análisis inicial para que la primera sesión arranque con foco y sin tiempo perdido.</p></div>
-                <div className="mt-auto pt-2 relative z-10"><span className="text-[0.65rem] uppercase tracking-widest font-bold" style={{color:'#9a3412'}}>Incluido sin costo adicional</span></div>
+                <div className="relative z-10"><h3 className="text-xl font-bold mb-2">{c.incluye.c6_title}</h3><p className="text-on-surface-variant text-sm font-light leading-relaxed">{c.incluye.c6_desc}</p></div>
+                <div className="mt-auto pt-2 relative z-10"><span className="text-[0.65rem] uppercase tracking-widest font-bold" style={{color:'#9a3412'}}>{c.incluye.c6_badge}</span></div>
               </div>
             </div>
           </div>
@@ -474,8 +476,8 @@ useEffect(() => {
                 </div>
               </div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-bright p-12 rounded-[3rem] soft-shadow text-center min-w-[280px]">
-                <div className="text-7xl font-extrabold tracking-tighter text-on-surface">150+</div>
-                <div className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mt-4">Historias transformadas</div>
+                <div className="text-7xl font-extrabold tracking-tighter text-on-surface">{c.testimonios.stat}</div>
+                <div className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mt-4">{c.testimonios.stat_label}</div>
               </div>
             </div>
 
@@ -488,12 +490,9 @@ useEffect(() => {
                   <div className="space-y-6">
                     <span className="material-symbols-outlined text-secondary-container" style={{fontSize:'3.5rem'}}>format_quote</span>
                     <h2 className="text-xl md:text-2xl font-light leading-relaxed text-on-surface">
-                      &ldquo;Trabajar con Flor fue el catalizador que no sabía que necesitaba. El <strong>Método RAP</strong> me dio una estructura para entender mi propia ambición sin perder mi esencia.&rdquo;
+                      &ldquo;{c.testimonios.t1_text}&rdquo;
                     </h2>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden"><span className="material-symbols-outlined text-on-secondary-container">person</span></div>
-                      <div><p className="font-bold text-sm uppercase tracking-wider">Elena Rodríguez</p><p className="text-xs text-on-surface-variant">CEO &amp; Directora Creativa</p></div>
-                    </div>
+                    <p className="text-xs text-on-surface-variant">{c.testimonios.t1_name}</p>
                   </div>
                 </div>
 
@@ -515,9 +514,10 @@ useEffect(() => {
                   >
                     <video
                       ref={testimonioVideoRef1}
-                      src="/testimoniovideo.mov"
+                      src="/testimoniovideo.mp4"
                       className="absolute inset-0 w-full h-full object-cover"
                       playsInline
+                      preload="metadata"
                       onEnded={() => setTestimonioVideo1Playing(false)}
                     />
                     <div
@@ -558,6 +558,7 @@ useEffect(() => {
                       src="/testimoniovideo2.mp4"
                       className="absolute inset-0 w-full h-full object-cover"
                       playsInline
+                      preload="metadata"
                       onEnded={() => setTestimonioVideo2Playing(false)}
                     />
                     <div
@@ -577,26 +578,49 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Item 4 - Texto */}
+                {/* Item 4 - WhatsApp: mensaje único */}
                 <div style={tItemStyle(3)}>
-                  <div className="space-y-8">
-                    <span className="material-symbols-outlined text-secondary-container" style={{fontSize:'3.5rem'}}>format_quote</span>
-                    <h2 className="text-xl md:text-2xl font-light leading-relaxed text-on-surface">&ldquo;[Testimonio escrito — agregá el texto real de esta persona]&rdquo;</h2>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center"><span className="material-symbols-outlined text-primary">person</span></div>
-                      <div><p className="font-bold text-sm uppercase tracking-wider">Nombre Apellido</p><p className="text-xs text-on-surface-variant">Descripción breve</p></div>
+                  <div className="flex flex-col gap-3 py-1" style={{height:'100%', minHeight:'300px'}}>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-[#25D366]"></div>
+                      <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">WhatsApp · mensaje real</span>
+                    </div>
+                    <div className="flex items-center justify-center" style={{flex:1, overflow:'hidden'}}>
+                      <div style={{maxWidth:'82%', borderRadius:'18px', overflow:'hidden', boxShadow:'0 8px 32px rgba(0,0,0,0.14)', transform:'rotate(-1.5deg)'}}>
+                        <img src="/wsp1.jpg" style={{width:'100%', display:'block'}} alt="Mensaje cliente" />
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Item 5 - Texto */}
+                {/* Item 5 - Instagram story */}
                 <div style={tItemStyle(4)}>
-                  <div className="space-y-8">
-                    <span className="material-symbols-outlined text-secondary-container" style={{fontSize:'3.5rem'}}>format_quote</span>
-                    <h2 className="text-xl md:text-2xl font-light leading-relaxed text-on-surface">&ldquo;[Testimonio escrito — agregá el texto real de esta persona]&rdquo;</h2>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center"><span className="material-symbols-outlined text-on-tertiary-container">person</span></div>
-                      <div><p className="font-bold text-sm uppercase tracking-wider">Nombre Apellido</p><p className="text-xs text-on-surface-variant">Descripción breve</p></div>
+                  <div className="flex flex-col items-center gap-3 py-1" style={{height:'100%', minHeight:'300px'}}>
+                    <div className="flex items-center gap-2 shrink-0 w-full">
+                      <div className="w-2 h-2 rounded-full" style={{background:'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)'}}></div>
+                      <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Instagram · @pamelapinat</span>
+                    </div>
+                    <div className="flex justify-center min-h-0" style={{flex:1}}>
+                      <div className="rounded-[1.75rem] p-[3px]" style={{background:'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', aspectRatio:'9/16', height:'100%', boxShadow:'0 4px 24px rgba(0,0,0,0.12)'}}>
+                        <div className="w-full h-full rounded-[calc(1.75rem-3px)] overflow-hidden">
+                          <img src="/wsp3.jpg" alt="Story @pamelapinat" className="w-full h-full object-cover" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Item 6 - WhatsApp: conversación del libro */}
+                <div style={tItemStyle(5)}>
+                  <div className="flex flex-col items-center gap-3 py-1" style={{height:'100%', minHeight:'300px'}}>
+                    <div className="flex items-center gap-2 shrink-0 w-full">
+                      <div className="w-2 h-2 rounded-full bg-[#25D366]"></div>
+                      <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">WhatsApp · lo usa como herramienta</span>
+                    </div>
+                    <div style={{flex:1, position:'relative', width:'100%', overflow:'hidden'}}>
+                      <div style={{position:'absolute', inset:0, display:'flex', justifyContent:'center', alignItems:'flex-start'}}>
+                        <img src="/wsp2.jpg" style={{height:'100%', width:'auto', maxWidth:'100%', display:'block', borderRadius:'20px', boxShadow:'0 4px 24px rgba(0,0,0,0.12)'}} alt="Conversación WhatsApp" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -637,13 +661,13 @@ useEffect(() => {
                     <span className="material-symbols-outlined text-4xl" style={{color:'#fff'}}>verified_user</span>
                   </div>
                   <div>
-                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-2 block" style={{color:'rgba(255,255,255,0.7)'}}>Garantía</span>
-                    <h2 className="text-3xl md:text-4xl font-light leading-tight" style={{color:'#fff'}}>Tu inversión <span className="font-extrabold italic">está protegida.</span></h2>
+                    <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-2 block" style={{color:'rgba(255,255,255,0.7)'}}>{c.garantia.badge}</span>
+                    <h2 className="text-3xl md:text-4xl font-light leading-tight" style={{color:'#fff'}}>{c.garantia.title} <span className="font-extrabold italic">{c.garantia.title_accent}</span></h2>
                   </div>
                 </div>
                 <div className="space-y-5 text-base md:text-lg font-light leading-relaxed max-w-2xl" style={{color:'rgba(255,255,255,0.85)'}}>
-                  <p>Si al terminar el proceso sentís que seguís exactamente en el mismo punto y no lograste identificar con claridad qué patrones te estaban frenando, vas a tener <span className="font-semibold" style={{color:'#fff'}}>15 días extra de acompañamiento sin costo adicional.</span></p>
-                  <p className="font-medium italic" style={{color:'#fff'}}>Porque si vos estás dispuesto/a a hacer el proceso, yo también estoy dispuesta a acompañarte hasta que algo real cambie.</p>
+                  <p>{c.garantia.p1}</p>
+                  <p className="font-medium italic" style={{color:'#fff'}}>{c.garantia.p2}</p>
                 </div>
               </div>
             </div>
@@ -679,7 +703,6 @@ useEffect(() => {
             <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold block" style={{color:'rgba(253,246,240,0.6)'}}>Inversión</span>
 
             <div className="space-y-2">
-              <p className="text-7xl md:text-8xl font-extrabold tracking-tight" style={{color:'#fdf6f0'}}>{c.precio.price}</p>
               <p className="text-base font-light" style={{color:'rgba(253,246,240,0.6)'}}>{c.precio.subtitle}</p>
             </div>
 
