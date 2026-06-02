@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { DEFAULT_LANDING_CONTENT, LandingContent } from '@/lib/landing-content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,6 +15,7 @@ const TOTAL_TESTIMONIALS = 5;
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [c, setC] = useState<LandingContent>(DEFAULT_LANDING_CONTENT);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [purchaseThank, setPurchaseThank] = useState(false);
@@ -32,6 +34,13 @@ const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   };
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [testimonialPaused, setTestimonialPaused] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/landing-content')
+      .then(r => r.json())
+      .then(data => setC(prev => ({ ...prev, ...data })))
+      .catch(() => {});
+  }, []);
 
   const handlePurchaseClick = (url: string) => {
     setPurchaseThank(true);
@@ -137,13 +146,13 @@ useEffect(() => {
           <div className="max-w-screen-xl mx-auto w-full flex flex-col items-center text-center">
             <div className="space-y-6 max-w-3xl">
               <div className="hero-badge inline-block px-4 py-1.5 rounded-full border border-[#1a1a1a]/30 bg-[#1a1a1a]/10">
-                <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-[#fdf6f0]/80">Evolución Consciente</span>
+                <span className="text-[0.7rem] uppercase tracking-[0.4em] font-bold text-[#fdf6f0]/80">{c.hero.badge}</span>
               </div>
               <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight leading-[1.1]" style={{color:'#fdf6f0'}}>
-                Habita tu <span className="font-extrabold italic">máximo</span> potencial.
+                {c.hero.title}
               </h1>
               <p className="hero-subtitle text-lg md:text-xl max-w-xl mx-auto font-light leading-relaxed" style={{color:'rgba(253,246,240,0.65)'}}>
-                Un espacio de autoconocimiento y dirección personal para quienes buscan entenderse, desbloquearse y avanzar con claridad.
+                {c.hero.subtitle}
               </p>
               <div className="hero-buttons flex flex-col sm:flex-row gap-6 pt-4 justify-center">
                 <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Flor! Me gustaría saber más sobre el Método RAP y cómo podemos trabajar juntos.')}`} target="_blank" rel="noopener noreferrer" className="rounded-full px-10 py-5 text-base font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90" style={{background:'#fdf6f0', color:'#7c2d12'}}>
@@ -217,9 +226,9 @@ useEffect(() => {
                 <div className="rap-letter absolute -top-6 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-secondary-container transition-colors duration-500">R</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-secondary-container text-3xl">visibility</span></div>
-                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Revelar</span>
-                  <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos cómo estás funcionando hoy</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Miramos juntas qué patrones se repiten en tu vida, qué señales estás ignorando y qué te está frenando realmente. No la versión que contás — la que te pasa de verdad.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">{c.rap.r_label}</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">{c.rap.r_title}</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">{c.rap.r_desc}</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 01</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
@@ -227,9 +236,9 @@ useEffect(() => {
                 <div className="rap-letter absolute top-0 md:top-12 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-surface-container-high transition-colors duration-500">A</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500 border border-surface-container-high" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center mb-8"><span className="material-symbols-outlined text-primary text-3xl">bolt</span></div>
-                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Avanzar</span>
-                  <h3 className="text-xl font-bold mb-3 leading-snug">Entendemos por qué eso sigue pasando</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Profundizamos en el origen de esos bloqueos. Entendemos por qué se sostienen, qué función cumplen y cómo impactan en tu manera de decidir, relacionarte y moverte.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">{c.rap.a_label}</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">{c.rap.a_title}</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">{c.rap.a_desc}</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 02</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
@@ -237,9 +246,9 @@ useEffect(() => {
                 <div className="rap-letter absolute -top-10 md:-top-16 left-0 text-[6rem] lg:text-[10rem] font-extrabold text-surface-dim opacity-30 select-none group-hover:text-tertiary-container transition-colors duration-500">P</div>
                 <div className="relative z-10 bg-surface-bright p-6 lg:p-10 rounded-[2rem] lg:rounded-xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-500" style={{boxShadow:'0 8px 40px rgba(154,52,18,0.15), 0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div className="w-16 h-16 rounded-2xl bg-tertiary-container flex items-center justify-center mb-8"><span className="material-symbols-outlined text-on-tertiary-container text-3xl">auto_awesome</span></div>
-                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">✦ Potenciar</span>
-                  <h3 className="text-xl font-bold mb-3 leading-snug">Trabajamos cómo salir de ese patrón</h3>
-                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">Traducimos todo lo que entendiste en decisiones concretas y acciones reales. La idea es que no te quedes solo con el insight — sino que realmente puedas generar cambios.</p>
+                  <span className="text-[0.65rem] uppercase tracking-[0.3em] font-bold text-[#9a3412] mb-1 block">{c.rap.p_label}</span>
+                  <h3 className="text-xl font-bold mb-3 leading-snug">{c.rap.p_title}</h3>
+                  <p className="text-on-surface-variant leading-relaxed mb-8 text-sm">{c.rap.p_desc}</p>
                   <div className="mt-auto flex items-center gap-2 text-sm font-bold tracking-widest uppercase"><span>Fase 03</span><div className="h-px flex-grow bg-[#9a3412]/20"></div></div>
                 </div>
               </div>
@@ -344,9 +353,9 @@ useEffect(() => {
             <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="book-text order-2 md:order-1 space-y-6">
                 <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-4 block" style={{color:'rgba(253,246,240,0.6)'}}>Publicación Reciente</span>
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-tight" style={{color:'#fdf6f0'}}>Volver al <span className="font-extrabold italic">Origen</span></h2>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-tight" style={{color:'#fdf6f0'}}>{c.libro.title}</h2>
                 <p className="text-lg md:text-xl max-w-lg font-light leading-relaxed" style={{color:'rgba(253,246,240,0.65)'}}>
-                  Una guía práctica de autoconocimiento y transformación personal. Un libro para quienes quieren entenderse mejor, desbloquearse y empezar a construir una vida más alineada con quienes realmente son.
+                  {c.libro.desc}
                 </p>
                 <div className="pt-6 flex flex-col sm:flex-row gap-4">
                   {/* Dropdown comprar */}
@@ -582,10 +591,10 @@ useEffect(() => {
                 <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#9a3412] mb-2 block">¿Quién es Flor?</span>
                 <h2 className="text-4xl md:text-5xl font-light leading-tight">Conocé a <span className="font-extrabold italic">Flor Aznar</span></h2>
                 <div className="space-y-5 text-on-surface-variant text-base md:text-lg font-light leading-relaxed">
-                  <p>Mi camino comenzó en el mundo del marketing. Soy Licenciada en Marketing y durante los años en los que ejercí mi profesión descubrí que lo que realmente me apasionaba era acompañar a las personas y ayudarlas a potenciarse para atravesar cualquier desafío.</p>
-                  <p>Ese descubrimiento me llevó a adentrarme en el mundo del coaching. Me formé en EDPyN Barcelona (España), institución avalada por la ICF – Level 2, realicé un Máster en Recursos Humanos y actualmente continúo mi formación estudiando Counseling (Consultoría Psicológica).</p>
-                  <p>A lo largo de este camino entendí algo fundamental: muchas veces las personas no avanzan en su vida no por falta de capacidad, sino porque no se conocen lo suficiente y terminan repitiendo patrones o creencias que las mantienen en el mismo lugar.</p>
-                  <p className="font-medium text-on-surface italic">Hoy mi trabajo está enfocado en ayudar a las personas a conocerse más profundamente, comprender qué les está pasando y encontrar claridad para avanzar en su vida.</p>
+                  <p>{c.about.p1}</p>
+                  <p>{c.about.p2}</p>
+                  <p>{c.about.p3}</p>
+                  <p className="font-medium text-on-surface italic">{c.about.p4}</p>
                 </div>
               </div>
             </div>
@@ -598,20 +607,20 @@ useEffect(() => {
             <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold block" style={{color:'rgba(253,246,240,0.6)'}}>Inversión</span>
 
             <div className="space-y-2">
-              <p className="text-7xl md:text-8xl font-extrabold tracking-tight" style={{color:'#fdf6f0'}}>$100.000</p>
-              <p className="text-base font-light" style={{color:'rgba(253,246,240,0.6)'}}>Proceso completo · 3 sesiones</p>
+              <p className="text-7xl md:text-8xl font-extrabold tracking-tight" style={{color:'#fdf6f0'}}>{c.precio.price}</p>
+              <p className="text-base font-light" style={{color:'rgba(253,246,240,0.6)'}}>{c.precio.subtitle}</p>
             </div>
 
             <div className="space-y-4">
               <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me interesa reservar mi lugar en el Método RAP. ¿Podrías darme más información?')}`} target="_blank" rel="noopener noreferrer" className="w-full rounded-full py-5 text-base font-bold text-center block hover:opacity-90 transition-opacity" style={{background:'#fdf6f0', color:'#7c2d12'}}>
                 Reservar mi lugar
               </a>
-              <p className="text-sm font-light" style={{color:'rgba(253,246,240,0.5)'}}>Una vez que reserves, te escribo con todos los detalles.</p>
+              <p className="text-sm font-light" style={{color:'rgba(253,246,240,0.5)'}}>{c.precio.note}</p>
             </div>
 
             <div className="pt-4" style={{borderTop:'1px solid rgba(253,246,240,0.15)'}}>
               <p className="text-lg md:text-xl font-light italic leading-relaxed" style={{color:'rgba(253,246,240,0.75)'}}>
-                &ldquo;La idea no es solo hablar del problema.<br className="hidden sm:block" />Es entenderte — y empezar a moverte.&rdquo;
+                &ldquo;{c.precio.quote}&rdquo;
               </p>
             </div>
           </div>
@@ -623,8 +632,8 @@ useEffect(() => {
             <div className="cta-section relative rounded-[2rem] lg:rounded-[4rem] p-8 md:p-16 lg:p-24 overflow-hidden text-center" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fde8dc 50%, #fdddd2 100%)'}}>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none" style={{background:'radial-gradient(circle, rgba(154,52,18,0.12) 0%, transparent 70%)'}}></div>
               <div className="relative z-10 max-w-3xl mx-auto space-y-12">
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight text-[#1a1a1a]">¿Iniciamos la <span className="italic font-extrabold" style={{color:'#9a3412'}}>conversación?</span></h2>
-                <p className="text-[#1a1a1a]/50 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight text-[#1a1a1a]">{c.cta.title}</h2>
+                <p className="text-[#1a1a1a]/50 text-lg md:text-xl font-light">{c.cta.subtitle}</p>
                 <div className="flex flex-col sm:flex-row justify-center gap-6">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full blur-2xl opacity-60 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(154,52,18,0.3) 0%, transparent 70%)', transform:'scale(1.4) translateY(6px)'}}></div>

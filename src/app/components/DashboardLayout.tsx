@@ -63,6 +63,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         { href: '/agenda', icon: 'calendar_month', label: 'Agenda' },
         { href: '/nueva-consulta', icon: 'add', label: 'Nueva Consulta' },
         { href: '/prompts', icon: 'auto_awesome', label: 'Prompts IA' },
+        { href: '/landing-editor', icon: 'web', label: 'Editar Landing' },
     ];
 
     useEffect(() => {
@@ -129,7 +130,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     }, [activePath, navItems]);
 
     // Rutas públicas que no deben tener el dashboard (sidebar, padding de la app, etc.)
-    const publicRoutes = ['/', '/login', '/leer'];
+    const publicRoutes = ['/', '/login', '/leer', '/landing-editor'];
     const isClientCoachingForm = pathname?.startsWith('/coaching/sesion/');
     if (publicRoutes.includes(pathname) || isClientCoachingForm) {
         return <>{children}</>;
