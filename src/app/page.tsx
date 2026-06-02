@@ -149,9 +149,6 @@ useEffect(() => {
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#testimonials">Testimonios</a>
             <a className="font-manrope tracking-tight text-sm font-medium text-slate-500 hover:text-[#1a1a1a] transition-colors" href="#contact">Contacto</a>
           </div>
-          <Link href="/login" className="hidden md:block">
-            <button className="bg-primary text-on-primary rounded-full px-8 py-3 text-sm font-bold hover:opacity-80 transition-all duration-300">Ingresar al Sistema</button>
-          </Link>
           <button className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menú">
             <span className={`block w-6 h-0.5 bg-[#1a1a1a] transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
             <span className={`block w-6 h-0.5 bg-[#1a1a1a] transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
@@ -165,9 +162,6 @@ useEffect(() => {
             <a className="font-manrope text-sm font-medium text-slate-500" href="#book" onClick={() => setIsMobileMenuOpen(false)}>Libro</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#testimonials" onClick={() => setIsMobileMenuOpen(false)}>Testimonios</a>
             <a className="font-manrope text-sm font-medium text-slate-500" href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contacto</a>
-            <Link href="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-              <button className="w-full bg-primary text-on-primary rounded-full px-8 py-3 text-sm font-bold hover:opacity-80 transition-all duration-300">Ingresar al Sistema</button>
-            </Link>
           </div>
         </div>
       </nav>
