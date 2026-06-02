@@ -312,19 +312,19 @@ useEffect(() => {
         </section>
 
         {/* ── LIBRO ── */}
-        <section className="book-section py-16 lg:py-24 xl:py-32 px-6 md:px-12 bg-surface overflow-hidden" id="book">
+        <section className="book-section py-16 lg:py-24 xl:py-32 px-6 md:px-12 overflow-hidden" id="book" style={{background:'linear-gradient(160deg, #7c2d12 0%, #9a3412 60%, #b5541a 100%)'}}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="book-text order-2 md:order-1 space-y-6">
-                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold text-[#7c2d12] mb-4 block">Publicación Reciente</span>
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-tight">Volver al <span className="font-extrabold italic">Origen</span></h2>
-                <p className="text-lg md:text-xl text-on-surface-variant max-w-lg font-light leading-relaxed">
+                <span className="text-[0.75rem] uppercase tracking-[0.4em] font-bold mb-4 block" style={{color:'rgba(253,246,240,0.6)'}}>Publicación Reciente</span>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-tight" style={{color:'#fdf6f0'}}>Volver al <span className="font-extrabold italic">Origen</span></h2>
+                <p className="text-lg md:text-xl max-w-lg font-light leading-relaxed" style={{color:'rgba(253,246,240,0.65)'}}>
                   Una guía práctica de autoconocimiento y transformación personal. Un libro para quienes quieren entenderse mejor, desbloquearse y empezar a construir una vida más alineada con quienes realmente son.
                 </p>
                 <div className="pt-6 flex flex-col sm:flex-row gap-4">
                   {/* Dropdown comprar */}
                   <div className="relative">
-                    <button onClick={() => setIsBookDropdownOpen(!isBookDropdownOpen)} className="bg-[#9a3412] text-white rounded-full px-12 py-5 text-base font-bold hover:bg-[#7c2d12] transition-colors soft-shadow flex items-center gap-2">
+                    <button onClick={() => setIsBookDropdownOpen(!isBookDropdownOpen)} className="rounded-full px-12 py-5 text-base font-bold transition-opacity hover:opacity-90 flex items-center gap-2" style={{background:'#fdf6f0', color:'#7c2d12'}}>
                       Adquirir el libro
                       <span className={`material-symbols-outlined text-lg transition-transform duration-300 ${isBookDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
@@ -355,7 +355,7 @@ useEffect(() => {
                     )}
                   </div>
                   {/* Pegar un vistazo */}
-                  <Link href="/leer" className="border-2 border-[#9a3412] text-[#9a3412] rounded-full px-10 py-5 text-base font-bold hover:bg-[#9a3412]/10 transition-all text-center">
+                  <Link href="/leer" className="rounded-full px-10 py-5 text-base font-bold transition-all text-center hover:bg-white/10" style={{border:'2px solid rgba(253,246,240,0.4)', color:'#fdf6f0'}}>
                     Pegar un vistazo
                   </Link>
                 </div>
@@ -363,7 +363,7 @@ useEffect(() => {
 
               {/* 3D Book */}
               <div className="book-mockup order-1 md:order-2 relative flex justify-center items-center">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-[100px] -z-10 rounded-full" style={{background:'rgba(13,80,80,0.18)'}}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-[100px] -z-10 rounded-full" style={{background:'rgba(253,246,240,0.08)'}}></div>
                 <div style={{perspective:'1400px',display:'flex',justifyContent:'center',padding:'20px 90px 60px 20px'}}>
                   <div
                     style={{
