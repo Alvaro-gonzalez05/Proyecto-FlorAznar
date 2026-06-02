@@ -617,21 +617,15 @@ useEffect(() => {
         {/* ── CTA ── */}
         <section className="px-6 md:px-12 py-16 lg:py-24 xl:py-32" id="contact">
           <div className="max-w-screen-2xl mx-auto">
-            <div className="cta-section relative bg-[#1a1a1a] text-white rounded-[2rem] lg:rounded-[4rem] p-8 md:p-16 lg:p-24 overflow-hidden text-center">
-              {/* Detalles decorativos negros */}
-              <div className="absolute top-0 left-0 w-full h-px bg-white/10"></div>
-              <div className="absolute bottom-0 left-0 w-full h-px bg-white/10"></div>
-              <div className="absolute top-8 left-8 w-8 h-8 border-l-2 border-t-2 border-white/20 rounded-tl-xl"></div>
-              <div className="absolute top-8 right-8 w-8 h-8 border-r-2 border-t-2 border-white/20 rounded-tr-xl"></div>
-              <div className="absolute bottom-8 left-8 w-8 h-8 border-l-2 border-b-2 border-white/20 rounded-bl-xl"></div>
-              <div className="absolute bottom-8 right-8 w-8 h-8 border-r-2 border-b-2 border-white/20 rounded-br-xl"></div>
+            <div className="cta-section relative rounded-[2rem] lg:rounded-[4rem] p-8 md:p-16 lg:p-24 overflow-hidden text-center" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fde8dc 50%, #fdddd2 100%)'}}>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none" style={{background:'radial-gradient(circle, rgba(154,52,18,0.12) 0%, transparent 70%)'}}></div>
               <div className="relative z-10 max-w-3xl mx-auto space-y-12">
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight">¿Iniciamos la <span className="italic font-extrabold" style={{color:'#e8956d'}}>conversación?</span></h2>
-                <p className="text-white/50 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-light tracking-tight text-[#1a1a1a]">¿Iniciamos la <span className="italic font-extrabold" style={{color:'#9a3412'}}>conversación?</span></h2>
+                <p className="text-[#1a1a1a]/50 text-lg md:text-xl font-light">Toda evolución comienza con una sola pregunta. Contáctame para explorar cómo podemos trabajar juntos.</p>
                 <div className="flex flex-col sm:flex-row justify-center gap-6">
                   <div className="relative">
-                    <div className="absolute inset-0 rounded-full blur-2xl opacity-50 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(232,149,109,0.5) 0%, transparent 70%)', transform:'scale(1.4) translateY(6px)'}}></div>
-                    <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="relative rounded-full px-12 py-6 text-lg font-bold hover:scale-105 transition-transform flex items-center justify-center gap-3 border border-[#9a3412]/40" style={{background:'linear-gradient(135deg, #fdeee8 0%, #fdddd2 100%)', color:'#7c2d12'}}>
+                    <div className="absolute inset-0 rounded-full blur-2xl opacity-60 pointer-events-none" style={{background:'radial-gradient(ellipse, rgba(154,52,18,0.3) 0%, transparent 70%)', transform:'scale(1.4) translateY(6px)'}}></div>
+                    <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola! Me gustaría agendar una llamada de introducción contigo. ¿Cuándo tenés disponibilidad?')}`} target="_blank" rel="noopener noreferrer" className="relative bg-[#9a3412] text-white rounded-full px-12 py-6 text-lg font-bold hover:bg-[#7c2d12] transition-colors flex items-center justify-center gap-3">
                       Agendar llamada de introducción
                       <span className="material-symbols-outlined">call</span>
                     </a>
