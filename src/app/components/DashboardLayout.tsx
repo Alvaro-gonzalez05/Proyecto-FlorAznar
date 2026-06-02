@@ -64,6 +64,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         { href: '/nueva-consulta', icon: 'add', label: 'Nueva Consulta' },
         { href: '/prompts', icon: 'auto_awesome', label: 'Prompts IA' },
         { href: '/landing-editor', icon: 'web', label: 'Editar Landing' },
+        { href: '/configuracion', icon: 'settings', label: 'Configuración' },
     ];
 
     useEffect(() => {

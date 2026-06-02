@@ -80,10 +80,21 @@ const nextTestimonial = useCallback(() => {
   }, []);
 
 useEffect(() => {
-    if (testimonialPaused) return;
+    if (testimonialPaused || testimonioVideo1Playing || testimonioVideo2Playing) return;
     const timer = setInterval(nextTestimonial, 4500);
     return () => clearInterval(timer);
-  }, [testimonialPaused, nextTestimonial]);
+  }, [testimonialPaused, testimonioVideo1Playing, testimonioVideo2Playing, nextTestimonial]);
+
+  useEffect(() => {
+    if (currentTestimonial !== 1 && testimonioVideoRef1.current) {
+      testimonioVideoRef1.current.pause();
+      setTestimonioVideo1Playing(false);
+    }
+    if (currentTestimonial !== 2 && testimonioVideoRef2.current) {
+      testimonioVideoRef2.current.pause();
+      setTestimonioVideo2Playing(false);
+    }
+  }, [currentTestimonial]);
 
   useGSAP(() => {
     gsap.set(['.hero-nav', '.hero-badge', '.hero-title', '.hero-subtitle', '.hero-buttons', '.hero-image', '.hero-quote'], { opacity: 0 });
@@ -492,40 +503,82 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Item 2 - Video */}
+                {/* Item 2 - Video Testimonio 1 */}
                 <div style={tItemStyle(1)}>
-                  <div className="bg-[#1a1a1a] rounded-[2rem] overflow-hidden flex flex-col" style={{height:'100%',minHeight:'300px',background:'linear-gradient(160deg,#111 0%,#222 100%)'}}>
-                    <div className="flex-grow flex items-center justify-center relative">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{background:'rgba(255,255,255,0.12)'}}>
-                        <span className="material-symbols-outlined text-white" style={{fontSize:'2.5rem'}}>play_arrow</span>
-                      </div>
-                      <div className="absolute top-5 left-5 flex items-center gap-2 rounded-full px-3 py-1" style={{background:'rgba(255,255,255,0.1)'}}>
-                        <span className="w-2 h-2 rounded-full" style={{background:'#f87171'}}></span>
-                        <span className="text-white text-xs font-semibold tracking-widest">VIDEO</span>
+                  <div
+                    className="relative rounded-[2rem] overflow-hidden cursor-pointer group"
+                    style={{height:'100%', minHeight:'300px', background:'#111'}}
+                    onClick={() => {
+                      if (!testimonioVideoRef1.current) return;
+                      if (testimonioVideo1Playing) {
+                        testimonioVideoRef1.current.pause();
+                        setTestimonioVideo1Playing(false);
+                      } else {
+                        testimonioVideoRef1.current.play();
+                        setTestimonioVideo1Playing(true);
+                      }
+                    }}
+                  >
+                    <video
+                      ref={testimonioVideoRef1}
+                      src="/testimoniovideo.mov"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      playsInline
+                      onEnded={() => setTestimonioVideo1Playing(false)}
+                    />
+                    <div
+                      className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${testimonioVideo1Playing ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
+                      style={{background: testimonioVideo1Playing ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.28)'}}
+                    >
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-200 group-hover:scale-110" style={{background:'rgba(255,255,255,0.18)', border:'1.5px solid rgba(255,255,255,0.45)'}}>
+                        <span className="material-symbols-outlined text-white" style={{fontSize:'2.5rem'}}>
+                          {testimonioVideo1Playing ? 'pause' : 'play_arrow'}
+                        </span>
                       </div>
                     </div>
-                    <div className="p-6 border-t" style={{borderColor:'rgba(255,255,255,0.08)'}}>
-                      <p className="font-bold text-white text-sm">Nombre Apellido</p>
-                      <p className="text-xs mt-1" style={{color:'rgba(255,255,255,0.4)'}}>Descripción breve</p>
+                    <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full px-3 py-1" style={{background:'rgba(0,0,0,0.45)', backdropFilter:'blur(6px)'}}>
+                      <span className="w-2 h-2 rounded-full" style={{background:'#f87171'}}></span>
+                      <span className="text-white text-xs font-semibold tracking-widest">VIDEO</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Item 3 - Video */}
+                {/* Item 3 - Video Testimonio 2 */}
                 <div style={tItemStyle(2)}>
-                  <div className="bg-[#1a1a1a] rounded-[2rem] overflow-hidden flex flex-col" style={{height:'100%',minHeight:'300px',background:'linear-gradient(160deg,#111 0%,#222 100%)'}}>
-                    <div className="flex-grow flex items-center justify-center relative">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{background:'rgba(255,255,255,0.12)'}}>
-                        <span className="material-symbols-outlined text-white" style={{fontSize:'2.5rem'}}>play_arrow</span>
-                      </div>
-                      <div className="absolute top-5 left-5 flex items-center gap-2 rounded-full px-3 py-1" style={{background:'rgba(255,255,255,0.1)'}}>
-                        <span className="w-2 h-2 rounded-full" style={{background:'#f87171'}}></span>
-                        <span className="text-white text-xs font-semibold tracking-widest">VIDEO</span>
+                  <div
+                    className="relative rounded-[2rem] overflow-hidden cursor-pointer group"
+                    style={{height:'100%', minHeight:'300px', background:'#111'}}
+                    onClick={() => {
+                      if (!testimonioVideoRef2.current) return;
+                      if (testimonioVideo2Playing) {
+                        testimonioVideoRef2.current.pause();
+                        setTestimonioVideo2Playing(false);
+                      } else {
+                        testimonioVideoRef2.current.play();
+                        setTestimonioVideo2Playing(true);
+                      }
+                    }}
+                  >
+                    <video
+                      ref={testimonioVideoRef2}
+                      src="/testimoniovideo2.mp4"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      playsInline
+                      onEnded={() => setTestimonioVideo2Playing(false)}
+                    />
+                    <div
+                      className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${testimonioVideo2Playing ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
+                      style={{background: testimonioVideo2Playing ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.28)'}}
+                    >
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-200 group-hover:scale-110" style={{background:'rgba(255,255,255,0.18)', border:'1.5px solid rgba(255,255,255,0.45)'}}>
+                        <span className="material-symbols-outlined text-white" style={{fontSize:'2.5rem'}}>
+                          {testimonioVideo2Playing ? 'pause' : 'play_arrow'}
+                        </span>
                       </div>
                     </div>
-                    <div className="p-6 border-t" style={{borderColor:'rgba(255,255,255,0.08)'}}>
-                      <p className="font-bold text-white text-sm">Nombre Apellido</p>
-                      <p className="text-xs mt-1" style={{color:'rgba(255,255,255,0.4)'}}>Descripción breve</p>
+                    <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full px-3 py-1" style={{background:'rgba(0,0,0,0.45)', backdropFilter:'blur(6px)'}}>
+                      <span className="w-2 h-2 rounded-full" style={{background:'#f87171'}}></span>
+                      <span className="text-white text-xs font-semibold tracking-widest">VIDEO</span>
                     </div>
                   </div>
                 </div>

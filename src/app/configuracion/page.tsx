@@ -79,6 +79,13 @@ export default function ConfiguracionPage() {
               <p className="text-sm font-medium text-black-accent">{email || '—'}</p>
             </div>
           </div>
+          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3">
+            <span className="material-symbols-outlined text-slate-400 text-lg">lock</span>
+            <div>
+              <p className="text-[0.7rem] text-slate-400 uppercase tracking-wider">Contraseña</p>
+              <p className="text-sm font-medium text-black-accent tracking-widest">••••••••</p>
+            </div>
+          </div>
         </div>
 
         {/* Change email */}
